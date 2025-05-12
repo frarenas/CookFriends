@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.models.Recipe
 import com.devapp.cookfriends.presentation.common.RatingStar
 import com.devapp.cookfriends.ui.theme.Red
@@ -41,8 +43,8 @@ fun RecipeListItem(recipe: Recipe) {
         Spacer(modifier = Modifier.width(8.dp))
         Column {
             Text(text = recipe.name!!, fontSize = 24.sp)
-            Text(text = "Categoría: ${recipe.type}")
-            Text(text = "Autor: ${recipe.author}")
+            Text(text = stringResource(R.string.category, recipe.type!!))
+            Text(text = stringResource(R.string.author, recipe.author!!))
         }
         Spacer(modifier = Modifier.weight(1f))
         RatingStar(recipe.rate?.toFloat() ?: 0F, maxRating = 5, {}, false)

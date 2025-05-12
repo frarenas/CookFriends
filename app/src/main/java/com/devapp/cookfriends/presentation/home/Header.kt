@@ -21,10 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.devapp.cookfriends.R
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import com.devapp.cookfriends.ui.theme.White
 
@@ -51,12 +53,18 @@ fun Header(modifier: Modifier = Modifier, title: String = "") {
             onValueChange = { newText -> text = newText },
             modifier = modifier.fillMaxWidth(),
             leadingIcon = {
-                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = stringResource(R.string.more_options)
+                )
             },
             trailingIcon = {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.search)
+                )
             },
-            label = { Text("Buscar recetas...") },
+            label = { Text(stringResource(R.string.search_recipes)) },
             shape = RoundedCornerShape(20.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = White,

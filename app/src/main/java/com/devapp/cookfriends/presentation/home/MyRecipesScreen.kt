@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.devapp.cookfriends.R
 
 @Composable
 fun MyRecipesScreen(viewModel: HomeViewModel = hiltViewModel()) {
@@ -19,7 +21,7 @@ fun MyRecipesScreen(viewModel: HomeViewModel = hiltViewModel()) {
         .fillMaxSize()) {
         Header(
             modifier = Modifier,
-            title = "Mis Recetas"
+            title = stringResource(R.string.my_recipes)
         )
         LazyColumn {
             items(homeState.recipeList) { item ->
