@@ -2,14 +2,19 @@ package com.devapp.cookfriends.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Favorite
@@ -30,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
@@ -37,7 +43,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
+import com.devapp.cookfriends.ui.theme.Red
 import com.devapp.cookfriends.ui.theme.White
 
 @Composable
@@ -79,14 +87,28 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             Header(
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
             )
             LazyColumn {
                 items(homeState.recipeList) { item ->
-                    Column {
-                        Text(text = item.name!!, fontSize = 16.sp)
-                        Text(text = "Categoría: ${item.type}")
-                        Text(text = "Autor: ${item.author}")
+                    Row(
+                        modifier = Modifier.padding(8.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            model = "https://www.clarin.com/2024/03/12/1jgNm90_r_340x340__1.jpg",
+                            contentDescription = null,
+                            modifier = Modifier.width(100.dp).height(100.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(text = item.name!!, fontSize = 24.sp)
+                            Text(text = "Categoría: ${item.type}")
+                            Text(text = "Autor: ${item.author}")
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorito", tint = Red)
                     }
                     HorizontalDivider()
                 }
