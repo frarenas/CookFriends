@@ -2,8 +2,6 @@ package com.devapp.cookfriends.presentation.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,10 +21,6 @@ fun RecipesScreen(viewModel: HomeViewModel = hiltViewModel()) {
             modifier = Modifier,
             title = stringResource(R.string.recipes)
         )
-        LazyColumn {
-            items(homeState.recipeList) { item ->
-                RecipeListItem(item)
-            }
-        }
+        Content(homeState)
     }
 }
