@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -29,6 +30,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
+import com.devapp.cookfriends.presentation.common.RatingStar
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import com.devapp.cookfriends.ui.theme.Red
 import com.devapp.cookfriends.ui.theme.White
@@ -101,14 +104,19 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             contentDescription = null,
                             modifier = Modifier.width(100.dp).height(100.dp)
                         )
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(text = item.name!!, fontSize = 24.sp)
                             Text(text = "Categoría: ${item.type}")
                             Text(text = "Autor: ${item.author}")
                         }
                         Spacer(modifier = Modifier.weight(1f))
-                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorito", tint = Red)
+                        RatingStar(item.rate?.toFloat() ?: 0F, maxRating = 5, {}, false)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton({}) {
+                            Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorito", tint = Red)
+                        }
+
                     }
                     HorizontalDivider()
                 }
@@ -136,7 +144,7 @@ fun Header(modifier: Modifier = Modifier) {
         OutlinedTextField(
             value = text,
             onValueChange = { newText -> text = newText },
-            modifier = modifier.background(White).fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
             },
@@ -144,7 +152,12 @@ fun Header(modifier: Modifier = Modifier) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
             },
             label = { Text("Buscar recetas...") },
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = White,
+                unfocusedContainerColor = White
+            ),
+            singleLine = true
         )
         Text(
             modifier = Modifier.padding(top = 16.dp),
