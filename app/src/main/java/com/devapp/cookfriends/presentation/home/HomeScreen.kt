@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devapp.cookfriends.R
@@ -30,7 +31,7 @@ import com.devapp.cookfriends.presentation.home.navigation.Profile
 import com.devapp.cookfriends.presentation.home.navigation.Recipes
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(mainNavController: NavHostController) {
 
     val homeNavController = rememberNavController()
     val items = listOf(
@@ -70,6 +71,10 @@ fun HomeScreen() {
             }
         }
     ) { innerPadding ->
-        HomeNavGraph(homeNavController = homeNavController, paddingValues = innerPadding)
+        HomeNavGraph(
+            mainNavController = mainNavController,
+            homeNavController = homeNavController,
+            paddingValues = innerPadding
+        )
     }
 }

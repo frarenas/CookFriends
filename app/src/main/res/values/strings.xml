@@ -9,4 +9,7 @@
     <string name="search">Buscar</string>
     <string name="author">Autor: %1s</string>
     <string name="category">Categoría: %1s</string>
+    <string name="change_password">Cambiar contraseña</string>">
+    <string name="password">Contraseña</string>
+    <string name="repeat_password">Repetir contraseña</string>
 </resources>

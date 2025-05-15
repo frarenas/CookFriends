@@ -84,14 +84,6 @@ fun Header(modifier: Modifier = Modifier, title: String = "") {
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    CookFriendsTheme {
-        HomeScreen()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
 fun HeaderPreview() {
     CookFriendsTheme {
         Header(Modifier)
