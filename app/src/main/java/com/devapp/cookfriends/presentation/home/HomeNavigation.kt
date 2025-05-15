@@ -9,6 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.devapp.cookfriends.presentation.home.favorites.FavoritesScreen
+import com.devapp.cookfriends.presentation.home.myrecipes.MyRecipesScreen
+import com.devapp.cookfriends.presentation.home.recipes.RecipesScreen
 
 @Composable
 fun HomeNavGraph(homeNavController: NavHostController, paddingValues: PaddingValues) {

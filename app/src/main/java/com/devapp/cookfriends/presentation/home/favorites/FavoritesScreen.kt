@@ -1,4 +1,4 @@
-package com.devapp.cookfriends.presentation.home
+package com.devapp.cookfriends.presentation.home.favorites
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,11 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.presentation.home.Content
+import com.devapp.cookfriends.presentation.home.Header
 
 @Composable
-fun FavoritesScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun FavoritesScreen(viewModel: FavoritesViewModel = hiltViewModel()) {
 
-    val homeState by viewModel.homeState.collectAsState()
+    val recipesState by viewModel.recipesState.collectAsState()
 
     Column(modifier = Modifier
         .fillMaxSize()) {
@@ -21,6 +23,6 @@ fun FavoritesScreen(viewModel: HomeViewModel = hiltViewModel()) {
             modifier = Modifier,
             title = stringResource(R.string.favorites)
         )
-        Content(homeState)
+        Content(recipesState)
     }
 }

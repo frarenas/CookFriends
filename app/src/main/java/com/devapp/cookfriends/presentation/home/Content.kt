@@ -13,15 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Content(homeState: HomeState = HomeState()) {
+fun Content(recipesState: RecipesState = RecipesState()) {
     Box(modifier = Modifier.fillMaxSize()) {
-        if (homeState.isLoading) {
+        if (recipesState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (homeState.error != null) {
-            Text(text = "Error: ${homeState.error}", modifier = Modifier.padding(16.dp))
+        } else if (recipesState.error != null) {
+            Text(text = "Error: ${recipesState.error}", modifier = Modifier.padding(16.dp))
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(homeState.recipeList) { item ->
+                items(recipesState.recipeList) { item ->
                     RecipeListItem(item)
                 }
             }
