@@ -1,4 +1,4 @@
-package com.devapp.cookfriends.presentation.home
+package com.devapp.cookfriends.presentation.home.navigation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,17 +19,23 @@ import com.devapp.cookfriends.presentation.home.recipes.RecipesScreen
 fun HomeNavGraph(homeNavController: NavHostController, paddingValues: PaddingValues) {
     NavHost(
         navController = homeNavController,
-        startDestination = "recipes",
-        modifier = androidx.compose.ui.Modifier.padding(paddingValues)
+        startDestination = Recipes,
+        modifier = Modifier.padding(paddingValues)
     ) {
-        composable("recipes") { RecipesScreen() }
-        composable("favorites") { FavoritesScreen() }
-        composable("myrecipes") { MyRecipesScreen() }
+        composable<Recipes> {
+            RecipesScreen()
+        }
+        composable<Favorites> {
+            FavoritesScreen()
+        }
+        composable<MyRecipes> {
+            MyRecipesScreen()
+        }
         //composable("profile") { ProfileScreen(onLogout = { mainNavController.navigate("login") { popUpTo("home") { inclusive = true } } }) }
     }
 }
 
-data class NavigationItem(val title: String, val route: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
+data class NavigationItem(val title: String, val route: HomeSection, val icon: ImageVector)
 
 @Composable
 fun ProfileScreen(onLogout: () -> Unit) {

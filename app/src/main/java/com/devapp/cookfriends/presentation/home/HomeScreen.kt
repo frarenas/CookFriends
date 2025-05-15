@@ -17,19 +17,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.devapp.cookfriends.R
+import com.devapp.cookfriends.presentation.home.navigation.Favorites
+import com.devapp.cookfriends.presentation.home.navigation.HomeNavGraph
+import com.devapp.cookfriends.presentation.home.navigation.MyRecipes
+import com.devapp.cookfriends.presentation.home.navigation.NavigationItem
+import com.devapp.cookfriends.presentation.home.navigation.Profile
+import com.devapp.cookfriends.presentation.home.navigation.Recipes
 
 @Composable
 fun HomeScreen() {
 
     val homeNavController = rememberNavController()
     val items = listOf(
-        NavigationItem("Recetas", "recipes", Icons.Outlined.Home),
-        NavigationItem("Favoritos", "favorites", Icons.Outlined.Favorite),
-        NavigationItem("Mis recetas", "myrecipes", Icons.Outlined.Favorite),
-        NavigationItem("Perfil", "profile", Icons.Outlined.Person)
+        NavigationItem(stringResource(R.string.recipes), Recipes, Icons.Outlined.Home),
+        NavigationItem(stringResource(R.string.favorites), Favorites, Icons.Outlined.Favorite),
+        NavigationItem(stringResource(R.string.my_recipes), MyRecipes, Icons.Outlined.Favorite),
+        NavigationItem(stringResource(R.string.profile), Profile, Icons.Outlined.Person)
     )
     var selectedItem by remember { mutableStateOf(items[0]) }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
@@ -43,7 +51,7 @@ fun HomeScreen() {
                     NavigationBarItem(
                         icon = { Icon(item.icon, contentDescription = item.title) },
                         label = { Text(item.title) },
-                        selected = currentRoute == item.route,
+                        selected = currentRoute == item.route.javaClass.name,
                         onClick = {
                             selectedItem = item
                             homeNavController.navigate(item.route) {
