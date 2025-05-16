@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.devapp.cookfriends.presentation.home.HomeScreen
+import com.devapp.cookfriends.presentation.navigation.AppNavGraph
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CookFriendsTheme {
-                HomeScreen()
+                AppNavGraph()
             }
         }
     }
