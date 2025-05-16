@@ -2,14 +2,17 @@ package com.devapp.cookfriends.presentation.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Kitchen
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,11 +36,13 @@ import com.devapp.cookfriends.presentation.home.navigation.Recipes
 @Composable
 fun HomeScreen(mainNavController: NavHostController) {
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val homeNavController = rememberNavController()
     val items = listOf(
-        NavigationItem(stringResource(R.string.recipes), Recipes, Icons.Outlined.Home),
+        NavigationItem(stringResource(R.string.recipes), Recipes, Icons.Outlined.Kitchen),
         NavigationItem(stringResource(R.string.favorites), Favorites, Icons.Outlined.Favorite),
-        NavigationItem(stringResource(R.string.my_recipes), MyRecipes, Icons.Outlined.Favorite),
+        NavigationItem(stringResource(R.string.my_recipes), MyRecipes, Icons.Outlined.Book),
         NavigationItem(stringResource(R.string.profile), Profile, Icons.Outlined.Person)
     )
     var selectedItem by remember { mutableStateOf(items[0]) }
@@ -69,12 +74,14 @@ fun HomeScreen(mainNavController: NavHostController) {
                     )
                 }
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         HomeNavGraph(
             mainNavController = mainNavController,
             homeNavController = homeNavController,
-            paddingValues = innerPadding
+            paddingValues = innerPadding,
+            snackbarHostState = snackbarHostState
         )
     }
 }

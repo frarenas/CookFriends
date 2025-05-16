@@ -2,6 +2,7 @@ package com.devapp.cookfriends.presentation.home.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -18,7 +19,8 @@ import com.devapp.cookfriends.presentation.profile.ProfileScreen
 fun HomeNavGraph(
     mainNavController: NavHostController,
     homeNavController: NavHostController,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    snackbarHostState: SnackbarHostState
 ) {
     NavHost(
         navController = homeNavController,
@@ -35,7 +37,7 @@ fun HomeNavGraph(
             MyRecipesScreen()
         }
         composable<Profile> {
-            ProfileScreen { mainNavController.navigate(Login) { popUpTo(Home) { inclusive = true } } }
+            ProfileScreen(snackbarHostState = snackbarHostState) { mainNavController.navigate(Login) { popUpTo(Home) { inclusive = true } } }
         }
     }
 }

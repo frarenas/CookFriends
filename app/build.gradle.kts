@@ -65,8 +65,11 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    //Compose Navigation
+    // Compose Navigation
     implementation(libs.androidx.navigation.compose)
+
+    // Material Icons
+    implementation(libs.androidx.material.icons.extended)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

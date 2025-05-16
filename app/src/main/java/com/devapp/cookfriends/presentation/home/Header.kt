@@ -31,7 +31,11 @@ import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import com.devapp.cookfriends.ui.theme.White
 
 @Composable
-fun Header(modifier: Modifier = Modifier, title: String = "") {
+fun Header(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    showSearchBar: Boolean = true
+) {
     var text by remember { mutableStateOf("") }
 
     Column(
@@ -48,30 +52,32 @@ fun Header(modifier: Modifier = Modifier, title: String = "") {
             )
             .padding(16.dp)
     ) {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { newText -> text = newText },
-            modifier = modifier.fillMaxWidth(),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = stringResource(R.string.more_options)
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(R.string.search)
-                )
-            },
-            label = { Text(stringResource(R.string.search_recipes)) },
-            shape = RoundedCornerShape(20.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = White,
-                unfocusedContainerColor = White
-            ),
-            singleLine = true
-        )
+        if (showSearchBar) {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { newText -> text = newText },
+                modifier = modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = stringResource(R.string.more_options)
+                    )
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringResource(R.string.search)
+                    )
+                },
+                label = { Text(stringResource(R.string.search_recipes)) },
+                shape = RoundedCornerShape(20.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = White,
+                    unfocusedContainerColor = White
+                ),
+                singleLine = true
+            )
+        }
         Text(
             modifier = Modifier.padding(top = 16.dp),
             text = title,

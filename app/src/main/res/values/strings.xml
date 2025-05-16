@@ -12,4 +12,7 @@
     <string name="change_password">Cambiar contraseña</string>">
     <string name="password">Contraseña</string>
     <string name="repeat_password">Repetir contraseña</string>
+    <string name="hide_password">Ocultar contraseña</string>
+    <string name="show_password">Mostrar contraseña</string>
+    <string name="logout">Cerrar sesión</string>">
 </resources>
