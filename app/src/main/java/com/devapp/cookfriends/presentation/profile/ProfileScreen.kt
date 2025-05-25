@@ -32,16 +32,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.home.Header
+import com.devapp.cookfriends.presentation.navigation.RecoveryPassword
 import com.devapp.cookfriends.ui.theme.White
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
+    navController: NavHostController,
     snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit
 ) {
@@ -147,6 +151,14 @@ fun ProfileScreen(
                         Text(stringResource(R.string.change_password))
                     }
                     HorizontalDivider()
+                    Button(
+                        onClick = { navController.navigate(RecoveryPassword) },
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(stringResource(R.string.recovery_password))
+                    }
                     Spacer(Modifier.weight(1f))
                     Button(
                         onClick = onLogout,
@@ -160,4 +172,10 @@ fun ProfileScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewProfileScreen () {
+    //ProfileScreen(snackbarHostState = SnackbarHostState(), onLogout = {})
 }

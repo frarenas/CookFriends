@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.devapp.cookfriends.presentation.home.HomeScreen
 import com.devapp.cookfriends.presentation.login.LoginScreen
+import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordScreen
 
 @Composable
 fun AppNavGraph() {
@@ -15,5 +16,6 @@ fun AppNavGraph() {
         composable<Login> { LoginScreen(Modifier) }
         composable<Home> { HomeScreen(mainNavController = mainNavController) }
         //composable<Recipe> { RecipeScreen() }
+        composable<RecoveryPassword> { RecoveryPasswordScreen() }
     }
 }
