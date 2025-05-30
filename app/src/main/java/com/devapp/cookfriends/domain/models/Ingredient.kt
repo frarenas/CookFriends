@@ -1,11 +1,11 @@
 package com.devapp.cookfriends.domain.models
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.devapp.cookfriends.data.model.IngredientModel
 
-@Serializable
 data class Ingredient(
-    @SerialName("name"        ) var name        : String? = null,
-    @SerialName("quantity"    ) var quantity    : String? = null,
-    @SerialName("measurement" ) var measurement : String? = null
+    var name: String? = null,
+    var quantity: String? = null,
+    var measurement: String? = null
 )
+
+fun IngredientModel.toDomain() = Ingredient(name, quantity, measurement)
