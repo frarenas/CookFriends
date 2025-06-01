@@ -2,7 +2,7 @@ package com.devapp.cookfriends.presentation.home.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devapp.cookfriends.data.repository.RecipeRepository
+import com.devapp.cookfriends.data.remote.repository.RecipeRepository
 import com.devapp.cookfriends.domain.models.toDomain
 import com.devapp.cookfriends.presentation.home.RecipesState
 import dagger.hilt.android.lifecycle.HiltViewModel

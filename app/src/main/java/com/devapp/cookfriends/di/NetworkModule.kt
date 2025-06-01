@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.di
 
-import com.devapp.cookfriends.data.service.CookFriendsService
+import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

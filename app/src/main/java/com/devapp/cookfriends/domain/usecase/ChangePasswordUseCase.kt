@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.domain.usecase
 
-import com.devapp.cookfriends.data.repository.ProfileRepository
+import com.devapp.cookfriends.data.remote.repository.ProfileRepository
 import javax.inject.Inject
 
 class ChangePasswordUseCase @Inject constructor(
