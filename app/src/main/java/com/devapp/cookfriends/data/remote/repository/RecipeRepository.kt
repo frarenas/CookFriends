@@ -1,7 +1,7 @@
-package com.devapp.cookfriends.data.repository
+package com.devapp.cookfriends.data.remote.repository
 
-import com.devapp.cookfriends.data.model.RecipeModel
-import com.devapp.cookfriends.data.service.CookFriendsService
+import com.devapp.cookfriends.data.remote.model.RecipeModel
+import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import javax.inject.Inject
 
 class RecipeRepository @Inject constructor(

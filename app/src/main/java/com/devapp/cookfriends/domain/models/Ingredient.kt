@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.domain.models
 
-import com.devapp.cookfriends.data.model.IngredientModel
+import com.devapp.cookfriends.data.remote.model.IngredientModel
 
 data class Ingredient(
     var name: String? = null,

@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.domain.models
 
-import com.devapp.cookfriends.data.model.StepModel
+import com.devapp.cookfriends.data.remote.model.StepModel
 
 data class Step(
     var order: Int? = null,

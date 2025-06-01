@@ -1,4 +1,4 @@
-package com.devapp.cookfriends.data.repository
+package com.devapp.cookfriends.data.remote.repository
 
 import javax.inject.Inject
 

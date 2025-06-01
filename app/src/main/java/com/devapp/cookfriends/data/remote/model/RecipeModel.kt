@@ -1,4 +1,4 @@
-package com.devapp.cookfriends.data.model
+package com.devapp.cookfriends.data.remote.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName

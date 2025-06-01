@@ -1,6 +1,6 @@
-package com.devapp.cookfriends.data.service
+package com.devapp.cookfriends.data.remote.service
 
-import com.devapp.cookfriends.data.model.RecipeModel
+import com.devapp.cookfriends.data.remote.model.RecipeModel
 import retrofit2.http.GET
 import retrofit2.http.Query
 
