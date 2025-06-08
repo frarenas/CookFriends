@@ -2,8 +2,10 @@ package com.devapp.cookfriends.domain.model
 
 import com.devapp.cookfriends.data.local.entity.RecipeEntity
 import com.devapp.cookfriends.data.remote.model.RecipeModel
+import kotlin.uuid.Uuid
 
 data class Recipe(
+    var id: Uuid = Uuid.random(),
     var name: String? = null,
     var author: String? = null,
     var rate: Double? = null,
@@ -15,6 +17,7 @@ data class Recipe(
 )
 
 fun RecipeModel.toDomain() = Recipe(
+    id,
     name,
     author,
     null,
@@ -26,6 +29,7 @@ fun RecipeModel.toDomain() = Recipe(
 )
 
 fun RecipeEntity.toDomain() = Recipe(
+    id,
     name,
     author,
     null,

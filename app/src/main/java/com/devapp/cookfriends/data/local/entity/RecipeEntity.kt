@@ -4,11 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.devapp.cookfriends.domain.model.Recipe
+import kotlin.uuid.Uuid
 
 @Entity(tableName = "recipe_table")
 data class RecipeEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Int = 0,
+    @PrimaryKey
+    @ColumnInfo(name = "id") val id: Uuid,
     @ColumnInfo(name = "name") val name: String? = null,
     @ColumnInfo(name = "author") val author: String? = null,
     @ColumnInfo(name = "rate") val rate: Double? = null,
@@ -20,6 +21,7 @@ data class RecipeEntity(
 )
 
 fun Recipe.toDatabase() = RecipeEntity(
+    id = id,
     name = name,
     author = author,
     rate = rate,

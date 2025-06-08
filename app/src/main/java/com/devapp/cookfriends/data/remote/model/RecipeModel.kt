@@ -2,11 +2,10 @@ package com.devapp.cookfriends.data.remote.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Serializable
-data class RecipeModel @OptIn(ExperimentalUuidApi::class) constructor(
+data class RecipeModel(
     @SerialName("id"          ) var id          : Uuid,
     @SerialName("name"        ) var name        : String?                = null,
     @SerialName("description"        ) var description        : String?                = null,

@@ -5,7 +5,7 @@ import com.devapp.cookfriends.domain.model.Recipe
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class getRecipesUseCase @Inject constructor(private val repository: RecipeRepository) {
+class GetRecipesUseCase @Inject constructor(private val repository: RecipeRepository) {
     suspend operator fun invoke(): Flow<List<Recipe>>{
         val recipes = repository.getRecipesFromApi()
 

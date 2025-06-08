@@ -23,11 +23,6 @@ class RecipeRepository @Inject constructor(
         return recipes.map { it.toDomain() }
     }
 
-    /*suspend fun getRecipesFromDatabase(): List<RecipeModel> {
-        val recipes: Flow<List<RecipeEntity>> = recipeDao.getRecipes()
-        return recipes.map { it.map { recipe -> recipe.toDomain() } }
-    }*/
-
     fun getRecipesFromDatabase(): Flow<List<Recipe>> {
         val recipesEntityFlow: Flow<List<RecipeEntity>> = recipeDao.getRecipes()
         return recipesEntityFlow.map { listOfEntities ->
