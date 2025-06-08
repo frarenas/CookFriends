@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.devapp.cookfriends.R
-import com.devapp.cookfriends.domain.models.Recipe
+import com.devapp.cookfriends.domain.model.Recipe
 import com.devapp.cookfriends.presentation.common.RatingStar
 import com.devapp.cookfriends.ui.theme.Red
 

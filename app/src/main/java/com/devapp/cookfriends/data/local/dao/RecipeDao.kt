@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface RecipeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(toDos: List<RecipeEntity>)
+    fun insert(recipes: List<RecipeEntity>)
 
     @Query("SELECT * FROM recipe_table")
     fun getRecipes(): Flow<List<RecipeEntity>>

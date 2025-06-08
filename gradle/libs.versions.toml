@@ -1,6 +1,6 @@
 [versions]
 agp = "8.10.1"
-coilCompose = "3.1.0"
+coilCompose = "3.2.0"
 kotlin = "2.1.20"
 ksp = "2.1.20-2.0.1"
 kotlinxSerialization = "1.8.1"
@@ -8,16 +8,15 @@ coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.9.0"
+lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
-composeBom = "2025.05.01"
+composeBom = "2025.06.00"
 hiltAndroid = "2.56.2"
 hiltNavigation = "1.2.0"
 materialIconsExtended = "1.7.8"
 navigationCompose = "2.9.0"
-retrofit = "2.11.0"
+retrofit = "3.0.0"
 okhttp = "4.12.0"
-retrofitKotlinxSerializationConverter = "2.11.0"
 room = "2.7.1"
 
 [libraries]
@@ -51,7 +50,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 retrofit2-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit2-kotlinx-serialization-converter = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofitKotlinxSerializationConverter" }
+retrofit2-kotlinx-serialization-converter = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 [plugins]

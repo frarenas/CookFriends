@@ -3,7 +3,7 @@ package com.devapp.cookfriends.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.devapp.cookfriends.domain.models.Recipe
+import com.devapp.cookfriends.domain.model.Recipe
 
 @Entity(tableName = "recipe_table")
 data class RecipeEntity(
@@ -19,7 +19,7 @@ data class RecipeEntity(
     //@ColumnInfo(name = "steps") val steps: List<Step> = arrayListOf()
 )
 
-fun Recipe.toDatabase() = Recipe(
+fun Recipe.toDatabase() = RecipeEntity(
     name = name,
     author = author,
     rate = rate,

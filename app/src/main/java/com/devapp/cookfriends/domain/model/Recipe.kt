@@ -1,5 +1,6 @@
-package com.devapp.cookfriends.domain.models
+package com.devapp.cookfriends.domain.model
 
+import com.devapp.cookfriends.data.local.entity.RecipeEntity
 import com.devapp.cookfriends.data.remote.model.RecipeModel
 
 data class Recipe(
@@ -22,4 +23,15 @@ fun RecipeModel.toDomain() = Recipe(
     portions,
     ingredients.map { ingredient -> ingredient.toDomain() },
     steps.map { step -> step.toDomain() }
+)
+
+fun RecipeEntity.toDomain() = Recipe(
+    name,
+    author,
+    null,
+    null,
+    type,
+    portions,
+    //ingredients.map { ingredient -> ingredient.toDomain() },
+    //steps.map { step -> step.toDomain() }
 )
