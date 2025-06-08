@@ -1,11 +1,10 @@
 package com.devapp.cookfriends.domain.models
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.devapp.cookfriends.data.remote.model.StepModel
 
-@Serializable
-data class Step (
-    @SerialName("order"   ) var order   : String? = null,
-    @SerialName("content" ) var content : String? = null,
-    @SerialName("type"    ) var type    : String? = null
+data class Step(
+    var order: Int? = null,
+    var content: String? = null
 )
+
+fun StepModel.toDomain() = Step(order, content)

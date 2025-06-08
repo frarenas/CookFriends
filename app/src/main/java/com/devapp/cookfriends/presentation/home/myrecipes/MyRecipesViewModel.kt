@@ -2,7 +2,8 @@ package com.devapp.cookfriends.presentation.home.myrecipes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devapp.cookfriends.data.repository.RecipeRepository
+import com.devapp.cookfriends.data.remote.repository.RecipeRepository
+import com.devapp.cookfriends.domain.models.toDomain
 import com.devapp.cookfriends.presentation.home.RecipesState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyRecipesViewModel @Inject constructor(
     private val recipeRepository: RecipeRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val _recipesState = MutableStateFlow(RecipesState())
     val recipesState: StateFlow<RecipesState> = _recipesState
@@ -24,7 +25,12 @@ class MyRecipesViewModel @Inject constructor(
             _recipesState.update { it.copy(isLoading = true, error = null) }
             try {
                 val recipes = recipeRepository.getRecipes()
-                _recipesState.update { it.copy(recipeList= recipes, isLoading = false) }
+                _recipesState.update {
+                    it.copy(
+                        recipeList = recipes.map { recipe -> recipe.toDomain() },
+                        isLoading = false
+                    )
+                }
             } catch (e: Exception) {
                 _recipesState.update { it.copy(error = e.message, isLoading = false) }
             }
