@@ -15,4 +15,5 @@
     <string name="hide_password">Ocultar contraseña</string>
     <string name="show_password">Mostrar contraseña</string>
     <string name="logout">Cerrar sesión</string>">
+    <string name="recovery_password">Recuperar constraseña</string>">
 </resources>
