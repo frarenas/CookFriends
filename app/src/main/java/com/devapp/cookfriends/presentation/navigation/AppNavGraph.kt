@@ -5,17 +5,17 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.cook_friends.presentation.screens.LoginScreen
 import com.devapp.cookfriends.presentation.home.HomeScreen
-import com.devapp.cookfriends.presentation.login.LoginScreen
 import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordScreen
 
 @Composable
 fun AppNavGraph() {
     val mainNavController = rememberNavController()
-    NavHost(navController = mainNavController, startDestination = Home) {
-        composable<Login> { LoginScreen(Modifier) }
+    NavHost(navController = mainNavController, startDestination = Login) {
+        composable<Login> { LoginScreen(Modifier, mainNavController) }
         composable<Home> { HomeScreen(mainNavController = mainNavController) }
         //composable<Recipe> { RecipeScreen() }
-        composable<RecoveryPassword> { RecoveryPasswordScreen() }
+        composable<RecoveryPassword> { RecoveryPasswordScreen(mainNavController) }
     }
 }

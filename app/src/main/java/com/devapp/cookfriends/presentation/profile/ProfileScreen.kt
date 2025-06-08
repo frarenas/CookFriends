@@ -151,14 +151,14 @@ fun ProfileScreen(
                         Text(stringResource(R.string.change_password))
                     }
                     HorizontalDivider()
-                    Button(
-                        onClick = { navController.navigate(RecoveryPassword) },
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text(stringResource(R.string.recovery_password))
-                    }
+//                    Button(
+//                        onClick = { navController.navigate(RecoveryPassword) },
+//                        Modifier
+//                            .fillMaxWidth()
+//                            .padding(8.dp)
+//                    ) {
+//                        Text(stringResource(R.string.recovery_password))
+//                    }
                     Spacer(Modifier.weight(1f))
                     Button(
                         onClick = onLogout,
