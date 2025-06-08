@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.domain.model
 
+import com.devapp.cookfriends.data.local.entity.IngredientEntity
 import com.devapp.cookfriends.data.remote.model.IngredientModel
 import kotlin.uuid.Uuid
 
@@ -12,3 +13,5 @@ data class Ingredient(
 )
 
 fun IngredientModel.toDomain() = Ingredient(id, name, quantity, measurement, recipeId)
+
+fun IngredientEntity.toDomain() = Ingredient(id, name, quantity, measurement, recipeId)

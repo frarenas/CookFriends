@@ -1,7 +1,7 @@
 package com.devapp.cookfriends.data.remote.repository
 
 import com.devapp.cookfriends.data.local.dao.RecipeDao
-import com.devapp.cookfriends.data.local.entity.RecipeEntity
+import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.local.entity.toDatabase
 import com.devapp.cookfriends.data.remote.model.RecipeModel
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
@@ -24,7 +24,7 @@ class RecipeRepository @Inject constructor(
     }
 
     fun getRecipesFromDatabase(): Flow<List<Recipe>> {
-        val recipesEntityFlow: Flow<List<RecipeEntity>> = recipeDao.getRecipes()
+        val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getRecipes()
         return recipesEntityFlow.map { listOfEntities ->
             listOfEntities.map { entity ->
                 entity.toDomain()
@@ -34,7 +34,8 @@ class RecipeRepository @Inject constructor(
 
     suspend fun saveRecipes(recipes: List<Recipe>) {
         withContext(Dispatchers.IO) {
-            val recipesEntities: List<RecipeEntity> = recipes.map { recipe -> recipe.toDatabase() }
+            val recipesEntities: List<RecipeWithExtraData> =
+                recipes.map { recipe -> recipe.toDatabase() }
             recipeDao.insert(recipesEntities)
         }
     }

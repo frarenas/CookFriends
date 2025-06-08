@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.domain.model
 
-import com.devapp.cookfriends.data.local.entity.RecipeEntity
+import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.remote.model.RecipeModel
 import kotlin.uuid.Uuid
 
@@ -28,14 +28,13 @@ fun RecipeModel.toDomain() = Recipe(
     steps.map { step -> step.toDomain() }
 )
 
-fun RecipeEntity.toDomain() = Recipe(
-    id,
-    name,
-    author,
+fun RecipeWithExtraData.toDomain() = Recipe(
+    recipe.id,
+    recipe.name,
+    recipe.author,
     null,
     null,
-    type,
-    portions,
-    //ingredients.map { ingredient -> ingredient.toDomain() },
-    //steps.map { step -> step.toDomain() }
+    recipe.type,
+    recipe.portions,
+    ingredients.map { ingredient -> ingredient.toDomain() }
 )
