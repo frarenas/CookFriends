@@ -4,11 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.devapp.cookfriends.domain.model.Ingredient
+import com.devapp.cookfriends.domain.model.Step
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "ingredient_table",
+    tableName = "step_table",
     foreignKeys = [ForeignKey(
             entity = RecipeEntity::class,
             parentColumns = arrayOf("id"),
@@ -17,19 +17,17 @@ import kotlin.uuid.Uuid
             onDelete = ForeignKey.CASCADE
         )]
 )
-data class IngredientEntity(
+data class StepEntity(
     @PrimaryKey
     @ColumnInfo(name = "id") val id: Uuid,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "quantity") val quantity: String,
-    @ColumnInfo(name = "measurement") val measurement: String? = null,
+    @ColumnInfo(name = "order") val order: Int,
+    @ColumnInfo(name = "content") val content: String,
     @ColumnInfo(name = "recipe_id", index = true) val recipeId: Uuid
 )
 
-fun Ingredient.toDatabase() = IngredientEntity(
+fun Step.toDatabase() = StepEntity(
     id = id,
-    name = name,
-    quantity = quantity,
-    measurement = measurement,
+    order = order,
+    content = content,
     recipeId = recipeId
 )

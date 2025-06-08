@@ -6,8 +6,8 @@ import kotlin.uuid.Uuid
 
 data class Ingredient(
     var id: Uuid = Uuid.random(),
-    var name: String? = null,
-    var quantity: String? = null,
+    var name: String,
+    var quantity: String,
     var measurement: String? = null,
     var recipeId: Uuid
 )

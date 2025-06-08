@@ -13,7 +13,8 @@ data class Recipe(
     var type: String? = null,
     var portions: Int? = null,
     var ingredients: List<Ingredient> = arrayListOf(),
-    var steps: List<Step> = arrayListOf()
+    var steps: List<Step> = arrayListOf(),
+    var photos: List<Photo> = arrayListOf()
 )
 
 fun RecipeModel.toDomain() = Recipe(
@@ -25,7 +26,8 @@ fun RecipeModel.toDomain() = Recipe(
     type,
     portions,
     ingredients.map { ingredient -> ingredient.toDomain() },
-    steps.map { step -> step.toDomain() }
+    steps.map { step -> step.toDomain() },
+    photos.map { photo -> photo.toDomain() }
 )
 
 fun RecipeWithExtraData.toDomain() = Recipe(
@@ -36,5 +38,7 @@ fun RecipeWithExtraData.toDomain() = Recipe(
     null,
     recipe.type,
     recipe.portions,
-    ingredients.map { ingredient -> ingredient.toDomain() }
+    ingredients.map { ingredient -> ingredient.toDomain() },
+    steps.map { step -> step.toDomain() },
+    photos.map { photo -> photo.toDomain() }
 )

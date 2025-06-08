@@ -10,16 +10,30 @@ data class RecipeWithExtraData(
         parentColumn = "id",
         entityColumn = "recipe_id"
     )
-    val ingredients: List<IngredientEntity>
+    val ingredients: List<IngredientEntity>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "recipe_id"
+    )
+    val steps: List<StepEntity>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "recipe_id"
+    )
+    val photos: List<PhotoEntity>
 )
 
 fun Recipe.toDatabase() = RecipeWithExtraData(
-    recipe = RecipeEntity( id = id,
-    name = name,
-    author = author,
-    rate = rate,
-    favorite = favorite,
-    type = type,
-    portions = portions),
-    ingredients = ingredients.map { ingredient -> ingredient.toDatabase() }
+    recipe = RecipeEntity(
+        id = id,
+        name = name,
+        author = author,
+        rate = rate,
+        favorite = favorite,
+        type = type,
+        portions = portions
+    ),
+    ingredients = ingredients.map { ingredient -> ingredient.toDatabase() },
+    steps = steps.map { step -> step.toDatabase() },
+    photos = photos.map { photo -> photo.toDatabase() }
 )

@@ -6,8 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.devapp.cookfriends.data.local.entity.IngredientEntity
+import com.devapp.cookfriends.data.local.entity.PhotoEntity
 import com.devapp.cookfriends.data.local.entity.RecipeEntity
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
+import com.devapp.cookfriends.data.local.entity.StepEntity
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -20,11 +22,23 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIngredients(ingredients: List<IngredientEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSteps(steps: List<StepEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPhotos(photos: List<PhotoEntity>)
+
     @Transaction
     suspend fun insert(recipe: RecipeWithExtraData) {
         insertRecipe(recipe.recipe)
         if (recipe.ingredients.isNotEmpty()) {
             insertIngredients(recipe.ingredients)
+        }
+        if (recipe.steps.isNotEmpty()) {
+            insertSteps(recipe.steps)
+        }
+        if (recipe.photos.isNotEmpty()) {
+            insertPhotos(recipe.photos)
         }
     }
 

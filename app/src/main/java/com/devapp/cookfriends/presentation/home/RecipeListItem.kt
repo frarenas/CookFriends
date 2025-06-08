@@ -34,7 +34,7 @@ fun RecipeListItem(recipe: Recipe) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = "https://www.clarin.com/2024/03/12/1jgNm90_r_340x340__1.jpg",
+            model = recipe.photos[0].url,
             contentDescription = null,
             modifier = Modifier
                 .width(100.dp)
