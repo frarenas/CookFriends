@@ -15,3 +15,6 @@ object MyRecipes: HomeSection
 
 @Serializable
 object Profile: HomeSection
+
+@Serializable
+object RecipeDetail: HomeSection

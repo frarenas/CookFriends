@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class RecipeModel @OptIn(ExperimentalUuidApi::class) constructor(
     @SerialName("id"          ) var id          : Uuid,
-    @SerialName("name"        ) var name        : String?                = null,
+    @SerialName("name"        ) var name        : String,
     @SerialName("description"        ) var description        : String?                = null,
     @SerialName("portions"    ) var portions    : Int?                   = null,
     @SerialName("userId"    ) var userId    : Uuid,

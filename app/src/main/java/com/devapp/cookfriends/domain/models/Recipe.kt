@@ -3,7 +3,7 @@ package com.devapp.cookfriends.domain.models
 import com.devapp.cookfriends.data.remote.model.RecipeModel
 
 data class Recipe(
-    var name: String? = null,
+    var name: String,
     var author: String? = null,
     var rate: Double? = null,
     var favorite: Boolean? = null,
