@@ -8,13 +8,15 @@ data class Recipe(
     var id: Uuid = Uuid.random(),
     var name: String? = null,
     var author: String? = null,
-    var rate: Double? = null,
+    var rating: Double? = null,
     var favorite: Boolean? = null,
     var type: String? = null,
     var portions: Int? = null,
     var ingredients: List<Ingredient> = arrayListOf(),
     var steps: List<Step> = arrayListOf(),
-    var photos: List<Photo> = arrayListOf()
+    var photos: List<Photo> = arrayListOf(),
+    var comments: List<Comment> = arrayListOf(),
+    var ratings: List<Rating> = arrayListOf()
 )
 
 fun RecipeModel.toDomain() = Recipe(
@@ -27,18 +29,22 @@ fun RecipeModel.toDomain() = Recipe(
     portions,
     ingredients.map { ingredient -> ingredient.toDomain() },
     steps.map { step -> step.toDomain() },
-    photos.map { photo -> photo.toDomain() }
+    photos.map { photo -> photo.toDomain() },
+    comments.map { comment -> comment.toDomain() },
+    ratings.map { rating -> rating.toDomain() }
 )
 
 fun RecipeWithExtraData.toDomain() = Recipe(
     recipe.id,
     recipe.name,
     recipe.author,
-    null,
+    averageRating,
     null,
     recipe.type,
     recipe.portions,
     ingredients.map { ingredient -> ingredient.toDomain() },
     steps.map { step -> step.toDomain() },
-    photos.map { photo -> photo.toDomain() }
+    photos.map { photo -> photo.toDomain() },
+    comments.map { comment -> comment.toDomain() },
+    ratings.map { rating -> rating.toDomain() }
 )

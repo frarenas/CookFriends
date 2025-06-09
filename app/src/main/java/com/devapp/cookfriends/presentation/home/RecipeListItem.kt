@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Recipe
-import com.devapp.cookfriends.presentation.common.RatingStar
+import com.devapp.cookfriends.ui.theme.Gold
 import com.devapp.cookfriends.ui.theme.Red
 
 @Composable
@@ -41,18 +42,20 @@ fun RecipeListItem(recipe: Recipe) {
                 .height(100.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Column {
+        Column(modifier = Modifier.weight(1F)) {
             Text(text = recipe.name!!, fontSize = 24.sp)
             Text(text = stringResource(R.string.category, recipe.type!!))
             Text(text = stringResource(R.string.author, recipe.author!!))
         }
-        Spacer(modifier = Modifier.weight(1f))
-        RatingStar(recipe.rate?.toFloat() ?: 0F, maxRating = 5, {}, false)
         Spacer(modifier = Modifier.width(8.dp))
-        IconButton({}) {
-            Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorito", tint = Red)
+        Column {
+            Icon(imageVector = Icons.Default.Star, contentDescription = "Rating", tint = Gold)
+            Text(text = recipe.rating?.toString() ?: "-")
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton({}) {
+                Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorito", tint = Red)
+            }
         }
-
     }
     HorizontalDivider()
 }

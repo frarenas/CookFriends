@@ -18,5 +18,7 @@ data class RecipeModel(
     //@SerialName("favorite"    ) var favorite    : Boolean?                = null,
     @SerialName("ingredients" ) var ingredients : ArrayList<IngredientModel> = arrayListOf(),
     @SerialName("steps"       ) var steps       : ArrayList<StepModel>       = arrayListOf(),
-    @SerialName("photos"      ) var photos      : ArrayList<PhotoModel>      = arrayListOf()
+    @SerialName("photos"      ) var photos      : ArrayList<PhotoModel>      = arrayListOf(),
+    @SerialName("comments"    ) var comments    : ArrayList<CommentModel>    = arrayListOf(),
+    @SerialName("ratings"     ) var ratings     : ArrayList<RatingModel>     = arrayListOf()
 )

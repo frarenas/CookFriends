@@ -5,8 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.devapp.cookfriends.data.local.entity.CommentEntity
 import com.devapp.cookfriends.data.local.entity.IngredientEntity
 import com.devapp.cookfriends.data.local.entity.PhotoEntity
+import com.devapp.cookfriends.data.local.entity.RatingEntity
 import com.devapp.cookfriends.data.local.entity.RecipeEntity
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.local.entity.StepEntity
@@ -26,7 +28,13 @@ interface RecipeDao {
     suspend fun insertSteps(steps: List<StepEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRatings(ratings: List<RatingEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPhotos(photos: List<PhotoEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertComments(comments: List<CommentEntity>)
 
     @Transaction
     suspend fun insert(recipe: RecipeWithExtraData) {
@@ -40,6 +48,12 @@ interface RecipeDao {
         if (recipe.photos.isNotEmpty()) {
             insertPhotos(recipe.photos)
         }
+        if (recipe.ratings.isNotEmpty()) {
+            insertRatings(recipe.ratings)
+        }
+        if (recipe.comments.isNotEmpty()) {
+            insertComments(recipe.comments)
+        }
     }
 
     @Transaction
@@ -50,7 +64,15 @@ interface RecipeDao {
     }
 
     @Transaction
-    @Query("SELECT * FROM recipe_table")
+    //@Query("SELECT * FROM recipe_table")
+    @Query("""
+            SELECT 
+                recipe_table.*,  -- Selects all columns from recipe_table for the @Embedded RecipeEntity
+                (SELECT AVG(rating_table.rate) 
+                 FROM rating_table 
+                 WHERE rating_table.recipe_id = recipe_table.id) AS averageRating
+            FROM recipe_table
+        """)
     fun getRecipes(): Flow<List<RecipeWithExtraData>>
 
     @Transaction

@@ -4,8 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.devapp.cookfriends.data.local.dao.RecipeDao
+import com.devapp.cookfriends.data.local.entity.CommentEntity
 import com.devapp.cookfriends.data.local.entity.IngredientEntity
 import com.devapp.cookfriends.data.local.entity.PhotoEntity
+import com.devapp.cookfriends.data.local.entity.RatingEntity
 import com.devapp.cookfriends.data.local.entity.RecipeEntity
 import com.devapp.cookfriends.data.local.entity.StepEntity
 
@@ -14,9 +16,11 @@ import com.devapp.cookfriends.data.local.entity.StepEntity
         RecipeEntity::class,
         IngredientEntity::class,
         StepEntity::class,
-        PhotoEntity::class
+        PhotoEntity::class,
+        RatingEntity::class,
+        CommentEntity::class
     ],
-    version = 4,
+    version = 7,
     exportSchema = false)
 @TypeConverters(UuidConverter::class)
 abstract class AppDatabase : RoomDatabase() {
