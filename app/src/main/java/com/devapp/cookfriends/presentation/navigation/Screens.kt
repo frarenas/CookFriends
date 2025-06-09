@@ -10,3 +10,6 @@ object Home
 
 @Serializable
 object Recipe
+
+@Serializable
+object RecoveryPassword
