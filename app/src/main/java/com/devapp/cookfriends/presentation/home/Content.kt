@@ -22,7 +22,12 @@ fun Content(recipesState: RecipesState = RecipesState()) {
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(recipesState.recipeList) { item ->
-                    RecipeListItem(item)
+                    RecipeListItem(
+                        item,
+                        onFavoriteClick = { clickedRecipe ->
+                            // Call ViewModel
+                        }
+                    )
                 }
             }
         }

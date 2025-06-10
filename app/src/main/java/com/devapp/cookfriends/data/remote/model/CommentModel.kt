@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class StepModel(
+data class CommentModel(
     @SerialName("id"      ) var id        : Uuid,
-    @SerialName("order"   ) var order     : Int,
-    @SerialName("content" ) var content   : String,
+    @SerialName("comment" ) var comment   : String,
+    @SerialName("userId"  ) var userId    : Uuid,
     @SerialName("recipeId") var recipeId  : Uuid
 )

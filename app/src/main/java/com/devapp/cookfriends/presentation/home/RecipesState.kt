@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.presentation.home
 
-import com.devapp.cookfriends.domain.models.Recipe
+import com.devapp.cookfriends.domain.model.Recipe
 
 data class RecipesState(
     val recipeList: List<Recipe> = emptyList(),
