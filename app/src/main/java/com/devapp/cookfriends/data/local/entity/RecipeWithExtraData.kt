@@ -31,7 +31,13 @@ data class RecipeWithExtraData(
         entityColumn = "recipe_id"
     )
     val comments: List<CommentEntity>,
-    val averageRating: Double? = null
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "recipe_id"
+    )
+    val favorites: List<FavoriteEntity>,
+    val averageRating: Double? = null,
+    val isUserFavorite: Boolean = false
 )
 
 fun Recipe.toDatabase() = RecipeWithExtraData(
@@ -39,8 +45,6 @@ fun Recipe.toDatabase() = RecipeWithExtraData(
         id = id,
         name = name,
         author = author,
-        //rating = rating,
-        //favorite = favorite,
         type = type,
         portions = portions
     ),
@@ -48,5 +52,6 @@ fun Recipe.toDatabase() = RecipeWithExtraData(
     steps = steps.map { step -> step.toDatabase() },
     photos = photos.map { photo -> photo.toDatabase() },
     ratings = ratings.map { rating -> rating.toDatabase() },
-    comments = comments.map { comment -> comment.toDatabase() }
+    comments = comments.map { comment -> comment.toDatabase() },
+    favorites = favorites.map { favorite -> favorite.toDatabase() }
 )

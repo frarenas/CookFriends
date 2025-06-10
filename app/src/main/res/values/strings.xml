@@ -15,4 +15,6 @@
     <string name="hide_password">Ocultar contraseña</string>
     <string name="show_password">Mostrar contraseña</string>
     <string name="logout">Cerrar sesión</string>">
+    <string name="favorite">favorite</string>">
+    <string name="rating">Puntuación</string>">
 </resources>

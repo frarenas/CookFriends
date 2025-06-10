@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.devapp.cookfriends.data.local.entity.CommentEntity
+import com.devapp.cookfriends.data.local.entity.FavoriteEntity
 import com.devapp.cookfriends.data.local.entity.IngredientEntity
 import com.devapp.cookfriends.data.local.entity.PhotoEntity
 import com.devapp.cookfriends.data.local.entity.RatingEntity
@@ -36,6 +37,9 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertComments(comments: List<CommentEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFavorites(favorites: List<FavoriteEntity>)
+
     @Transaction
     suspend fun insert(recipe: RecipeWithExtraData) {
         insertRecipe(recipe.recipe)
@@ -54,6 +58,9 @@ interface RecipeDao {
         if (recipe.comments.isNotEmpty()) {
             insertComments(recipe.comments)
         }
+        if (recipe.favorites.isNotEmpty()) {
+            insertFavorites(recipe.favorites)
+        }
     }
 
     @Transaction
@@ -64,18 +71,28 @@ interface RecipeDao {
     }
 
     @Transaction
-    //@Query("SELECT * FROM recipe_table")
-    @Query("""
+    /*@Query("""
             SELECT 
-                recipe_table.*,  -- Selects all columns from recipe_table for the @Embedded RecipeEntity
-                (SELECT AVG(rating_table.rate) 
+                recipe_table.*,
+                (SELECT ROUND(AVG(rating_table.rate), 2) 
                  FROM rating_table 
                  WHERE rating_table.recipe_id = recipe_table.id) AS averageRating
             FROM recipe_table
+        """)*/
+    @Query("""
+            SELECT 
+                r.*,
+                (SELECT ROUND(AVG(rt.rate), 2) 
+                 FROM rating_table rt 
+                 WHERE rt.recipe_id = r.id) AS averageRating,
+                (EXISTS (SELECT 1 
+                         FROM favorite_table ft 
+                         WHERE ft.recipe_id = r.id AND ft.user_id = :userId)) AS isUserFavorite
+            FROM recipe_table r
         """)
-    fun getRecipes(): Flow<List<RecipeWithExtraData>>
+    fun getRecipes(userId: Uuid? = null): Flow<List<RecipeWithExtraData>>
 
     @Transaction
-    @Query("SELECT * FROM recipe_table WHERE id = :id LIMIT 1")
+    @Query("SELECT *, 0 as isUserFavorite FROM recipe_table WHERE id = :id LIMIT 1")
     fun getById(id: Uuid): RecipeWithExtraData?
 }

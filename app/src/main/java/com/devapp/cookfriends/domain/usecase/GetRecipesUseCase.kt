@@ -12,6 +12,7 @@ class GetRecipesUseCase @Inject constructor(private val repository: RecipeReposi
         if(recipes.isNotEmpty()){
             repository.saveRecipes(recipes)
         }
+        // TODO: pasar uuid del usuario logueado
         return repository.getRecipesFromDatabase()
     }
 }

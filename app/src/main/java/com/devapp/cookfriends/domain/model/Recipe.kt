@@ -8,30 +8,30 @@ data class Recipe(
     var id: Uuid = Uuid.random(),
     var name: String? = null,
     var author: String? = null,
-    var rating: Double? = null,
-    var favorite: Boolean? = null,
+    var averageRating: Double? = null,
+    var isUserFavorite: Boolean = false,
     var type: String? = null,
     var portions: Int? = null,
     var ingredients: List<Ingredient> = arrayListOf(),
     var steps: List<Step> = arrayListOf(),
     var photos: List<Photo> = arrayListOf(),
     var comments: List<Comment> = arrayListOf(),
-    var ratings: List<Rating> = arrayListOf()
+    var ratings: List<Rating> = arrayListOf(),
+    var favorites: List<Favorite> = arrayListOf()
 )
 
 fun RecipeModel.toDomain() = Recipe(
-    id,
-    name,
-    author,
-    null,
-    null,
-    type,
-    portions,
-    ingredients.map { ingredient -> ingredient.toDomain() },
-    steps.map { step -> step.toDomain() },
-    photos.map { photo -> photo.toDomain() },
-    comments.map { comment -> comment.toDomain() },
-    ratings.map { rating -> rating.toDomain() }
+    id = id,
+    name = name,
+    author = author,
+    type = type,
+    portions = portions,
+    ingredients = ingredients.map { ingredient -> ingredient.toDomain() },
+    steps = steps.map { step -> step.toDomain() },
+    photos = photos.map { photo -> photo.toDomain() },
+    comments = comments.map { comment -> comment.toDomain() },
+    ratings = ratings.map { rating -> rating.toDomain() },
+    favorites = favorites.map { favorite -> favorite.toDomain() }
 )
 
 fun RecipeWithExtraData.toDomain() = Recipe(
@@ -39,12 +39,13 @@ fun RecipeWithExtraData.toDomain() = Recipe(
     recipe.name,
     recipe.author,
     averageRating,
-    null,
+    isUserFavorite,
     recipe.type,
     recipe.portions,
     ingredients.map { ingredient -> ingredient.toDomain() },
     steps.map { step -> step.toDomain() },
     photos.map { photo -> photo.toDomain() },
     comments.map { comment -> comment.toDomain() },
-    ratings.map { rating -> rating.toDomain() }
+    ratings.map { rating -> rating.toDomain() },
+    favorites.map { favorite -> favorite.toDomain() }
 )

@@ -11,8 +11,6 @@ data class RecipeEntity(
     @ColumnInfo(name = "id") val id: Uuid,
     @ColumnInfo(name = "name") val name: String? = null,
     @ColumnInfo(name = "author") val author: String? = null,
-    //@ColumnInfo(name = "rating") val rating: Double? = null,
-    //@ColumnInfo(name = "favorite") val favorite: Boolean? = null,
     @ColumnInfo(name = "type") val type: String? = null,
     @ColumnInfo(name = "portions") val portions: Int? = null
 )

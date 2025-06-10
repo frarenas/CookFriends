@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.uuid.Uuid
 
 class RecipeRepository @Inject constructor(
     private val service: CookFriendsService,
@@ -23,8 +24,8 @@ class RecipeRepository @Inject constructor(
         return recipes.map { it.toDomain() }
     }
 
-    fun getRecipesFromDatabase(): Flow<List<Recipe>> {
-        val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getRecipes()
+    fun getRecipesFromDatabase(userId: Uuid? = null): Flow<List<Recipe>> {
+        val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getRecipes(userId)
         return recipesEntityFlow.map { listOfEntities ->
             listOfEntities.map { entity ->
                 entity.toDomain()
