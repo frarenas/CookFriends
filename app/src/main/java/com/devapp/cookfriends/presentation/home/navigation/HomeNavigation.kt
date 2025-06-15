@@ -37,7 +37,10 @@ fun HomeNavGraph(
             MyRecipesScreen()
         }
         composable<Profile> {
-            ProfileScreen(snackbarHostState = snackbarHostState) { mainNavController.navigate(Login) { popUpTo(Home) { inclusive = true } } }
+            ProfileScreen(
+                snackbarHostState = snackbarHostState,
+                navController = mainNavController)
+            { mainNavController.navigate(Login) { popUpTo(Home) { inclusive = true } } }
         }
     }
 }

@@ -36,6 +36,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs += "-Xopt-in=kotlin.uuid.ExperimentalUuidApi"
     }
     buildFeatures {
         compose = true
