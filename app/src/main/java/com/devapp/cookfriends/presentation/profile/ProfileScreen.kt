@@ -74,7 +74,9 @@ fun ProfileScreen(
         Header(
             modifier = Modifier,
             title = stringResource(R.string.profile),
-            showSearchBar = false
+            showSearchBar = false,
+            onSearchClick = {},
+            onSearchOptionsClick = { }
         )
         Box(modifier = Modifier.fillMaxSize()) {
             if (profileState.isLoading) {

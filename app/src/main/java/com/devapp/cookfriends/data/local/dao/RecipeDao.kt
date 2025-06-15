@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
 import androidx.room.Transaction
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.devapp.cookfriends.data.local.entity.CommentEntity
 import com.devapp.cookfriends.data.local.entity.FavoriteEntity
 import com.devapp.cookfriends.data.local.entity.IngredientEntity
@@ -71,14 +73,6 @@ interface RecipeDao {
     }
 
     @Transaction
-    /*@Query("""
-            SELECT 
-                recipe_table.*,
-                (SELECT ROUND(AVG(rating_table.rate), 2) 
-                 FROM rating_table 
-                 WHERE rating_table.recipe_id = recipe_table.id) AS averageRating
-            FROM recipe_table
-        """)*/
     @Query("""
             SELECT 
                 r.*,
@@ -95,4 +89,7 @@ interface RecipeDao {
     @Transaction
     @Query("SELECT *, 0 as isUserFavorite FROM recipe_table WHERE id = :id LIMIT 1")
     fun getById(id: Uuid): RecipeWithExtraData?
+
+    @RawQuery(observedEntities = [RecipeEntity::class])
+    fun getDynamicRecipes(query: SupportSQLiteQuery): Flow<List<RecipeWithExtraData>>
 }

@@ -27,5 +27,8 @@ object DatabaseModule {
             .build()
 
     @Provides
-    fun provideSomeDao(appDatabase: AppDatabase) = appDatabase.recipeDao()
+    fun provideRecipeDao(appDatabase: AppDatabase) = appDatabase.recipeDao()
+
+    @Provides
+    fun provideRecipeTypeDao(appDatabase: AppDatabase) = appDatabase.recipeTypeDao()
 }
