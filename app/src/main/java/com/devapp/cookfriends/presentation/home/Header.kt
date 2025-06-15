@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.domain.model.SearchOptions
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import com.devapp.cookfriends.ui.theme.White
 
@@ -34,9 +36,12 @@ import com.devapp.cookfriends.ui.theme.White
 fun Header(
     modifier: Modifier = Modifier,
     title: String = "",
-    showSearchBar: Boolean = true
+    showSearchBar: Boolean = true,
+    initialOptions: SearchOptions? = null,
+    onSearchClick: (SearchOptions) -> Unit,
+    onSearchOptionsClick: () -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var currentSearchText by remember { mutableStateOf(initialOptions?.searchText) }
 
     Column(
         modifier = Modifier
@@ -54,20 +59,26 @@ fun Header(
     ) {
         if (showSearchBar) {
             OutlinedTextField(
-                value = text,
-                onValueChange = { newText -> text = newText },
+                value = currentSearchText!!,
+                onValueChange = { currentSearchText = it },
                 modifier = modifier.fillMaxWidth(),
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = stringResource(R.string.more_options)
-                    )
+                    IconButton(onClick = onSearchOptionsClick) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.more_options)
+                        )
+                    }
                 },
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search)
-                    )
+                    IconButton(onClick = {
+                        onSearchClick(initialOptions!!.copy(searchText = currentSearchText!!))
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.search)
+                        )
+                    }
                 },
                 label = { Text(stringResource(R.string.search_recipes)) },
                 shape = RoundedCornerShape(20.dp),
@@ -92,6 +103,6 @@ fun Header(
 @Composable
 fun HeaderPreview() {
     CookFriendsTheme {
-        Header(Modifier)
+        Header(Modifier, "Recipes", initialOptions = SearchOptions(), onSearchClick = {}, onSearchOptionsClick = {})
     }
 }
