@@ -51,6 +51,10 @@ object SqlQueryBuilder {
             whereClauses.add("author LIKE '$author'")
         }
 
+        options.recipeType?.takeIf { it.isNotBlank() }?.let { recipeType ->
+            whereClauses.add("type = '$recipeType'")
+        }
+
         // Add WHERE clause if any filters are present
         if (whereClauses.isNotEmpty()) {
             queryBuilder.append("WHERE ")

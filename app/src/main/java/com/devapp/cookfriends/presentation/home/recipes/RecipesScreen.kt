@@ -19,6 +19,7 @@ fun RecipesScreen(viewModel: RecipesViewModel = hiltViewModel()) {
     val recipesState by viewModel.recipesState.collectAsState()
     val showSearchOptionsDialog by viewModel.showSearchOptionsDialog.collectAsState()
     val currentSearchOptions by viewModel.currentSearchOptions.collectAsState()
+    val availableRecipeTypes by viewModel.availableRecipeTypes.collectAsState()
 
     Column(
         modifier = Modifier
@@ -39,6 +40,7 @@ fun RecipesScreen(viewModel: RecipesViewModel = hiltViewModel()) {
     if (showSearchOptionsDialog) {
         SearchOptionsDialog(
             initialOptions = currentSearchOptions,
+            availableRecipeTypes = availableRecipeTypes,
             onDismiss = { viewModel.dismissSearchOptionsDialog() },
             onApply = { newOptions ->
                 viewModel.applySearchOptions(newOptions)

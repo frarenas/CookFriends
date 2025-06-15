@@ -2,7 +2,9 @@ package com.devapp.cookfriends.presentation.home.myrecipes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
+import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipesUseCase
 import com.devapp.cookfriends.presentation.home.RecipesState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,11 +21,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyRecipesViewModel @Inject constructor(
-    private val getRecipesUseCase: GetRecipesUseCase
+    private val getRecipesUseCase: GetRecipesUseCase,
+    private val getRecipeTypesUseCase: GetRecipeTypesUseCase
 ) : ViewModel() {
 
     private val _recipesState = MutableStateFlow(RecipesState())
     val recipesState: StateFlow<RecipesState> = _recipesState
+
+    private val _availableRecipeTypes = MutableStateFlow<List<RecipeType>>(emptyList())
+    val availableRecipeTypes: StateFlow<List<RecipeType>> = _availableRecipeTypes.asStateFlow()
 
     private val _showSearchOptionsDialog = MutableStateFlow(false)
     val showSearchOptionsDialog: StateFlow<Boolean> = _showSearchOptionsDialog.asStateFlow()
@@ -57,6 +65,16 @@ class MyRecipesViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+    }
+
+    fun getAvailableRecipeTypes() {
+        viewModelScope.launch {
+            getRecipeTypesUseCase()
+                .onEach { recipeType ->
+                    _availableRecipeTypes.value = recipeType
+                }
+                .launchIn(this)
         }
     }
 

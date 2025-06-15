@@ -36,15 +36,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.devapp.cookfriends.domain.model.OrderBy
+import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
 
 @Composable
 fun SearchOptionsDialog(
-    initialOptions: SearchOptions, // Pass current options to pre-fill the dialog fields
-    onDismiss: () -> Unit, // Callback when the dialog is dismissed (e.g., Cancel button, outside click)
-    onApply: (SearchOptions) -> Unit // Callback when the "Apply" button is clicked
+    initialOptions: SearchOptions,
+    availableRecipeTypes: List<RecipeType>,
+    onDismiss: () -> Unit,
+    onApply: (SearchOptions) -> Unit
 ) {
-    // Internal state for the dialog's fields, initialized with current options
     var currentSearchText by remember { mutableStateOf(initialOptions.searchText) }
     var currentAuthor by remember {
         mutableStateOf(
@@ -54,11 +55,13 @@ fun SearchOptionsDialog(
     var currentKeywords by remember { mutableStateOf(initialOptions.includedIngredients.toMutableList()) }
     var newKeywordInput by remember { mutableStateOf("") }
     var currentOrder by remember { mutableStateOf(initialOptions.order) }
+    var selectedRecipeType by remember {
+        mutableStateOf(availableRecipeTypes.find { it.name == initialOptions.recipeType })
+    }
 
-    // State for the OrderBy dropdown menu visibility
     var orderMenuExpanded by remember { mutableStateOf(false) }
+    var recipeTypeMenuExpanded by remember { mutableStateOf(false) }
 
-    // Use the standard Dialog composable
     Dialog(onDismissRequest = onDismiss) {
         ElevatedCard(
             modifier = Modifier
@@ -90,7 +93,51 @@ fun SearchOptionsDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Author input field (optional)
+                // Recipe type
+                Box(modifier = Modifier.fillMaxWidth()) { // Use Box to anchor DropdownMenu
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { recipeTypeMenuExpanded = true } // Make the whole row clickable
+                            .padding(vertical = 8.dp)
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                MaterialTheme.shapes.small
+                            ) // Visual border like OutlinedTextField
+                            .padding(horizontal = 16.dp), // Padding inside the "text field" part
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            selectedRecipeType?.name ?: ""
+                        )
+                        Icon(
+                            Icons.Filled.ArrowDropDown,
+                            contentDescription = "Dropdown for recipe type"
+                        )
+                    }
+
+                    // The actual dropdown menu
+                    DropdownMenu(
+                        expanded = recipeTypeMenuExpanded,
+                        onDismissRequest = { recipeTypeMenuExpanded = false },
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    ) {
+                        availableRecipeTypes.forEach { category ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    selectedRecipeType = category
+                                    recipeTypeMenuExpanded = false
+                                },
+                                text = { Text(category.name) }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Author
                 OutlinedTextField(
                     value = currentAuthor,
                     onValueChange = { currentAuthor = it },
@@ -100,6 +147,8 @@ fun SearchOptionsDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
+
+                // Included ingredients
                 OutlinedTextField(
                     value = newKeywordInput,
                     onValueChange = { newKeywordInput = it },
@@ -116,7 +165,6 @@ fun SearchOptionsDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Included ingredients
                 if (currentKeywords.isNotEmpty()) {
                     FlowRow(
                         modifier = Modifier.fillMaxWidth()
@@ -197,6 +245,7 @@ fun SearchOptionsDialog(
                             onApply(
                                 SearchOptions(
                                     searchText = currentSearchText,
+                                    recipeType = selectedRecipeType?.name,
                                     author = currentAuthor.takeIf { it.isNotBlank() }, // Set to null if author field is blank
                                     order = currentOrder
                                 )
