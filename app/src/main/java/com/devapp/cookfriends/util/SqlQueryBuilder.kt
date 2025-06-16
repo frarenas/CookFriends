@@ -6,9 +6,9 @@ import com.devapp.cookfriends.domain.model.SearchOptions
 import kotlin.uuid.Uuid
 
 object SqlQueryBuilder {
-    fun getProductsDynamically(userId: Uuid? = null, options: SearchOptions): SimpleSQLiteQuery {
+    fun getRecipesDynamically(userId: Uuid? = null, options: SearchOptions): SimpleSQLiteQuery {
         val queryBuilder = StringBuilder("""
-            SELECT 
+            SELECT DISTINCT
                 r.*,
                 (SELECT ROUND(AVG(rt.rate), 2) 
                  FROM rating_table rt 
@@ -19,27 +19,6 @@ object SqlQueryBuilder {
             FROM recipe_table r
         """)
         val whereClauses = mutableListOf<String>()
-
-        // 1. Search Text and Keywords (using FTS)
-        /*val ftsQueryParts = mutableListOf<String>()
-        if (options.searchText.isNotBlank()) {
-            // FTS simple match for general search text
-            ftsQueryParts.add("name LIKE '${options.searchText}%'")
-        }
-        if (options.includedIngredients.isNotEmpty()) {
-            val keywordFtsQueries = options.includedIngredients.joinToString(" AND ") { keyword ->
-                // Use quotes for multi-word keywords if desired, and AND operator
-                "name MATCH '$keyword*' OR description MATCH '$keyword*'"
-            }
-            ftsQueryParts.add("($keywordFtsQueries)")
-        }
-
-        if (ftsQueryParts.isNotEmpty()) {
-            // Combine FTS parts with AND
-            val combinedFtsQuery = ftsQueryParts.joinToString(" AND ")
-            // Link main table to FTS table using rowid (which is ProductEntity's primary key)
-            whereClauses.add("id IN (SELECT rowid FROM products_fts WHERE $combinedFtsQuery)")
-        }*/
 
 
         options.searchText.takeIf { it.isNotBlank() }?.let { searchText ->
@@ -53,6 +32,18 @@ object SqlQueryBuilder {
 
         options.recipeType?.takeIf { it.isNotBlank() }?.let { recipeType ->
             whereClauses.add("type = '$recipeType'")
+        }
+
+        if (options.includedIngredients.isNotEmpty()) {
+            options.includedIngredients.forEach { ingredientName ->
+                val cleanIngredientName = ingredientName.replace("'", "''")
+
+                whereClauses.add("""
+                    EXISTS (SELECT 1 
+                            FROM ingredient_table it 
+                            WHERE it.recipe_id = r.id AND it.name LIKE '$cleanIngredientName')
+                """.trimIndent())
+            }
         }
 
         // Add WHERE clause if any filters are present

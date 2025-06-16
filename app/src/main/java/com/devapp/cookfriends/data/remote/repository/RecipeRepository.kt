@@ -24,15 +24,6 @@ class RecipeRepository @Inject constructor(
         return recipes.map { it.toDomain() }
     }
 
-    /*fun getRecipesFromDatabase(userId: Uuid? = null): Flow<List<Recipe>> {
-        val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getRecipes(userId)
-        return recipesEntityFlow.map { listOfEntities ->
-            listOfEntities.map { entity ->
-                entity.toDomain()
-            }
-        }
-    }*/
-
     fun getRecipesFromDatabase(query: SupportSQLiteQuery): Flow<List<Recipe>> {
         val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getDynamicRecipes(query)
         return recipesEntityFlow.map { listOfEntities ->

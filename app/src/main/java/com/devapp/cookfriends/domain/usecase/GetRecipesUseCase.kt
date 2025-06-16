@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetRecipesUseCase @Inject constructor(private val repository: RecipeRepository) {
-    suspend operator fun invoke(searchOptions: SearchOptions): Flow<List<Recipe>>{
+    operator fun invoke(searchOptions: SearchOptions): Flow<List<Recipe>>{
         // TODO: pasar uuid del usuario logueado
-        return repository.getRecipesFromDatabase(SqlQueryBuilder.getProductsDynamically(null, searchOptions))
+        return repository.getRecipesFromDatabase(SqlQueryBuilder.getRecipesDynamically(null, searchOptions))
     }
 }

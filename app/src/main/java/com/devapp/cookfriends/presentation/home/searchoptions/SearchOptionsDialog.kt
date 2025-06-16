@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,7 +53,8 @@ fun SearchOptionsDialog(
             initialOptions.author ?: ""
         )
     }
-    var currentKeywords by remember { mutableStateOf(initialOptions.includedIngredients.toMutableList()) }
+    var currentKeywords = remember { mutableStateListOf<String>().apply { addAll(initialOptions.includedIngredients) } }
+
     var newKeywordInput by remember { mutableStateOf("") }
     var currentOrder by remember { mutableStateOf(initialOptions.order) }
     var selectedRecipeType by remember {
@@ -246,6 +248,7 @@ fun SearchOptionsDialog(
                                 SearchOptions(
                                     searchText = currentSearchText,
                                     recipeType = selectedRecipeType?.name,
+                                    includedIngredients = currentKeywords,
                                     author = currentAuthor.takeIf { it.isNotBlank() }, // Set to null if author field is blank
                                     order = currentOrder
                                 )
