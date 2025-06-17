@@ -10,7 +10,8 @@ data class Recipe(
     var type: String? = null,
     var portions: Int? = null,
     var ingredients: List<Ingredient> = arrayListOf(),
-    var steps: List<Step> = arrayListOf()
+    var steps: List<Step> = arrayListOf(),
+    var comments: List<Comment> = arrayListOf()
 )
 
 fun RecipeModel.toDomain() = Recipe(
