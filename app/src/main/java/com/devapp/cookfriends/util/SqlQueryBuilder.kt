@@ -20,20 +20,22 @@ object SqlQueryBuilder {
         """)
         val whereClauses = mutableListOf<String>()
 
-
+        // Search word
         options.searchText.takeIf { it.isNotBlank() }?.let { searchText ->
             whereClauses.add("name LIKE '$searchText%'")
         }
 
-        // 2. Author Filter
+        // Author
         options.author?.takeIf { it.isNotBlank() }?.let { author ->
             whereClauses.add("author LIKE '$author'")
         }
 
+        // Recipe type
         options.recipeType?.takeIf { it.isNotBlank() }?.let { recipeType ->
             whereClauses.add("type = '$recipeType'")
         }
 
+        // included ingredients
         if (options.includedIngredients.isNotEmpty()) {
             options.includedIngredients.forEach { ingredientName ->
                 val cleanIngredientName = ingredientName.replace("'", "''")
@@ -41,8 +43,20 @@ object SqlQueryBuilder {
                 whereClauses.add("""
                     EXISTS (SELECT 1 
                             FROM ingredient_table it 
-                            WHERE it.recipe_id = r.id AND it.name LIKE '$cleanIngredientName')
+                            WHERE it.recipe_id = r.id AND LOWER(it.name) = LOWER('$cleanIngredientName'))
                 """.trimIndent())
+            }
+        }
+
+        // excluded ingredients
+        if (options.excludedIngredients.isNotEmpty()) {
+            options.excludedIngredients.forEach { ingredientName ->
+                val cleanIngredientName = ingredientName.replace("'", "''") // Basic single quote escaping
+                whereClauses.add("""
+                    NOT EXISTS (SELECT 1 
+                                FROM ingredient_table it 
+                                WHERE it.recipe_id = r.id AND LOWER(it.name) = LOWER('$cleanIngredientName'))
+                """.trimIndent()) // Using LOWER for case-insensitive matching
             }
         }
 
@@ -52,7 +66,7 @@ object SqlQueryBuilder {
             queryBuilder.append(whereClauses.joinToString(" AND "))
         }
 
-        // 3. Order By
+        // Order By
         when (options.order) {
             OrderBy.NAME -> queryBuilder.append(" ORDER BY name ASC")
             OrderBy.AUTHOR -> queryBuilder.append(" ORDER BY author ASC")
