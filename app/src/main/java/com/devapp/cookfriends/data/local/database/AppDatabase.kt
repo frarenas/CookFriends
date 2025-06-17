@@ -25,9 +25,9 @@ import com.devapp.cookfriends.data.local.entity.StepEntity
         FavoriteEntity::class,
         RecipeTypeEntity::class
     ],
-    version = 9,
+    version = 11,
     exportSchema = false)
-@TypeConverters(UuidConverter::class)
+@TypeConverters(UuidConverter::class, InstantConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun recipeDao(): RecipeDao

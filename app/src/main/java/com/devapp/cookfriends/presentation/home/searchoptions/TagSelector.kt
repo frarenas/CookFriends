@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,7 +59,7 @@ fun TagSelector(
             if (newTagInput.isNotBlank()) {
                 IconButton(onClick = { addTag() }) {
                     Icon(
-                        imageVector = Icons.Default.Done,
+                        imageVector = Icons.Default.Add,
                         contentDescription = stringResource(R.string.add)
                     )
                 }

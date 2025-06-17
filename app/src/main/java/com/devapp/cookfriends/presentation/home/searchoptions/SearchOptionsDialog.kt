@@ -152,13 +152,13 @@ fun SearchOptionsDialog(
 
                 // Included ingredients
                 TagSelector(
-                    label = stringResource(R.string.included_ingeredients),
+                    label = stringResource(R.string.included_ingredients),
                     currentTags = includedIngredients,
                     onTagsChange = { includedIngredients = it })
 
                 // Excluded ingredients
                 TagSelector(
-                    label = stringResource(R.string.excluded_ingeredients),
+                    label = stringResource(R.string.excluded_ingredients),
                     currentTags = excludedIngredients,
                     onTagsChange = { excludedIngredients = it })
 
@@ -210,30 +210,23 @@ fun SearchOptionsDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Action Buttons (Cancel and Apply)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround // Distribute buttons evenly
-                ) {
-                    Button(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
-                    Button(
-                        onClick = {
-                            // Create the SearchOptions object and pass it via callback
-                            onApply(
-                                SearchOptions(
-                                    searchText = currentSearchText,
-                                    recipeType = selectedRecipeType?.name,
-                                    includedIngredients = includedIngredients,
-                                    excludedIngredients = excludedIngredients,
-                                    author = currentAuthor.takeIf { it.isNotBlank() }, // Set to null if author field is blank
-                                    order = currentOrder
-                                )
+                Button(
+                    onClick = {
+                        // Create the SearchOptions object and pass it via callback
+                        onApply(
+                            SearchOptions(
+                                searchText = currentSearchText,
+                                recipeType = selectedRecipeType?.name,
+                                includedIngredients = includedIngredients,
+                                excludedIngredients = excludedIngredients,
+                                author = currentAuthor.takeIf { it.isNotBlank() }, // Set to null if author field is blank
+                                order = currentOrder
                             )
-                        }
-                    ) {
-                        Text("Apply")
-                    }
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.search))
                 }
             }
         }

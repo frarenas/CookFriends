@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Book
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Kitchen
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -52,7 +52,7 @@ fun HomeScreen(
     val homeNavController = rememberNavController()
     val items = listOf(
         NavigationItem(stringResource(R.string.recipes), Recipes, Icons.Outlined.Kitchen),
-        NavigationItem(stringResource(R.string.favorites), Favorites, Icons.Outlined.Favorite),
+        NavigationItem(stringResource(R.string.favorites), Favorites, Icons.Sharp.Favorite),
         NavigationItem(stringResource(R.string.my_recipes), MyRecipes, Icons.Outlined.Book),
         NavigationItem(stringResource(R.string.profile), Profile, Icons.Outlined.Person)
     )

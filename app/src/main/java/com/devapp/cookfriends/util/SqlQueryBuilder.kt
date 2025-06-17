@@ -69,7 +69,7 @@ object SqlQueryBuilder {
         // Order By
         when (options.order) {
             OrderBy.NAME -> queryBuilder.append(" ORDER BY name ASC")
-            OrderBy.AUTHOR -> queryBuilder.append(" ORDER BY author ASC")
+            OrderBy.AUTHOR -> queryBuilder.append(" ORDER BY author ASC, name ASC")
             OrderBy.DATE -> queryBuilder.append(" ORDER BY date ASC, name ASC")
         }
 

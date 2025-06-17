@@ -21,6 +21,6 @@
     <string name="advance_search">Busqueda avanzada</string>
     <string name="add">Agregar</string>
     <string name="delete">Eliminar %1s</string>
-    <string name="included_ingeredients">Ingredientes incluidos</string>
-    <string name="excluded_ingeredients">Ingredientes excluidos</string>
+    <string name="included_ingredients">Ingredientes incluidos</string>
+    <string name="excluded_ingredients">Ingredientes excluidos</string>
 </resources>

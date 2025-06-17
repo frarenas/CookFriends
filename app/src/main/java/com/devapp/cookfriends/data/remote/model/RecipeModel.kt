@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.data.remote.model
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 import kotlin.uuid.Uuid
@@ -19,5 +20,6 @@ data class RecipeModel(
     @SerialName("photos"      ) var photos      : ArrayList<PhotoModel>      = arrayListOf(),
     @SerialName("comments"    ) var comments    : ArrayList<CommentModel>    = arrayListOf(),
     @SerialName("ratings"     ) var ratings     : ArrayList<RatingModel>     = arrayListOf(),
-    @SerialName("favorites"   ) var favorites   : ArrayList<FavoriteModel>   = arrayListOf()
+    @SerialName("favorites"   ) var favorites   : ArrayList<FavoriteModel>   = arrayListOf(),
+    @SerialName("date"        ) var date        : Instant
 )
