@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.data.remote.repository
 
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.devapp.cookfriends.data.local.dao.RecipeDao
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.local.entity.toDatabase
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.uuid.Uuid
 
 class RecipeRepository @Inject constructor(
     private val service: CookFriendsService,
@@ -24,8 +24,8 @@ class RecipeRepository @Inject constructor(
         return recipes.map { it.toDomain() }
     }
 
-    fun getRecipesFromDatabase(userId: Uuid? = null): Flow<List<Recipe>> {
-        val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getRecipes(userId)
+    fun getRecipesFromDatabase(query: SupportSQLiteQuery): Flow<List<Recipe>> {
+        val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getDynamicRecipes(query)
         return recipesEntityFlow.map { listOfEntities ->
             listOfEntities.map { entity ->
                 entity.toDomain()

@@ -2,6 +2,8 @@ package com.devapp.cookfriends.domain.model
 
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.remote.model.RecipeModel
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.uuid.Uuid
 
 data class Recipe(
@@ -17,7 +19,8 @@ data class Recipe(
     var photos: List<Photo> = arrayListOf(),
     var comments: List<Comment> = arrayListOf(),
     var ratings: List<Rating> = arrayListOf(),
-    var favorites: List<Favorite> = arrayListOf()
+    var favorites: List<Favorite> = arrayListOf(),
+    var date: Instant = Clock.System.now()
 )
 
 fun RecipeModel.toDomain() = Recipe(
@@ -31,7 +34,8 @@ fun RecipeModel.toDomain() = Recipe(
     photos = photos.map { photo -> photo.toDomain() },
     comments = comments.map { comment -> comment.toDomain() },
     ratings = ratings.map { rating -> rating.toDomain() },
-    favorites = favorites.map { favorite -> favorite.toDomain() }
+    favorites = favorites.map { favorite -> favorite.toDomain() },
+    date = date
 )
 
 fun RecipeWithExtraData.toDomain() = Recipe(
@@ -47,5 +51,6 @@ fun RecipeWithExtraData.toDomain() = Recipe(
     photos.map { photo -> photo.toDomain() },
     comments.map { comment -> comment.toDomain() },
     ratings.map { rating -> rating.toDomain() },
-    favorites.map { favorite -> favorite.toDomain() }
+    favorites.map { favorite -> favorite.toDomain() },
+    date = recipe.date
 )
