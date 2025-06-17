@@ -53,13 +53,12 @@ fun SearchOptionsDialog(
     }
     var includedIngredients by remember { mutableStateOf(initialOptions.includedIngredients.toList()) }
     var excludedIngredients by remember { mutableStateOf(initialOptions.excludedIngredients.toList()) }
-
     var currentOrder by remember { mutableStateOf(initialOptions.order) }
-    var selectedRecipeType by remember {
-        mutableStateOf(availableRecipeTypes.find { it.name == initialOptions.recipeType })
-    }
-
     var orderMenuExpanded by remember { mutableStateOf(false) }
+    var selectedRecipeType by remember {
+        mutableStateOf<RecipeType?>(availableRecipeTypes.find { it.name == initialOptions.recipeType })
+    }
+    val selectOneRecipeTypePlaceholder = stringResource(R.string.select_recipe_type)
     var recipeTypeMenuExpanded by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -84,7 +83,7 @@ fun SearchOptionsDialog(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Search Text input field
+                // Search text
                 OutlinedTextField(
                     value = currentSearchText,
                     onValueChange = { currentSearchText = it },
@@ -95,25 +94,27 @@ fun SearchOptionsDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Recipe type
-                Box(modifier = Modifier.fillMaxWidth()) { // Use Box to anchor DropdownMenu
+                Text(stringResource(R.string.label_recipe_type))
+                Box(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
                                 recipeTypeMenuExpanded = true
-                            } // Make the whole row clickable
+                            }
                             .padding(vertical = 8.dp)
                             .border(
                                 1.dp,
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                 MaterialTheme.shapes.small
-                            ) // Visual border like OutlinedTextField
-                            .padding(horizontal = 16.dp), // Padding inside the "text field" part
+                            )
+                            .padding(horizontal = 16.dp)
+                            .height(48.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            selectedRecipeType?.name ?: ""
+                            selectedRecipeType?.name ?: selectOneRecipeTypePlaceholder
                         )
                         Icon(
                             Icons.Filled.ArrowDropDown,
@@ -127,13 +128,21 @@ fun SearchOptionsDialog(
                         onDismissRequest = { recipeTypeMenuExpanded = false },
                         modifier = Modifier.fillMaxWidth(0.9f)
                     ) {
-                        availableRecipeTypes.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(selectOneRecipeTypePlaceholder) },
+                            onClick = {
+                                selectedRecipeType = null
+                                recipeTypeMenuExpanded = false
+                            }
+                        )
+                        availableRecipeTypes.forEach { recipeType ->
                             DropdownMenuItem(
                                 onClick = {
-                                    selectedRecipeType = category
+                                    selectedRecipeType = recipeType
                                     recipeTypeMenuExpanded = false
                                 },
-                                text = { Text(category.name) }
+                                text = { Text(recipeType.name) },
+                                modifier = Modifier.fillMaxWidth(0.9f)
                             )
                         }
                     }
@@ -144,7 +153,7 @@ fun SearchOptionsDialog(
                 OutlinedTextField(
                     value = currentAuthor,
                     onValueChange = { currentAuthor = it },
-                    label = { Text("Author") },
+                    label = { Text(stringResource(R.string.label_author)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -163,41 +172,41 @@ fun SearchOptionsDialog(
                     onTagsChange = { excludedIngredients = it })
 
                 // Order By Dropdown Menu
-                Box(modifier = Modifier.fillMaxWidth()) { // Use Box to anchor DropdownMenu
+                Text(stringResource(R.string.label_order_by))
+                Box(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { orderMenuExpanded = true } // Make the whole row clickable
+                            .clickable { orderMenuExpanded = true }
                             .padding(vertical = 8.dp)
                             .border(
                                 1.dp,
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                 MaterialTheme.shapes.small
-                            ) // Visual border like OutlinedTextField
-                            .padding(horizontal = 16.dp), // Padding inside the "text field" part
+                            )
+                            .padding(horizontal = 16.dp)
+                            .height(48.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            "Order By: ${currentOrder.name.replace("_", " ")}",
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (currentOrder == OrderBy.NAME) 0.6f else 1f)
-                        ) // Hint like color for default
+                            currentOrder.name
+                        )
                         Icon(
                             Icons.Filled.ArrowDropDown,
                             contentDescription = "Dropdown for order by"
                         )
                     }
 
-                    // The actual dropdown menu
                     DropdownMenu(
                         expanded = orderMenuExpanded,
                         onDismissRequest = { orderMenuExpanded = false },
-                        modifier = Modifier.fillMaxWidth(0.9f) // Adjust width to match the clickable row
+                        modifier = Modifier.fillMaxWidth(0.9f)
                     ) {
                         OrderBy.entries.forEach { order ->
                             DropdownMenuItem(
                                 text = {
-                                    Text(order.name.replace("_", " "))
+                                    Text(order.name)
                                 },
                                 onClick = {
                                     currentOrder = order
@@ -212,14 +221,13 @@ fun SearchOptionsDialog(
                 // Action Buttons (Cancel and Apply)
                 Button(
                     onClick = {
-                        // Create the SearchOptions object and pass it via callback
                         onApply(
                             SearchOptions(
                                 searchText = currentSearchText,
                                 recipeType = selectedRecipeType?.name,
                                 includedIngredients = includedIngredients,
                                 excludedIngredients = excludedIngredients,
-                                author = currentAuthor.takeIf { it.isNotBlank() }, // Set to null if author field is blank
+                                author = currentAuthor.takeIf { it.isNotBlank() },
                                 order = currentOrder
                             )
                         )

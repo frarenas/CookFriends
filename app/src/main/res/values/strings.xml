@@ -23,4 +23,9 @@
     <string name="delete">Eliminar %1s</string>
     <string name="included_ingredients">Ingredientes incluidos</string>
     <string name="excluded_ingredients">Ingredientes excluidos</string>
+    <string name="label_author">Autor</string>
+    <string name="label_recipe_type">Tipo de receta</string>
+    <string name="label_order_by">Ordenar por</string>
+    <string name="select_recipe_type">Seleccionar…</string>
+    <string name="no_recipes_found">No se encontraron recetas.</string>
 </resources>

@@ -2,8 +2,8 @@ package com.devapp.cookfriends.presentation.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Kitchen
 import androidx.compose.material.icons.outlined.Person
@@ -26,13 +26,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.presentation.home.navigation.Favorites
 import com.devapp.cookfriends.presentation.home.navigation.HomeNavGraph
 import com.devapp.cookfriends.presentation.home.navigation.MyRecipes
@@ -65,7 +65,10 @@ fun HomeScreen(
         if (recipesState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else if (recipesState.error != null) {
-            Text(text = "Error: ${recipesState.error}", modifier = Modifier.padding(16.dp))
+            MessageScreen(
+                message = recipesState.error!!,
+                imageVector = Icons.Default.Error
+            )
         } else {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
