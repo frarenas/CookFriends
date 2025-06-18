@@ -28,4 +28,8 @@
     <string name="label_order_by">Ordenar por</string>
     <string name="select_recipe_type">Seleccionar…</string>
     <string name="no_recipes_found">No se encontraron recetas.</string>
+    <string name="new_recipe">Nueva receta</string>
+    <string name="edit_recipe">Editar receta</string>
+    <string name="back">Volver</string>
+    <string name="name">Nombre</string>
 </resources>

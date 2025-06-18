@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.uuid.Uuid
 
 class RecipeRepository @Inject constructor(
     private val service: CookFriendsService,
@@ -39,5 +40,9 @@ class RecipeRepository @Inject constructor(
                 recipes.map { recipe -> recipe.toDatabase() }
             recipeDao.insert(recipesEntities)
         }
+    }
+
+    fun getRecipeById(id: Uuid): Recipe? {
+        return recipeDao.getById(id)?.toDomain()
     }
 }
