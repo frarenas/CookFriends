@@ -39,27 +39,18 @@ class EditRecipeViewModel @Inject constructor(
     private val _editRecipeState = MutableStateFlow(EditRecipeState())
     val editRecipeState: StateFlow<EditRecipeState> = _editRecipeState
 
-    private val _name = mutableStateOf("")
-    val name: State<String> = _name
-
-    private val _description = mutableStateOf("")
-    val description: State<String> = _description
-
     private val _recipeType = mutableStateOf<RecipeType?>(null)
     val recipeType: State<RecipeType?> = _recipeType
 
     private val _availableRecipeTypes = MutableStateFlow<List<RecipeType>>(emptyList())
     val availableRecipeTypes: StateFlow<List<RecipeType>> = _availableRecipeTypes.asStateFlow()
 
-    //private val _recipeId = MutableStateFlow<Uuid?>(null)
-    //val recipeId: StateFlow<Uuid?> = _recipeId.asStateFlow()
-
     init {
         getAvailableRecipeTypes()
         getRecipe()
     }
 
-    fun getRecipe(/*id: Uuid?*/) {
+    fun getRecipe() {
         if (recipeId == null) {
             _editRecipeState.update {
                 it.copy(isLoading = false, recipe = Recipe(), error = null)
@@ -70,7 +61,6 @@ class EditRecipeViewModel @Inject constructor(
             _editRecipeState.update { it.copy(isLoading = true, error = null) }
             try {
                 val recipe = getRecipeUseCase(recipeId)
-                _name.value = recipe?.name ?: ""
                 if (recipe == null) {
                     _editRecipeState.update {
                         it.copy(
@@ -108,15 +98,7 @@ class EditRecipeViewModel @Inject constructor(
         }
     }
 
-    fun onNameChange(newName: String) {
-        _name.value = newName
-    }
-
-    fun onDescriptionChange(newDescription: String) {
-        _description.value = newDescription
-    }
-
-    fun onRecipeTypeChange(newRecipeType: RecipeType?) {
-        _recipeType.value = newRecipeType
+    fun onRecipeChange(recipe: Recipe) {
+        _editRecipeState.update { it.copy(recipe = recipe) }
     }
 }

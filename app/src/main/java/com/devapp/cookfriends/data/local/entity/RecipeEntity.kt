@@ -2,21 +2,12 @@ package com.devapp.cookfriends.data.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.datetime.Instant
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "recipe_table",
-    /*foreignKeys = [
-        ForeignKey(
-            entity = RecipeTypeEntity::class,
-            parentColumns = ["recipe_type_id"],
-            childColumns = ["id"],
-            onDelete = ForeignKey.SET_NULL
-        )
-    ],*/
     indices = [androidx.room.Index(value = ["recipe_type_id"])]
 )
 data class RecipeEntity(

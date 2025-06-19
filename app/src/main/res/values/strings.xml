@@ -20,7 +20,7 @@
     <string name="rating">Puntuación</string>
     <string name="advance_search">Busqueda avanzada</string>
     <string name="add">Agregar</string>
-    <string name="delete">Eliminar %1s</string>
+    <string name="delete_tag">Eliminar %1s</string>
     <string name="included_ingredients">Ingredientes incluidos</string>
     <string name="excluded_ingredients">Ingredientes excluidos</string>
     <string name="label_author">Autor</string>
@@ -34,4 +34,13 @@
     <string name="name">Nombre</string>
     <string name="description">Descripción</string>
     <string name="save">Guardar</string>
+    <string name="images">Imágenes</string>
+    <string name="image_url">URL de la imagen</string>
+    <string name="add_image">Agregar imagen</string>
+    <string name="delete_image">Eliminar imagen</string>
+    <string name="image_preview">Vista previa de la imagen</string>
+    <string name="confirm_delete_title">Confirmar eliminación</string>
+    <string name="confirm_delete_message">¿Estás seguro de que quieres eliminar la imagen?</string>
+    <string name="delete">Eliminar</string>
+    <string name="cancel">Cancelar</string>
 </resources>
