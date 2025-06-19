@@ -10,17 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,7 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -47,7 +42,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Photo
-import com.devapp.cookfriends.presentation.common.CFAsyncImage
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.presentation.common.RecipeTypeDropDownMenu
 import kotlin.uuid.Uuid
@@ -215,53 +209,4 @@ Spacer(modifier = Modifier.weight(1f))
             }
         )
     }
-}
-
-
-
-@Composable
-fun ImagePreviewItem(imageUrl: String, onDeleteRequest: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            CFAsyncImage(
-                imageUrl = imageUrl,
-                imageDescription = stringResource(R.string.image_preview)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            IconButton(modifier = Modifier.fillMaxWidth(), onClick = onDeleteRequest) {
-                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete_image))
-            }
-        }
-    }
-}
-
-@Composable
-fun DeleteConfirmationDialog(
-    onConfirmDelete: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.confirm_delete_title)) },
-        text = { Text(text = stringResource(R.string.confirm_delete_message)) },
-        confirmButton = {
-            TextButton(onClick = {
-                onConfirmDelete()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.delete))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
-            }
-        }
-    )
 }
