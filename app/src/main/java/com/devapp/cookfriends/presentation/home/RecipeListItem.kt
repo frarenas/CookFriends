@@ -51,7 +51,7 @@ fun RecipeListItem(
         Spacer(modifier = Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1F)) {
             Text(text = recipe.name!!, fontSize = 24.sp)
-            Text(text = stringResource(R.string.category, recipe.type!!))
+            Text(text = stringResource(R.string.category, recipe.recipeType!!.name))
             Text(text = stringResource(R.string.author, recipe.author!!))
         }
         Spacer(modifier = Modifier.width(8.dp))

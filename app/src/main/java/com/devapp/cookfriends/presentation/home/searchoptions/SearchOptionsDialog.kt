@@ -37,6 +37,7 @@ import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.OrderBy
 import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
+import com.devapp.cookfriends.presentation.common.RecipeTypeDropDownMenu
 
 @Composable
 fun SearchOptionsDialog(
@@ -56,10 +57,8 @@ fun SearchOptionsDialog(
     var currentOrder by remember { mutableStateOf(initialOptions.order) }
     var orderMenuExpanded by remember { mutableStateOf(false) }
     var selectedRecipeType by remember {
-        mutableStateOf<RecipeType?>(availableRecipeTypes.find { it.name == initialOptions.recipeType })
+        mutableStateOf<RecipeType?>(initialOptions.recipeType)
     }
-    val selectOneRecipeTypePlaceholder = stringResource(R.string.select_recipe_type)
-    var recipeTypeMenuExpanded by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         ElevatedCard(
@@ -87,65 +86,18 @@ fun SearchOptionsDialog(
                 OutlinedTextField(
                     value = currentSearchText,
                     onValueChange = { currentSearchText = it },
-                    label = { Text("Search Text") },
+                    label = { Text(stringResource(R.string.search)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Recipe type
-                Text(stringResource(R.string.label_recipe_type))
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                recipeTypeMenuExpanded = true
-                            }
-                            .padding(vertical = 8.dp)
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                                MaterialTheme.shapes.small
-                            )
-                            .padding(horizontal = 16.dp)
-                            .height(48.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            selectedRecipeType?.name ?: selectOneRecipeTypePlaceholder
-                        )
-                        Icon(
-                            Icons.Filled.ArrowDropDown,
-                            contentDescription = "Dropdown for recipe type"
-                        )
-                    }
-
-                    // The actual dropdown menu
-                    DropdownMenu(
-                        expanded = recipeTypeMenuExpanded,
-                        onDismissRequest = { recipeTypeMenuExpanded = false },
-                        modifier = Modifier.fillMaxWidth(0.9f)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(selectOneRecipeTypePlaceholder) },
-                            onClick = {
-                                selectedRecipeType = null
-                                recipeTypeMenuExpanded = false
-                            }
-                        )
-                        availableRecipeTypes.forEach { recipeType ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedRecipeType = recipeType
-                                    recipeTypeMenuExpanded = false
-                                },
-                                text = { Text(recipeType.name) },
-                                modifier = Modifier.fillMaxWidth(0.9f)
-                            )
-                        }
-                    }
+                RecipeTypeDropDownMenu(
+                    initialOptions.recipeType,
+                    availableRecipeTypes = availableRecipeTypes
+                ) {
+                    selectedRecipeType = it
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -162,14 +114,18 @@ fun SearchOptionsDialog(
                 // Included ingredients
                 TagSelector(
                     label = stringResource(R.string.included_ingredients),
-                    currentTags = includedIngredients,
-                    onTagsChange = { includedIngredients = it })
+                    currentTags = includedIngredients
+                ) {
+                    includedIngredients = it
+                }
 
                 // Excluded ingredients
                 TagSelector(
                     label = stringResource(R.string.excluded_ingredients),
-                    currentTags = excludedIngredients,
-                    onTagsChange = { excludedIngredients = it })
+                    currentTags = excludedIngredients
+                ) {
+                    excludedIngredients = it
+                }
 
                 // Order By Dropdown Menu
                 Text(stringResource(R.string.label_order_by))
@@ -194,7 +150,7 @@ fun SearchOptionsDialog(
                         )
                         Icon(
                             Icons.Filled.ArrowDropDown,
-                            contentDescription = "Dropdown for order by"
+                            contentDescription = stringResource(R.string.label_order_by)
                         )
                     }
 
@@ -218,13 +174,13 @@ fun SearchOptionsDialog(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Action Buttons (Cancel and Apply)
+                // Search Button
                 Button(
                     onClick = {
                         onApply(
                             SearchOptions(
                                 searchText = currentSearchText,
-                                recipeType = selectedRecipeType?.name,
+                                recipeType = selectedRecipeType,
                                 includedIngredients = includedIngredients,
                                 excludedIngredients = excludedIngredients,
                                 author = currentAuthor.takeIf { it.isNotBlank() },

@@ -18,21 +18,24 @@ object SqlQueryBuilder {
                          WHERE ft.recipe_id = r.id AND ft.user_id = $userId)) AS isUserFavorite
             FROM recipe_table r
         """)
+        if (options.recipeType != null) {
+            queryBuilder.append(" LEFT JOIN recipe_type_table rtt ON r.recipe_type_id = rtt.id ")
+        }
         val whereClauses = mutableListOf<String>()
 
         // Search word
         options.searchText.takeIf { it.isNotBlank() }?.let { searchText ->
-            whereClauses.add("name LIKE '$searchText%'")
+            whereClauses.add("r.name LIKE '$searchText%'")
         }
 
         // Author
         options.author?.takeIf { it.isNotBlank() }?.let { author ->
-            whereClauses.add("author LIKE '$author'")
+            whereClauses.add("r.author LIKE '$author'")
         }
 
         // Recipe type
-        options.recipeType?.takeIf { it.isNotBlank() }?.let { recipeType ->
-            whereClauses.add("type = '$recipeType'")
+        options.recipeType?.let { recipeType ->
+            whereClauses.add("rtt.id = '${recipeType.id}'")
         }
 
         // included ingredients

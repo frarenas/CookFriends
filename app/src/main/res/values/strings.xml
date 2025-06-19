@@ -32,4 +32,6 @@
     <string name="edit_recipe">Editar receta</string>
     <string name="back">Volver</string>
     <string name="name">Nombre</string>
+    <string name="description">Descripción</string>
+    <string name="save">Guardar</string>
 </resources>

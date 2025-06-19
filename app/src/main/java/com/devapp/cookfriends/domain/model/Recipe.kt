@@ -4,15 +4,17 @@ import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.remote.model.RecipeModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.String
 import kotlin.uuid.Uuid
 
 data class Recipe(
     var id: Uuid = Uuid.random(),
     var name: String? = null,
+    var description: String? = null,
     var author: String? = null,
     var averageRating: Double? = null,
     var isUserFavorite: Boolean = false,
-    var type: String? = null,
+    var recipeType: RecipeType? = null,
     var portions: Int? = null,
     var ingredients: List<Ingredient> = arrayListOf(),
     var steps: List<Step> = arrayListOf(),
@@ -26,8 +28,9 @@ data class Recipe(
 fun RecipeModel.toDomain() = Recipe(
     id = id,
     name = name,
+    description = description,
     author = author,
-    type = type,
+    recipeType = recipeType.toDomain(),
     portions = portions,
     ingredients = ingredients.map { ingredient -> ingredient.toDomain() },
     steps = steps.map { step -> step.toDomain() },
@@ -41,10 +44,11 @@ fun RecipeModel.toDomain() = Recipe(
 fun RecipeWithExtraData.toDomain() = Recipe(
     recipe.id,
     recipe.name,
+    recipe.description,
     recipe.author,
     averageRating,
     isUserFavorite,
-    recipe.type,
+    recipeType?.toDomain(),
     recipe.portions,
     ingredients.map { ingredient -> ingredient.toDomain() },
     steps.map { step -> step.toDomain() },

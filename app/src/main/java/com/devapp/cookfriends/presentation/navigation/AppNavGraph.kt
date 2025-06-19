@@ -21,11 +21,6 @@ fun AppNavGraph() {
         composable<Home> { HomeScreen(mainNavController = mainNavController) }
         //composable<Recipe> { RecipeScreen() }
         composable<RecoveryPassword> { RecoveryPasswordScreen(mainNavController) }
-        /*composable<EditRecipe> { backStackEntry ->
-            val editRecipe: EditRecipe = backStackEntry.toRoute()
-            EditRecipeScreen(recipeId = editRecipe.id, mainNavController = mainNavController)
-        }*/
-
         composable<EditRecipe>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)){ backStackEntry ->
             val editRecipe: EditRecipe = backStackEntry.toRoute()
             EditRecipeScreen(recipeId = editRecipe.id, mainNavController = mainNavController)

@@ -42,7 +42,9 @@ class RecipeRepository @Inject constructor(
         }
     }
 
-    fun getRecipeById(id: Uuid): Recipe? {
-        return recipeDao.getById(id)?.toDomain()
+    suspend fun getRecipeById(id: Uuid): Recipe? {
+        return withContext(Dispatchers.IO) {
+            recipeDao.getById(id)?.toDomain()
+        }
     }
 }

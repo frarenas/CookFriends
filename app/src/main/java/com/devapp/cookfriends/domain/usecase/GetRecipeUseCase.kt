@@ -6,7 +6,7 @@ import javax.inject.Inject
 import kotlin.uuid.Uuid
 
 class GetRecipeUseCase @Inject constructor(private val repository: RecipeRepository) {
-    operator fun invoke(id: Uuid): Recipe?{
+    suspend operator fun invoke(id: Uuid): Recipe?{
         return repository.getRecipeById(id)
     }
 }
