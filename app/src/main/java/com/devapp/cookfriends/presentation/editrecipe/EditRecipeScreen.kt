@@ -98,11 +98,16 @@ fun EditRecipeScreen(
                     imageVector = Icons.Default.Error
                 )
             } else {
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
+                    Text(
+                        text = stringResource(R.string.recipe_information),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                     OutlinedTextField(
                         value = editRecipeState.recipe.name ?: "",
                         onValueChange = { viewModel.onRecipeChange(editRecipeState.recipe.copy(name = it)) },
@@ -113,7 +118,13 @@ fun EditRecipeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = editRecipeState.recipe.description ?: "",
-                        onValueChange = { viewModel.onRecipeChange(editRecipeState.recipe.copy(description = it)) },
+                        onValueChange = {
+                            viewModel.onRecipeChange(
+                                editRecipeState.recipe.copy(
+                                    description = it
+                                )
+                            )
+                        },
                         label = { Text(stringResource(R.string.description)) },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 4
@@ -121,13 +132,17 @@ fun EditRecipeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     RecipeTypeDropDownMenu(
                         selectedRecipeType = editRecipeState.recipe.recipeType,
-                        availableRecipeTypes = availableRecipeTypes
-                    ) {
-                        viewModel.onRecipeChange(editRecipeState.recipe.copy(recipeType = it))
-                    }
+                        availableRecipeTypes = availableRecipeTypes,
+                        onSelectItem = { recipeType ->
+                            viewModel.onRecipeChange(editRecipeState.recipe.copy(recipeType = recipeType))
+                        },
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-// --- Image URL Input Section ---
-                    Text(stringResource(R.string.images), style = MaterialTheme.typography.titleMedium)
+                    // Images
+                    Text(
+                        stringResource(R.string.images),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -142,14 +157,23 @@ fun EditRecipeScreen(
                         )
                         IconButton(onClick = {
                             if (newImageUrl.isNotBlank()) {
-                                val recipePhotos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
+                                val recipePhotos: MutableList<RecipePhoto> =
+                                    mutableListOf<RecipePhoto>()
                                 recipePhotos.addAll(editRecipeState.recipe.recipePhotos)
-                                recipePhotos.add(RecipePhoto(url = newImageUrl.trim(), recipeId = editRecipeState.recipe.id))
+                                recipePhotos.add(
+                                    RecipePhoto(
+                                        url = newImageUrl.trim(),
+                                        recipeId = editRecipeState.recipe.id
+                                    )
+                                )
                                 viewModel.onRecipeChange(editRecipeState.recipe.copy(recipePhotos = recipePhotos))
                                 newImageUrl = ""
                             }
                         }) {
-                            Icon(Icons.Default.AddAPhoto, contentDescription = stringResource(R.string.add_image))
+                            Icon(
+                                Icons.Default.AddAPhoto,
+                                contentDescription = stringResource(R.string.add_image)
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -163,19 +187,39 @@ fun EditRecipeScreen(
                                 ImagePreviewItem(
                                     imageUrl = photo.url,
                                     onDeleteRequest = {
-                                        /*val photos: MutableList<Photo> = mutableListOf<Photo>()
-                                        photos.addAll(editRecipeState.recipe.photos)
-                                        photos.remove(photo)
-                                        viewModel.onRecipeChange(editRecipeState.recipe.copy(photos = photos))*/
-                                        recipePhotoToDelete = photo // Set the photo to be deleted
+                                        recipePhotoToDelete = photo
                                         showDeleteConfirmationDialog = true
                                     }
                                 )
                             }
                         }
                     }
-                    // --- End Image Section ---
-Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Ingredients
+                    Text(
+                        text = stringResource(R.string.ingredients),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    OutlinedTextField(
+                        value = editRecipeState.recipe.portions.toString(),
+                        onValueChange = {
+                            viewModel.onRecipeChange(
+                                editRecipeState.recipe.copy(
+                                    portions = it.toInt()
+                                )
+                            )
+                        },
+                        label = { Text(stringResource(R.string.portions)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Steps
+                    Text(
+                        text = stringResource(R.string.steps),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
                             /*viewModel.saveRecipe(

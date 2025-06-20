@@ -43,4 +43,8 @@
     <string name="confirm_delete_message">¿Estás seguro de que quieres eliminar la imagen?</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
+    <string name="recipe_information">Información de la receta</string>
+    <string name="ingredients">Ingredientes</string>
+    <string name="steps">Pasos</string>
+    <string name="portions">Porciones</string>
 </resources>

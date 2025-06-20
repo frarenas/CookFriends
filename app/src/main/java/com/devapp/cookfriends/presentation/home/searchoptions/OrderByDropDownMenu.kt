@@ -1,4 +1,4 @@
-package com.devapp.cookfriends.presentation.common
+package com.devapp.cookfriends.presentation.home.searchoptions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,37 +19,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.devapp.cookfriends.R
-import com.devapp.cookfriends.domain.model.RecipeType
+import com.devapp.cookfriends.domain.model.OrderBy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeTypeDropDownMenu(
-    selectedRecipeType: RecipeType?,
-    availableRecipeTypes: List<RecipeType>,
-    onSelectItem: (RecipeType?) -> Unit,
+fun OrderByDropDownMenu(
+    selectedItem: OrderBy,
+    availableItems: List<OrderBy>,
+    onSelectItem: (OrderBy) -> Unit,
     modifier: Modifier = Modifier,
-    label: String = stringResource(R.string.label_recipe_type)
+    label: String = stringResource(R.string.label_order_by)
 ) {
-    val selectOneRecipeTypePlaceholder = stringResource(R.string.select_recipe_type)
-    var recipeTypeMenuExpanded by remember { mutableStateOf(false) }
+    var menuExpanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
-        expanded = recipeTypeMenuExpanded,
-        onExpandedChange = { recipeTypeMenuExpanded = !recipeTypeMenuExpanded },
+        expanded = menuExpanded,
+        onExpandedChange = { menuExpanded = !menuExpanded },
         modifier = modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = selectedRecipeType?.name ?: "",
+            value = selectedItem.name,
             onValueChange = { },
             modifier = Modifier
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
                 .fillMaxWidth()
-                .clickable(onClick = { recipeTypeMenuExpanded = true }),
+                .clickable(onClick = { menuExpanded = true }),
             readOnly = true,
             label = { Text(label) },
-            placeholder = { Text(selectOneRecipeTypePlaceholder) },
+            placeholder = { Text(selectedItem.name) },
             trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = recipeTypeMenuExpanded)
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuExpanded)
             },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
                 cursorColor = Color.Transparent,
@@ -60,25 +59,18 @@ fun RecipeTypeDropDownMenu(
         )
 
         ExposedDropdownMenu(
-            expanded = recipeTypeMenuExpanded,
-            onDismissRequest = { recipeTypeMenuExpanded = false },
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false },
             modifier = Modifier.fillMaxWidth()
         ) {
-            DropdownMenuItem(
-                text = { Text(selectOneRecipeTypePlaceholder) },
-                modifier = Modifier.fillMaxWidth(0.9f),
-                onClick = {
-                    onSelectItem(null)
-                    recipeTypeMenuExpanded = false
-                }
-            )
-            availableRecipeTypes.forEach { recipeType ->
+            availableItems.forEach { item ->
                 DropdownMenuItem(
-                    text = { Text(recipeType.name) },
-                    modifier = Modifier.fillMaxWidth(0.9f),
+                    text = {
+                        Text(item.name)
+                    },
                     onClick = {
-                        onSelectItem(recipeType)
-                        recipeTypeMenuExpanded = false
+                        onSelectItem(item)
+                        menuExpanded = false
                     }
                 )
             }

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Recipe
 import com.devapp.cookfriends.presentation.common.CFAsyncImage
@@ -48,7 +48,10 @@ fun RecipeListItem(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1F)) {
-            Text(text = recipe.name!!, fontSize = 24.sp)
+            Text(
+                recipe.name!!,
+                style = MaterialTheme.typography.headlineSmall
+            )
             Text(text = stringResource(R.string.category, recipe.recipeType!!.name))
             Text(text = stringResource(R.string.author, recipe.user!!.username))
         }
