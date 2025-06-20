@@ -40,11 +40,17 @@
     <string name="delete_image">Eliminar imagen</string>
     <string name="image_preview">Vista previa de la imagen</string>
     <string name="confirm_delete_title">Confirmar eliminación</string>
-    <string name="confirm_delete_message">¿Estás seguro de que quieres eliminar la imagen?</string>
+    <string name="confirm_delete_photo_message">¿Estás seguro de que quieres eliminar la imagen?</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
     <string name="recipe_information">Información de la receta</string>
     <string name="ingredients">Ingredientes</string>
     <string name="steps">Pasos</string>
     <string name="portions">Porciones</string>
+    <string name="ingredient">Ingrediente</string>
+    <string name="quantity">Cantidad</string>
+    <string name="measurement">Medida</string>
+    <string name="add_ingredient">Agregar ingrediente</string>
+    <string name="delete_ingredient">Eliminar ingrediente</string>
+    <string name="confirm_delete_ingredient_message">¿Estás seguro de que quieres eliminar el ingrediente?</string>
 </resources>

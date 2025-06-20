@@ -29,7 +29,9 @@ fun MessageScreen(
     imageVector: ImageVector? = null,
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -63,6 +65,16 @@ fun MessageScreen(
 @Preview(showBackground = true)
 @Composable
 fun MessageScreenPreview() {
+    CookFriendsTheme {
+        MessageScreen(
+            "Test"
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun MessageScreenPreviewDark() {
     CookFriendsTheme {
         MessageScreen(
             "Test"
