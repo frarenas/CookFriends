@@ -47,9 +47,9 @@ fun SearchOptionsDialog(
     onApply: (SearchOptions) -> Unit
 ) {
     var currentSearchText by remember { mutableStateOf(initialOptions.searchText) }
-    var currentAuthor by remember {
+    var currentUsername by remember {
         mutableStateOf(
-            initialOptions.author ?: ""
+            initialOptions.username ?: ""
         )
     }
     var includedIngredients by remember { mutableStateOf(initialOptions.includedIngredients.toList()) }
@@ -103,8 +103,8 @@ fun SearchOptionsDialog(
 
                 // Author
                 OutlinedTextField(
-                    value = currentAuthor,
-                    onValueChange = { currentAuthor = it },
+                    value = currentUsername,
+                    onValueChange = { currentUsername = it },
                     label = { Text(stringResource(R.string.label_author)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
@@ -183,7 +183,7 @@ fun SearchOptionsDialog(
                                 recipeType = selectedRecipeType,
                                 includedIngredients = includedIngredients,
                                 excludedIngredients = excludedIngredients,
-                                author = currentAuthor.takeIf { it.isNotBlank() },
+                                username = currentUsername.takeIf { it.isNotBlank() },
                                 order = currentOrder
                             )
                         )

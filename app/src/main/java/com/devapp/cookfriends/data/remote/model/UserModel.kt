@@ -5,8 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class PhotoModel(
+data class UserModel(
     @SerialName("id"      ) var id        : Uuid,
-    @SerialName("url"     ) var url       : String,
-    @SerialName("recipeId") var recipeId  : Uuid
+    @SerialName("username") var username  : String
 )

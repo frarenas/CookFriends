@@ -15,7 +15,7 @@ data class RecipeEntity(
     @ColumnInfo(name = "id") val id: Uuid,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "description") val description: String,
-    @ColumnInfo(name = "author") val author: String,
+    @ColumnInfo(name = "user_id") val userId: Uuid?,
     @ColumnInfo(name = "recipe_type_id") val recipeTypeId: Uuid?,
     @ColumnInfo(name = "portions") val portions: Int,
     @ColumnInfo(name = "date") val date: Instant,

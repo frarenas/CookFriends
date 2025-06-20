@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
-import com.devapp.cookfriends.domain.model.Photo
+import com.devapp.cookfriends.domain.model.RecipePhoto
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.presentation.common.RecipeTypeDropDownMenu
 import kotlin.uuid.Uuid
@@ -58,7 +58,7 @@ fun EditRecipeScreen(
     val availableRecipeTypes by viewModel.availableRecipeTypes.collectAsState()
     var newImageUrl by remember { mutableStateOf("") }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
-    var photoToDelete by remember { mutableStateOf<Photo?>(null) }
+    var recipePhotoToDelete by remember { mutableStateOf<RecipePhoto?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -142,10 +142,10 @@ fun EditRecipeScreen(
                         )
                         IconButton(onClick = {
                             if (newImageUrl.isNotBlank()) {
-                                val photos: MutableList<Photo> = mutableListOf<Photo>()
-                                photos.addAll(editRecipeState.recipe.photos)
-                                photos.add(Photo(url = newImageUrl.trim(), recipeId = editRecipeState.recipe.id))
-                                viewModel.onRecipeChange(editRecipeState.recipe.copy(photos = photos))
+                                val recipePhotos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
+                                recipePhotos.addAll(editRecipeState.recipe.recipePhotos)
+                                recipePhotos.add(RecipePhoto(url = newImageUrl.trim(), recipeId = editRecipeState.recipe.id))
+                                viewModel.onRecipeChange(editRecipeState.recipe.copy(recipePhotos = recipePhotos))
                                 newImageUrl = ""
                             }
                         }) {
@@ -154,12 +154,12 @@ fun EditRecipeScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    if (editRecipeState.recipe.photos.isNotEmpty()) {
+                    if (editRecipeState.recipe.recipePhotos.isNotEmpty()) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.horizontalScroll(rememberScrollState())
                         ) {
-                            editRecipeState.recipe.photos.forEachIndexed { index, photo ->
+                            editRecipeState.recipe.recipePhotos.forEachIndexed { index, photo ->
                                 ImagePreviewItem(
                                     imageUrl = photo.url,
                                     onDeleteRequest = {
@@ -167,7 +167,7 @@ fun EditRecipeScreen(
                                         photos.addAll(editRecipeState.recipe.photos)
                                         photos.remove(photo)
                                         viewModel.onRecipeChange(editRecipeState.recipe.copy(photos = photos))*/
-                                        photoToDelete = photo // Set the photo to be deleted
+                                        recipePhotoToDelete = photo // Set the photo to be deleted
                                         showDeleteConfirmationDialog = true
                                     }
                                 )
@@ -194,15 +194,15 @@ Spacer(modifier = Modifier.weight(1f))
         }
     }
 
-    if (showDeleteConfirmationDialog && photoToDelete != null) {
+    if (showDeleteConfirmationDialog && recipePhotoToDelete != null) {
         DeleteConfirmationDialog(
             onConfirmDelete = {
-                val photos: MutableList<Photo> = mutableListOf<Photo>()
-                photos.addAll(editRecipeState.recipe.photos)
-                photos.remove(photoToDelete)
-                viewModel.onRecipeChange(editRecipeState.recipe.copy(photos = photos))
+                val recipePhotos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
+                recipePhotos.addAll(editRecipeState.recipe.recipePhotos)
+                recipePhotos.remove(recipePhotoToDelete)
+                viewModel.onRecipeChange(editRecipeState.recipe.copy(recipePhotos = recipePhotos))
                 showDeleteConfirmationDialog = false
-                photoToDelete = null
+                recipePhotoToDelete = null
             },
             onDismiss = {
                 showDeleteConfirmationDialog = false

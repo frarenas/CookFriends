@@ -2,7 +2,7 @@ package com.devapp.cookfriends.domain.model
 
 data class SearchOptions(
     val searchText: String = "",
-    val author: String? = null,
+    val username: String? = null,
     val recipeType: RecipeType? = null,
     val includedIngredients: List<String> = emptyList(),
     val excludedIngredients: List<String> = emptyList(),

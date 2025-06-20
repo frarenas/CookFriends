@@ -40,7 +40,7 @@ fun RecipeListItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         CFAsyncImage(
-            imageUrl = recipe.photos[0].url,
+            imageUrl = recipe.recipePhotos[0].url,
             imageDescription = recipe.name!!,
             modifier = Modifier
                 .width(100.dp)
@@ -50,7 +50,7 @@ fun RecipeListItem(
         Column(modifier = Modifier.weight(1F)) {
             Text(text = recipe.name!!, fontSize = 24.sp)
             Text(text = stringResource(R.string.category, recipe.recipeType!!.name))
-            Text(text = stringResource(R.string.author, recipe.author!!))
+            Text(text = stringResource(R.string.author, recipe.user!!.username))
         }
         Spacer(modifier = Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
