@@ -2,14 +2,16 @@ package com.devapp.cookfriends.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-object Login
+interface Screen
 
 @Serializable
-object Home
+object Login: Screen
 
 @Serializable
-object Recipe
+object Home: Screen
 
 @Serializable
-object RecoveryPassword
+object Recipe: Screen
+
+@Serializable
+object RecoveryPassword: Screen
