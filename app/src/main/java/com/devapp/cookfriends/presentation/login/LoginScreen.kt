@@ -49,6 +49,7 @@ fun LoginScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var keepMeLoggedInChecked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
 
@@ -137,10 +138,9 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .padding(bottom = 24.dp)
                     ) {
-                        var checked by remember { mutableStateOf(false) }
                         Checkbox(
-                            checked = checked,
-                            onCheckedChange = { checked = it }
+                            checked = keepMeLoggedInChecked,
+                            onCheckedChange = { keepMeLoggedInChecked = it }
                         )
                         Text("Mantenerme conectado")
                     }
@@ -148,7 +148,7 @@ fun LoginScreen(
                     // 6. Botón de Login
                     Button(
                         onClick = {
-                            viewModel.login(username, password)
+                            viewModel.login(username, password, keepMeLoggedInChecked)
                         },
                         modifier = Modifier
                             .fillMaxWidth()

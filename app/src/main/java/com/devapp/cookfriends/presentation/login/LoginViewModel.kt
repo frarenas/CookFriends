@@ -24,11 +24,11 @@ class LoginViewModel @Inject constructor(
     private val _snackbarFlow = MutableSharedFlow<SnackbarMessage>()
     val snackbarFlow: SharedFlow<SnackbarMessage> = _snackbarFlow
 
-    fun login(username: String, password: String) {
+    fun login(username: String, password: String, keepMeLoggedIn: Boolean) {
         viewModelScope.launch {
             _loginState.update { it.copy(isLoading = true) }
             try {
-                val user = loginUseCase(username, password)
+                val user = loginUseCase(username, password, keepMeLoggedIn)
                 _loginState.update { it.copy(user = user, isLoading = false) }
             } catch (e: Exception) {
                 _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))

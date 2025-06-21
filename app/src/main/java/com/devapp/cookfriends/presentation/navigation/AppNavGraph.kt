@@ -9,9 +9,9 @@ import com.devapp.cookfriends.presentation.login.LoginScreen
 import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordScreen
 
 @Composable
-fun AppNavGraph() {
+fun AppNavGraph(startDestination: Screen) {
     val mainNavController = rememberNavController()
-    NavHost(navController = mainNavController, startDestination = Login) {
+    NavHost(navController = mainNavController, startDestination = startDestination) {
         composable<Login> {
             LoginScreen(
                 navigateToHome = { mainNavController.navigate(Home) },
