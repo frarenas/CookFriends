@@ -21,7 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel // Si usas Hilt
 import androidx.lifecycle.viewmodel.compose.viewModel // Para uso sin Hilt
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.devapp.cookfriends.domain.models.RecoveryStep
+import com.devapp.cookfriends.domain.model.RecoveryStep
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

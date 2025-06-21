@@ -1,6 +1,6 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.devapp.cookfriends.domain.models.RecoveryStep // Asegúrate de importar RecoveryStep
+import com.devapp.cookfriends.domain.model.RecoveryStep // Asegúrate de importar RecoveryStep
 import com.devapp.cookfriends.presentation.recoverypassword.PreviewRecoveryPasswordViewModel // Importa tu Preview VM
 import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordViewModel // Importa tu VM base
 
