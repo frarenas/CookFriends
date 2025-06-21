@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.presentation.navigation.AppNavGraph
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,7 +17,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CookFriendsTheme {
-                AppNavGraph()
+                val mainViewModel: MainViewModel = hiltViewModel()
+                val startDestination = mainViewModel.startDestination.collectAsState()
+                if (startDestination.value != null) { // Wait until DataStore provides the initial route
+                    AppNavGraph(startDestination = startDestination.value!!)
+                }
+                //AppNavGraph()
             }
         }
     }

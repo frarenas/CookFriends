@@ -1,4 +1,4 @@
-package com.devapp.cookfriends.domain.models
+package com.devapp.cookfriends.domain.model
 
 sealed class RecoveryStep {
     object EnterEmail : RecoveryStep()

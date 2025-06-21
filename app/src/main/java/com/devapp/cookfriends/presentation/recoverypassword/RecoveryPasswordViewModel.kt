@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devapp.cookfriends.domain.models.RecoveryStep // Asegúrate de importar tu RecoveryStep
+import com.devapp.cookfriends.domain.model.RecoveryStep // Asegúrate de importar tu RecoveryStep
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

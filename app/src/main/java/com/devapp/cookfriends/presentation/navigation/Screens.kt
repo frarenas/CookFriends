@@ -3,17 +3,19 @@ package com.devapp.cookfriends.presentation.navigation
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-@Serializable
-object Login
+interface Screen
 
 @Serializable
-object Home
+object Login: Screen
 
 @Serializable
-object Recipe
+object Home: Screen
 
 @Serializable
-object RecoveryPassword
+object Recipe: Screen
 
 @Serializable
-data class  EditRecipe (val id: Uuid? = null)
+object RecoveryPassword: Screen
+
+@Serializable
+data class  EditRecipe (val id: Uuid? = null): Screen

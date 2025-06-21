@@ -6,9 +6,11 @@ import kotlin.uuid.Uuid
 
 data class User(
     val id: Uuid,
-    val username: String
+    val username: String,
+    val password: String? = null,
+    val name: String
 )
 
-fun UserModel.toDomain() = User(id, username)
+fun UserModel.toDomain() = User(id, username, password, name)
 
-fun UserEntity.toDomain() = User(id, username)
+fun UserEntity.toDomain() = User(id, username, null, name)
