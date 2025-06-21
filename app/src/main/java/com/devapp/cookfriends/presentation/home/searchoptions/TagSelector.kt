@@ -85,7 +85,7 @@ fun TagSelector(
                     trailingIcon = {
                         Icon(
                         imageVector = Icons.Default.Cancel,
-                        contentDescription = stringResource(R.string.delete, tag)
+                        contentDescription = stringResource(R.string.delete_tag, tag)
                     )},
                     modifier = Modifier.padding(end = 8.dp)
                 )

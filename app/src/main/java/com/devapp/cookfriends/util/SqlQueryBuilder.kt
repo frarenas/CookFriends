@@ -17,22 +17,29 @@ object SqlQueryBuilder {
                          FROM favorite_table ft 
                          WHERE ft.recipe_id = r.id AND ft.user_id = $userId)) AS isUserFavorite
             FROM recipe_table r
+            LEFT JOIN user_table u ON r.user_id = u.id
         """)
+        if (options.recipeType != null) {
+            queryBuilder.append(" LEFT JOIN recipe_type_table rtt ON r.recipe_type_id = rtt.id ")
+        }
+        /*if (options.username != null) {
+            queryBuilder.append(" LEFT JOIN user_table u ON r.user_id = u.id ")
+        }*/
         val whereClauses = mutableListOf<String>()
 
         // Search word
         options.searchText.takeIf { it.isNotBlank() }?.let { searchText ->
-            whereClauses.add("name LIKE '$searchText%'")
+            whereClauses.add("r.name LIKE '$searchText%'")
         }
 
         // Author
-        options.author?.takeIf { it.isNotBlank() }?.let { author ->
-            whereClauses.add("author LIKE '$author'")
+        options.username?.takeIf { it.isNotBlank() }?.let { username ->
+            whereClauses.add("u.username LIKE '$username%'")
         }
 
         // Recipe type
-        options.recipeType?.takeIf { it.isNotBlank() }?.let { recipeType ->
-            whereClauses.add("type = '$recipeType'")
+        options.recipeType?.let { recipeType ->
+            whereClauses.add("rtt.id = '${recipeType.id}'")
         }
 
         // included ingredients
@@ -69,7 +76,7 @@ object SqlQueryBuilder {
         // Order By
         when (options.order) {
             OrderBy.NAME -> queryBuilder.append(" ORDER BY name ASC")
-            OrderBy.AUTHOR -> queryBuilder.append(" ORDER BY author ASC, name ASC")
+            OrderBy.AUTHOR -> queryBuilder.append(" ORDER BY u.username ASC, name ASC")
             OrderBy.DATE -> queryBuilder.append(" ORDER BY date ASC, name ASC")
         }
 

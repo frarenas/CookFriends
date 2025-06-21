@@ -8,6 +8,6 @@ import kotlin.uuid.Uuid
 data class UserModel(
     @SerialName("id"      ) var id       : Uuid,
     @SerialName("username") var username : String,
-    @SerialName("password") var password : String?,
-    @SerialName("name"    ) var name     : String
+    @SerialName("password") var password : String? = "",
+    @SerialName("name"    ) var name     : String? = ""
 )
