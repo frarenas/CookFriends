@@ -31,13 +31,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
-import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -51,6 +50,7 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(loginState.user) {
         if (loginState.user != null)
@@ -188,7 +188,19 @@ fun LoginScreen(
                             )
                         }
                         TextButton(
-                            onClick = { println("Registrarse") },
+                            onClick = {
+                                val signUpUrl = "https://www.example.com/signup"
+                                try {
+                                    uriHandler.openUri(signUpUrl)
+                                } catch (_: Exception) {
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = "No se pudo abrir el enlace.",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
+                                }
+                            },
                             modifier = Modifier.wrapContentWidth()
                         ) {
                             Text(
@@ -200,27 +212,5 @@ fun LoginScreen(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    CookFriendsTheme {
-        LoginScreen(
-            navigateToHome = {},
-            navigateToRecoveryPassword = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun LoginScreenPreviewDark() {
-    CookFriendsTheme {
-        LoginScreen(
-            navigateToHome = {},
-            navigateToRecoveryPassword = {}
-        )
     }
 }
