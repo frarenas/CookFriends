@@ -29,7 +29,7 @@ import com.devapp.cookfriends.data.local.entity.UserEntity
         UserEntity::class,
         StepPhotoEntity::class
     ],
-    version = 18,
+    version = 20,
     exportSchema = false)
 @TypeConverters(UuidConverter::class, InstantConverter::class)
 abstract class AppDatabase : RoomDatabase() {

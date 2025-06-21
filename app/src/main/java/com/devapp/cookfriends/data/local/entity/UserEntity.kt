@@ -12,10 +12,12 @@ import kotlin.uuid.Uuid
 data class UserEntity(
     @PrimaryKey
     @ColumnInfo(name = "id") val id: Uuid,
-    @ColumnInfo(name = "username") val username: String
+    @ColumnInfo(name = "username") val username: String,
+    @ColumnInfo(name = "name") val name: String?
 )
 
 fun User.toDatabase() = UserEntity(
     id = id,
-    username = username
+    username = username,
+    name = name
 )

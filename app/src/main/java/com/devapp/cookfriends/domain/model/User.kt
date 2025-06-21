@@ -8,9 +8,9 @@ data class User(
     val id: Uuid,
     val username: String,
     val password: String? = null,
-    val name: String
+    val name: String?
 )
 
-fun UserModel.toDomain() = User(id, username, password, name)
+fun UserModel.toDomain() = User(id = id, username = username, name = name)
 
-fun UserEntity.toDomain() = User(id, username, null, name)
+fun UserEntity.toDomain() = User(id = id, username = username, name = name)

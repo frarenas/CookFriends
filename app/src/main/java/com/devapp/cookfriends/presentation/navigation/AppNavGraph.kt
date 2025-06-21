@@ -5,7 +5,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.cook_friends.presentation.screens.LoginScreen
 import com.devapp.cookfriends.presentation.editrecipe.EditRecipeScreen
 import com.devapp.cookfriends.presentation.home.HomeScreen
 import com.devapp.cookfriends.presentation.login.LoginScreen
@@ -16,7 +15,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun AppNavGraph(startDestination: Screen) {
     val mainNavController = rememberNavController()
-    NavHost(navController = mainNavController, startDestination = EditRecipe(id = Uuid.parse("34c0730c-8373-4789-9506-e4b2ba33124b"))) {
+    NavHost(navController = mainNavController, startDestination = startDestination){//EditRecipe(id = Uuid.parse("34c0730c-8373-4789-9506-e4b2ba33124b"))) {
         composable<Login> {
             LoginScreen(
                 navigateToHome = { mainNavController.navigate(Home) },
