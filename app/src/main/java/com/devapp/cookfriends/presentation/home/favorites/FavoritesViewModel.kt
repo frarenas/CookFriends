@@ -6,6 +6,7 @@ import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipesUseCase
+import com.devapp.cookfriends.domain.usecase.ToggleFavoriteUseCase
 import com.devapp.cookfriends.presentation.home.RecipesState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +19,13 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.uuid.Uuid
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val getRecipesUseCase: GetRecipesUseCase,
-    private val getRecipeTypesUseCase: GetRecipeTypesUseCase
+    private val getRecipeTypesUseCase: GetRecipeTypesUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
 
     private val _recipesState = MutableStateFlow(RecipesState())
@@ -38,6 +41,7 @@ class FavoritesViewModel @Inject constructor(
     val currentSearchOptions: StateFlow<SearchOptions> = _currentSearchOptions.asStateFlow()
 
     init {
+        _currentSearchOptions.update { _currentSearchOptions.value.copy(onlyFavorites = true) }
         searchRecipes(_currentSearchOptions.value)
     }
 
@@ -79,8 +83,8 @@ class FavoritesViewModel @Inject constructor(
     }
 
     fun applySearchOptions(options: SearchOptions) {
-        _currentSearchOptions.value = options // Update the ViewModel's state
-        dismissSearchOptionsDialog() // Close the dialog after applying
+        _currentSearchOptions.value = options
+        dismissSearchOptionsDialog()
 
         searchRecipes(options)
     }
@@ -91,5 +95,11 @@ class FavoritesViewModel @Inject constructor(
 
     fun dismissSearchOptionsDialog() {
         _showSearchOptionsDialog.value = false
+    }
+
+    fun toggleFavorite(recipeId: Uuid) {
+        viewModelScope.launch {
+            toggleFavoriteUseCase(recipeId)
+        }
     }
 }

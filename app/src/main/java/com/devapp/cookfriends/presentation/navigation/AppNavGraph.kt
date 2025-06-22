@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun AppNavGraph(startDestination: Screen) {
     val mainNavController = rememberNavController()
-    NavHost(navController = mainNavController, startDestination = EditRecipe(id = Uuid.parse("34c0730c-8373-4789-9506-e4b2ba33124b"))) {
+    NavHost(navController = mainNavController, startDestination = startDestination) {
         composable<Login> {
             LoginScreen(
                 navigateToHome = { mainNavController.navigate(Home) },

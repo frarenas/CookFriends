@@ -15,16 +15,13 @@ object SqlQueryBuilder {
                  WHERE rt.recipe_id = r.id) AS averageRating,
                 (EXISTS (SELECT 1 
                          FROM favorite_table ft 
-                         WHERE ft.recipe_id = r.id AND ft.user_id = $userId)) AS isUserFavorite
+                         WHERE ft.recipe_id = r.id AND ft.user_id = '$userId')) AS isUserFavorite
             FROM recipe_table r
             LEFT JOIN user_table u ON r.user_id = u.id
         """)
         if (options.recipeType != null) {
             queryBuilder.append(" LEFT JOIN recipe_type_table rtt ON r.recipe_type_id = rtt.id ")
         }
-        /*if (options.username != null) {
-            queryBuilder.append(" LEFT JOIN user_table u ON r.user_id = u.id ")
-        }*/
         val whereClauses = mutableListOf<String>()
 
         // Search word
@@ -65,6 +62,11 @@ object SqlQueryBuilder {
                                 WHERE it.recipe_id = r.id AND LOWER(it.name) = LOWER('$cleanIngredientName'))
                 """.trimIndent()) // Using LOWER for case-insensitive matching
             }
+        }
+
+        // Only get favorites
+        if(options.onlyFavorites) {
+            whereClauses.add("isUserFavorite = 1")
         }
 
         // Add WHERE clause if any filters are present
