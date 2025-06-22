@@ -10,11 +10,13 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.devapp.cookfriends.data.local.entity.CommentEntity
 import com.devapp.cookfriends.data.local.entity.FavoriteEntity
 import com.devapp.cookfriends.data.local.entity.IngredientEntity
-import com.devapp.cookfriends.data.local.entity.PhotoEntity
+import com.devapp.cookfriends.data.local.entity.RecipePhotoEntity
 import com.devapp.cookfriends.data.local.entity.RatingEntity
 import com.devapp.cookfriends.data.local.entity.RecipeEntity
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.local.entity.StepEntity
+import com.devapp.cookfriends.data.local.entity.StepPhotoEntity
+import com.devapp.cookfriends.data.local.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -31,16 +33,22 @@ interface RecipeDao {
     suspend fun insertSteps(steps: List<StepEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStepPhotos(photos: List<StepPhotoEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRatings(ratings: List<RatingEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPhotos(photos: List<PhotoEntity>)
+    suspend fun insertRecipePhotos(photos: List<RecipePhotoEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertComments(comments: List<CommentEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavorites(favorites: List<FavoriteEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUsers(users: List<UserEntity>)
 
     @Transaction
     suspend fun insert(recipe: RecipeWithExtraData) {
@@ -49,10 +57,16 @@ interface RecipeDao {
             insertIngredients(recipe.ingredients)
         }
         if (recipe.steps.isNotEmpty()) {
-            insertSteps(recipe.steps)
+            val stepEntities = recipe.steps.map { it.step }
+            insertSteps(stepEntities) // Insert all StepEntity objects
+
+            val allStepPhotos = recipe.steps.flatMap { it.photos } // Get all StepPhotoEntity objects
+            if (allStepPhotos.isNotEmpty()) {
+                insertStepPhotos(allStepPhotos) // Insert all StepPhotoEntity objects
+            }
         }
         if (recipe.photos.isNotEmpty()) {
-            insertPhotos(recipe.photos)
+            insertRecipePhotos(recipe.photos)
         }
         if (recipe.ratings.isNotEmpty()) {
             insertRatings(recipe.ratings)
@@ -62,6 +76,9 @@ interface RecipeDao {
         }
         if (recipe.favorites.isNotEmpty()) {
             insertFavorites(recipe.favorites)
+        }
+        if (recipe.user != null) {
+            insertUsers(listOf(recipe.user))
         }
     }
 

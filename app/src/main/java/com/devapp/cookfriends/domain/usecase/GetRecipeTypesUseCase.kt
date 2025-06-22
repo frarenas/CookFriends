@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetRecipeTypesUseCase @Inject constructor(private val repository: RecipeTypeRepository) {
-    suspend operator fun invoke(): Flow<List<RecipeType>>{
+    operator fun invoke(): Flow<List<RecipeType>>{
         return repository.getRecipeTypesFromDatabase()
     }
 }

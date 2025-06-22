@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -38,7 +39,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.home.Header
-import com.devapp.cookfriends.presentation.navigation.RecoveryPassword
 import com.devapp.cookfriends.ui.theme.White
 import kotlinx.coroutines.launch
 
@@ -87,7 +87,10 @@ fun ProfileScreen(
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
-                    Text(stringResource(R.string.change_password))
+                    Text(
+                        text = stringResource(R.string.change_password),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                     OutlinedTextField(
                         value = password,
                         onValueChange = { newText -> password = newText },
