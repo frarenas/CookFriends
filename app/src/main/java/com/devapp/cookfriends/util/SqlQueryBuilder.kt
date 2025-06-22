@@ -64,6 +64,11 @@ object SqlQueryBuilder {
             }
         }
 
+        // Only get favorites
+        if(options.onlyFavorites) {
+            whereClauses.add("isUserFavorite = 1")
+        }
+
         // Add WHERE clause if any filters are present
         if (whereClauses.isNotEmpty()) {
             queryBuilder.append("WHERE ")

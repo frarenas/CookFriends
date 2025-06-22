@@ -41,6 +41,7 @@ class FavoritesViewModel @Inject constructor(
     val currentSearchOptions: StateFlow<SearchOptions> = _currentSearchOptions.asStateFlow()
 
     init {
+        _currentSearchOptions.update { _currentSearchOptions.value.copy(onlyFavorites = true) }
         searchRecipes(_currentSearchOptions.value)
     }
 
