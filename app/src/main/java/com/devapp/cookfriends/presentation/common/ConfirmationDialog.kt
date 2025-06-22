@@ -1,5 +1,6 @@
-package com.devapp.cookfriends.presentation.editrecipe
+package com.devapp.cookfriends.presentation.common
 
+import android.content.res.Configuration
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -10,10 +11,12 @@ import com.devapp.cookfriends.R
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 
 @Composable
-fun DeleteConfirmationDialog(
+fun ConfirmationDialog(
     title: String,
     message: String,
-    onConfirmDelete: () -> Unit,
+    confirmText: String,
+    dismissText: String,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -23,18 +26,18 @@ fun DeleteConfirmationDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirmDelete()
+                    onConfirm()
                     onDismiss()
                 }
             ) {
-                Text(stringResource(R.string.delete))
+                Text(confirmText)
             }
         },
         dismissButton = {
             TextButton(
                 onClick = onDismiss
             ) {
-                Text(stringResource(R.string.cancel))
+                Text(dismissText)
             }
         }
     )
@@ -44,23 +47,27 @@ fun DeleteConfirmationDialog(
 @Composable
 fun DeleteConfirmationDialogPreview() {
     CookFriendsTheme {
-        DeleteConfirmationDialog(
+        ConfirmationDialog(
             title = "Delete Ingredient",
             message = "Are you sure you want to delete this ingredient?",
-            onConfirmDelete = {},
+            confirmText = stringResource(R.string.delete),
+            dismissText = stringResource(R.string.cancel),
+            onConfirm = {},
             onDismiss = {}
         )
     }
 }
 
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeleteConfirmationDialogPreviewDark() {
     CookFriendsTheme {
-        DeleteConfirmationDialog(
+        ConfirmationDialog(
             title = "Delete Ingredient",
             message = "Are you sure you want to delete this ingredient?",
-            onConfirmDelete = {},
+            confirmText = stringResource(R.string.delete),
+            dismissText = stringResource(R.string.cancel),
+            onConfirm = {},
             onDismiss = {}
         )
     }

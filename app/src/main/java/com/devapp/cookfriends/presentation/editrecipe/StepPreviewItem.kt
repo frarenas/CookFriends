@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Step
 import com.devapp.cookfriends.domain.model.StepPhoto
+import com.devapp.cookfriends.presentation.common.ConfirmationDialog
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import com.devapp.cookfriends.ui.theme.LightBlue
 import kotlin.uuid.Uuid
@@ -142,10 +143,12 @@ fun StepPreviewItem(
     }
 
     if (showDeleteConfirmationDialog && stepPhotoToDelete != null) {
-        DeleteConfirmationDialog(
+        ConfirmationDialog(
             title = stringResource(R.string.confirm_delete_title),
             message = stringResource(R.string.confirm_delete_photo_message),
-            onConfirmDelete = {
+            confirmText = stringResource(R.string.delete),
+            dismissText = stringResource(R.string.cancel),
+            onConfirm = {
                 val stepPhotos: MutableList<StepPhoto> = mutableListOf<StepPhoto>()
                 stepPhotos.addAll(step.photos)
                 stepPhotos.remove(stepPhotoToDelete)

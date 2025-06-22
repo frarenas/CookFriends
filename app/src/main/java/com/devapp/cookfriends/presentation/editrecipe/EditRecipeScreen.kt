@@ -51,6 +51,7 @@ import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Ingredient
 import com.devapp.cookfriends.domain.model.RecipePhoto
 import com.devapp.cookfriends.domain.model.Step
+import com.devapp.cookfriends.presentation.common.ConfirmationDialog
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.presentation.common.RecipeTypeDropDownMenu
 import com.devapp.cookfriends.ui.theme.LightBlue
@@ -68,7 +69,7 @@ fun EditRecipeScreen(
     val editRecipeState by viewModel.editRecipeState.collectAsState()
     val availableRecipeTypes by viewModel.availableRecipeTypes.collectAsState()
     var newImageUrl by remember { mutableStateOf("") }
-    var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+    var showConfirmationDialog by remember { mutableStateOf(false) }
     var recipePhotoToDelete by remember { mutableStateOf<RecipePhoto?>(null) }
     var newIngredient by remember {
         mutableStateOf<Ingredient>(
@@ -93,6 +94,7 @@ fun EditRecipeScreen(
     var stepToDelete by remember { mutableStateOf<Step?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    var saveRecipeConfirmation by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = viewModel.snackbarFlow) {
         viewModel.snackbarFlow.collect { snackbarMessage ->
@@ -228,7 +230,7 @@ fun EditRecipeScreen(
                                     imageUrl = photo.url,
                                     onDeleteRequest = {
                                         recipePhotoToDelete = photo
-                                        showDeleteConfirmationDialog = true
+                                        showConfirmationDialog = true
                                     }
                                 )
                             }
@@ -316,7 +318,7 @@ fun EditRecipeScreen(
                                     ingredient = ingredient,
                                     onDeleteRequest = {
                                         ingredientToDelete = ingredient
-                                        showDeleteConfirmationDialog = true
+                                        showConfirmationDialog = true
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -373,7 +375,7 @@ fun EditRecipeScreen(
                                     step = step,
                                     onDeleteRequest = {
                                         stepToDelete = step
-                                        showDeleteConfirmationDialog = true
+                                        showConfirmationDialog = true
                                     },
                                     onAddPhoto = {
                                         viewModel.onStepAdd(step)
@@ -390,7 +392,8 @@ fun EditRecipeScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
-                            viewModel.saveRecipe()
+                            saveRecipeConfirmation = true
+                            showConfirmationDialog = true
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -401,47 +404,69 @@ fun EditRecipeScreen(
         }
     }
 
-    if (showDeleteConfirmationDialog) {
+    if (showConfirmationDialog) {
         if (recipePhotoToDelete != null) {
-            DeleteConfirmationDialog(
+            ConfirmationDialog(
                 title = stringResource(R.string.confirm_delete_title),
                 message = stringResource(R.string.confirm_delete_photo_message),
-                onConfirmDelete = {
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
                     viewModel.onPhotoRemove(recipePhotoToDelete!!)
-                    showDeleteConfirmationDialog = false
+                    showConfirmationDialog = false
                     recipePhotoToDelete = null
                 },
                 onDismiss = {
-                    showDeleteConfirmationDialog = false
+                    showConfirmationDialog = false
                     recipePhotoToDelete = null
                 }
             )
         } else if (ingredientToDelete != null) {
-            DeleteConfirmationDialog(
+            ConfirmationDialog(
                 title = stringResource(R.string.confirm_delete_title),
                 message = stringResource(R.string.confirm_delete_ingredient_message),
-                onConfirmDelete = {
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
                     viewModel.onIngredientRemove(ingredientToDelete!!)
-                    showDeleteConfirmationDialog = false
+                    showConfirmationDialog = false
                     ingredientToDelete = null
                 },
                 onDismiss = {
-                    showDeleteConfirmationDialog = false
+                    showConfirmationDialog = false
                     ingredientToDelete = null
                 }
             )
         } else if (stepToDelete != null) {
-            DeleteConfirmationDialog(
+            ConfirmationDialog(
                 title = stringResource(R.string.confirm_delete_title),
                 message = stringResource(R.string.confirm_delete_step_message),
-                onConfirmDelete = {
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
                     viewModel.onStepRemove(stepToDelete!!)
-                    showDeleteConfirmationDialog = false
+                    showConfirmationDialog = false
                     stepToDelete = null
                 },
                 onDismiss = {
-                    showDeleteConfirmationDialog = false
+                    showConfirmationDialog = false
                     stepToDelete = null
+                }
+            )
+        } else if (saveRecipeConfirmation) {
+            ConfirmationDialog(
+                title = stringResource(R.string.confirm_save_recipe_title),
+                message = stringResource(R.string.confirm_save_recipe_message),
+                confirmText = stringResource(R.string.save),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
+                    viewModel.saveRecipe()
+                    showConfirmationDialog = false
+                    saveRecipeConfirmation = false
+                },
+                onDismiss = {
+                    showConfirmationDialog = false
+                    saveRecipeConfirmation = false
                 }
             )
         }
