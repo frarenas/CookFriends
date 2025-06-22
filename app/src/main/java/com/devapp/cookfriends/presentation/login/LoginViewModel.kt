@@ -3,6 +3,7 @@ package com.devapp.cookfriends.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.domain.usecase.LoginUseCase
+import com.devapp.cookfriends.domain.usecase.LogoutUseCase
 import com.devapp.cookfriends.presentation.common.SnackbarMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val logoutUseCase: LogoutUseCase
 ): ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginState())
@@ -28,12 +30,25 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _loginState.update { it.copy(isLoading = true) }
             try {
-                val user = loginUseCase(username, password, keepMeLoggedIn)
-                _loginState.update { it.copy(user = user, isLoading = false) }
+                loginUseCase(username, password, keepMeLoggedIn)
+                _loginState.update { it.copy(continueToHome = true) }
             } catch (e: Exception) {
                 _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))
                 _loginState.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    fun guestLogin() {
+        viewModelScope.launch {
+            try {
+                _loginState.update { it.copy(isLoading = true) }
+                logoutUseCase()
+                _loginState.update { it.copy(continueToHome = true) }
+            } catch (_: Exception) {
+                _loginState.update { it.copy(isLoading = false) }
+            }
+
         }
     }
 }

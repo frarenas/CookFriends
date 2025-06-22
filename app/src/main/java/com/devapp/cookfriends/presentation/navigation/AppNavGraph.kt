@@ -18,7 +18,7 @@ fun AppNavGraph(startDestination: Screen) {
     NavHost(navController = mainNavController, startDestination = startDestination) {
         composable<Login> {
             LoginScreen(
-                navigateToHome = { mainNavController.navigate(Home) },
+                navigateToHome = { mainNavController.navigate(Home){ popUpTo(Login) { inclusive = true } } },
                 navigateToRecoveryPassword = { mainNavController.navigate(RecoveryPassword) })
         }
         composable<Home> { HomeScreen(mainNavController = mainNavController) }

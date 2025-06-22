@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.profile
 
 data class ProfileState(
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val loggedOut: Boolean = false
 )

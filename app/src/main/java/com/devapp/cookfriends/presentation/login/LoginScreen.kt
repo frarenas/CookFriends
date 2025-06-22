@@ -53,8 +53,8 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
 
-    LaunchedEffect(loginState.user) {
-        if (loginState.user != null)
+    LaunchedEffect(loginState.continueToHome) {
+        if (loginState.continueToHome)
             navigateToHome()
     }
 
@@ -160,8 +160,7 @@ fun LoginScreen(
                     // 7. Botón de Continuar como Invitado
                     Button(
                         onClick = {
-                            navigateToHome()
-                            //println("Invitado")
+                            viewModel.guestLogin()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
