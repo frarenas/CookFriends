@@ -2,6 +2,7 @@ package com.devapp.cookfriends.data.remote.repository
 
 import com.devapp.cookfriends.data.local.dao.FavoriteDao
 import com.devapp.cookfriends.data.local.entity.toDatabase
+import com.devapp.cookfriends.data.remote.model.toModel
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import com.devapp.cookfriends.domain.model.Favorite
 import com.devapp.cookfriends.domain.model.toDomain
@@ -20,13 +21,23 @@ class FavoriteRepository @Inject constructor(
             return@withContext favoriteDao.getFavoritesByUserIdAndRecipeId(userId, recipeId)?.toDomain()
         }
 
-    suspend fun addFavorite(favorite: Favorite) =
+    suspend fun addFavoriteDb(favorite: Favorite) =
         withContext(Dispatchers.IO) {
             favoriteDao.insert(favorite.toDatabase())
         }
 
-    suspend fun removeFavorite(favorite: Favorite) =
+    suspend fun removeFavoriteDb(favorite: Favorite) =
         withContext(Dispatchers.IO) {
             favoriteDao.delete(favorite.toDatabase())
+        }
+
+    suspend fun addFavoriteApi(favorite: Favorite) =
+        withContext(Dispatchers.IO) {
+            service.addFavorite(favorite.toModel())
+        }
+
+    suspend fun removeFavoriteApi(favorite: Favorite) =
+        withContext(Dispatchers.IO) {
+            service.removeFavorite(favorite.toModel())
         }
 }

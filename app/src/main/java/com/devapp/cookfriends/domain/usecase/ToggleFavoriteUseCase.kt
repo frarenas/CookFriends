@@ -20,9 +20,11 @@ class ToggleFavoriteUseCase @Inject constructor(
                     userId = loggedUserId,
                     recipeId = recipeId
                 )
-                favoriteRepository.addFavorite(favorite)
+                favoriteRepository.addFavoriteDb(favorite)
+                favoriteRepository.addFavoriteApi(favorite)
             } else {
-                favoriteRepository.removeFavorite(favorite)
+                favoriteRepository.removeFavoriteDb(favorite)
+                favoriteRepository.removeFavoriteApi(favorite)
             }
         }
     }
