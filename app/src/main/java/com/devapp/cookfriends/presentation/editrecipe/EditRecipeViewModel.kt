@@ -13,10 +13,14 @@ import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.Step
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
+import com.devapp.cookfriends.domain.usecase.SaveRecipeUseCase
+import com.devapp.cookfriends.presentation.common.SnackbarMessage
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -31,6 +35,7 @@ import kotlin.uuid.Uuid
 class EditRecipeViewModel @Inject constructor(
     private val getRecipeUseCase: GetRecipeUseCase,
     private val getRecipeTypesUseCase: GetRecipeTypesUseCase,
+    private val saveRecipeUseCase: SaveRecipeUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -47,6 +52,9 @@ class EditRecipeViewModel @Inject constructor(
 
     private val _availableRecipeTypes = MutableStateFlow<List<RecipeType>>(emptyList())
     val availableRecipeTypes: StateFlow<List<RecipeType>> = _availableRecipeTypes.asStateFlow()
+
+    private val _snackbarFlow = MutableSharedFlow<SnackbarMessage>()
+    val snackbarFlow: SharedFlow<SnackbarMessage> = _snackbarFlow
 
     init {
         getAvailableRecipeTypes()
@@ -105,6 +113,28 @@ class EditRecipeViewModel @Inject constructor(
         _editRecipeState.update { it.copy(recipe = recipe) }
     }
 
+    fun onPortionsChange(portions: String) {
+        var newPortions =
+            if (_editRecipeState.value.recipe.portions != null) _editRecipeState.value.recipe.portions else 0
+        try {
+            newPortions = if (portions.isBlank()) {
+                null
+            } else {
+                portions.toInt()
+            }
+        } catch (_: Exception) {
+
+        } finally {
+            _editRecipeState.update {
+                it.copy(
+                    editRecipeState.value.recipe.copy(
+                        portions = newPortions
+                    )
+                )
+            }
+        }
+    }
+
     fun onPhotoAdd(recipePhoto: RecipePhoto) {
         var recipe = _editRecipeState.value.recipe
         val photos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
@@ -126,6 +156,7 @@ class EditRecipeViewModel @Inject constructor(
 
     fun onIngredientAdd(ingredient: Ingredient) {
         var recipe = _editRecipeState.value.recipe
+        ingredient.recipeId = recipe.id
         val ingredients: MutableList<Ingredient> = mutableListOf<Ingredient>()
         ingredients.addAll(recipe.ingredients)
         ingredients.remove(ingredient)
@@ -145,6 +176,7 @@ class EditRecipeViewModel @Inject constructor(
 
     fun onStepAdd(step: Step) {
         var recipe = _editRecipeState.value.recipe
+        step.recipeId = recipe.id
         val steps: MutableList<Step> = mutableListOf<Step>()
         steps.addAll(recipe.steps)
         steps.remove(step)
@@ -160,5 +192,23 @@ class EditRecipeViewModel @Inject constructor(
         steps.remove(step)
         recipe.steps = steps
         _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun saveRecipe() {
+        viewModelScope.launch {
+            _editRecipeState.update { it.copy(isLoading = true, error = null) }
+            try {
+                saveRecipeUseCase(_editRecipeState.value.recipe)
+                _editRecipeState.update { it.copy(isLoading = false, error = null) }
+                _snackbarFlow.emit(SnackbarMessage.Error("Se guardaron los cambios."))
+            } catch (e: Exception) {
+                _editRecipeState.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+                _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))
+            }
+        }
     }
 }

@@ -27,15 +27,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +54,7 @@ import com.devapp.cookfriends.domain.model.Step
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.presentation.common.RecipeTypeDropDownMenu
 import com.devapp.cookfriends.ui.theme.LightBlue
+import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,6 +92,18 @@ fun EditRecipeScreen(
     }
     var stepToDelete by remember { mutableStateOf<Step?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = viewModel.snackbarFlow) {
+        viewModel.snackbarFlow.collect { snackbarMessage ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = snackbarMessage.message,
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -225,13 +241,9 @@ fun EditRecipeScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     OutlinedTextField(
-                        value = editRecipeState.recipe.portions.toString(),
+                        value = (editRecipeState.recipe.portions.toString()),
                         onValueChange = {
-                            viewModel.onRecipeChange(
-                                editRecipeState.recipe.copy(
-                                    portions = it.toInt()
-                                )
-                            )
+                            viewModel.onPortionsChange(it)
                         },
                         label = { Text(stringResource(R.string.portions)) },
                         modifier = Modifier.fillMaxWidth(),
@@ -378,12 +390,7 @@ fun EditRecipeScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
-                            /*viewModel.saveRecipe(
-                                editRecipeState.recipe.copy(
-                                    name = recipeName,
-                                    description = recipeDescription
-                                )
-                            )*/
+                            viewModel.saveRecipe()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {

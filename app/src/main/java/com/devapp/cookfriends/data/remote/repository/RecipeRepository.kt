@@ -42,6 +42,11 @@ class RecipeRepository @Inject constructor(
         }
     }
 
+    suspend fun saveRecipe(recipe: Recipe) =
+        withContext(Dispatchers.IO) {
+            recipeDao.insert(recipe.toDatabase())
+        }
+
     suspend fun getRecipeById(id: Uuid): Recipe? {
         return withContext(Dispatchers.IO) {
             recipeDao.getById(id)?.toDomain()
