@@ -34,7 +34,10 @@ fun RecipesScreen(viewModel: RecipesViewModel = hiltViewModel()) {
             },
             onSearchOptionsClick = { viewModel.openSearchOptionsDialog() }
         )
-        Content(recipesState)
+        Content(
+            recipesState = recipesState,
+            onFavoriteClick = {viewModel.toggleFavorite(it)}
+        )
     }
 
     if (showSearchOptionsDialog) {

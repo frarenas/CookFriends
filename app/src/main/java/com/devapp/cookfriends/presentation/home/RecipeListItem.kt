@@ -27,11 +27,12 @@ import com.devapp.cookfriends.domain.model.Recipe
 import com.devapp.cookfriends.presentation.common.CFAsyncImage
 import com.devapp.cookfriends.ui.theme.Gold
 import com.devapp.cookfriends.ui.theme.Red
+import kotlin.uuid.Uuid
 
 @Composable
 fun RecipeListItem(
     recipe: Recipe,
-    onFavoriteClick: (Recipe) -> Unit
+    onFavoriteClick: (Uuid) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -57,7 +58,7 @@ fun RecipeListItem(
         }
         Spacer(modifier = Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            IconButton(onClick = { onFavoriteClick(recipe) }) {
+            IconButton(onClick = { onFavoriteClick(recipe.id) }) {
                 Icon(
                     imageVector = if (recipe.isUserFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = stringResource(R.string.favorite),

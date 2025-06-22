@@ -15,9 +15,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
+import kotlin.uuid.Uuid
 
 @Composable
-fun Content(recipesState: RecipesState = RecipesState()) {
+fun Content(
+    recipesState: RecipesState = RecipesState(),
+    onFavoriteClick: (Uuid) -> Unit
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -37,8 +41,8 @@ fun Content(recipesState: RecipesState = RecipesState()) {
                     items(recipesState.recipeList) { item ->
                         RecipeListItem(
                             item,
-                            onFavoriteClick = { clickedRecipe ->
-                                // Call ViewModel
+                            onFavoriteClick = { recipeId ->
+                                onFavoriteClick(recipeId)
                             }
                         )
                     }
@@ -52,7 +56,10 @@ fun Content(recipesState: RecipesState = RecipesState()) {
 @Composable
 fun ContentPreviewLoading() {
     CookFriendsTheme {
-        Content(RecipesState(isLoading = true))
+        Content(
+            recipesState = RecipesState(isLoading = true),
+            onFavoriteClick = {}
+        )
     }
 }
 
@@ -60,7 +67,10 @@ fun ContentPreviewLoading() {
 @Composable
 fun ContentPreviewError() {
     CookFriendsTheme {
-        Content(RecipesState(error = "Error"))
+        Content(
+            recipesState = RecipesState(error = "Error"),
+            onFavoriteClick = {}
+        )
     }
 }
 
@@ -68,6 +78,9 @@ fun ContentPreviewError() {
 @Composable
 fun ContentPreviewEmpty() {
     CookFriendsTheme {
-        Content(RecipesState(recipeList = emptyList()))
+        Content(
+            recipesState = RecipesState(recipeList = emptyList()),
+            onFavoriteClick = {}
+        )
     }
 }

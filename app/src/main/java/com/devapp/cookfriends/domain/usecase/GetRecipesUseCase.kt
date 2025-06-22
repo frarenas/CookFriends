@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class GetRecipesUseCase @Inject constructor(
     private val recipeRepository: RecipeRepository,
-    val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository
 ) {
     suspend operator fun invoke(searchOptions: SearchOptions): Flow<List<Recipe>> {
         val loggedUserId = profileRepository.getLoggedUserId()
