@@ -53,4 +53,8 @@
     <string name="add_ingredient">Agregar ingrediente</string>
     <string name="delete_ingredient">Eliminar ingrediente</string>
     <string name="confirm_delete_ingredient_message">¿Estás seguro de que quieres eliminar el ingrediente?</string>
+    <string name="confirm_delete_step_message">¿Estás seguro de que quieres eliminar el paso?</string>
+    <string name="delete_step">Eliminar paso</string>
+    <string name="instructions">Instrucciones</string>
+    <string name="add_step">Agregar paso</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -46,6 +47,7 @@ import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Ingredient
 import com.devapp.cookfriends.domain.model.RecipePhoto
+import com.devapp.cookfriends.domain.model.Step
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.presentation.common.RecipeTypeDropDownMenu
 import com.devapp.cookfriends.ui.theme.LightBlue
@@ -75,6 +77,16 @@ fun EditRecipeScreen(
         )
     }
     var ingredientToDelete by remember { mutableStateOf<Ingredient?>(null) }
+    var newStep by remember {
+        mutableStateOf<Step>(
+            Step(
+                content = "",
+                order = 0,
+                recipeId = editRecipeState.recipe.id
+            )
+        )
+    }
+    var stepToDelete by remember { mutableStateOf<Step?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -173,16 +185,12 @@ fun EditRecipeScreen(
                         )
                         IconButton(onClick = {
                             if (newImageUrl.isNotBlank()) {
-                                val recipePhotos: MutableList<RecipePhoto> =
-                                    mutableListOf<RecipePhoto>()
-                                recipePhotos.addAll(editRecipeState.recipe.recipePhotos)
-                                recipePhotos.add(
+                                viewModel.onPhotoAdd(
                                     RecipePhoto(
                                         url = newImageUrl.trim(),
                                         recipeId = editRecipeState.recipe.id
                                     )
                                 )
-                                viewModel.onRecipeChange(editRecipeState.recipe.copy(recipePhotos = recipePhotos))
                                 newImageUrl = ""
                             }
                         }) {
@@ -199,7 +207,7 @@ fun EditRecipeScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.horizontalScroll(rememberScrollState())
                         ) {
-                            editRecipeState.recipe.recipePhotos.forEachIndexed { index, photo ->
+                            editRecipeState.recipe.recipePhotos.forEach { photo ->
                                 ImagePreviewItem(
                                     imageUrl = photo.url,
                                     onDeleteRequest = {
@@ -236,43 +244,39 @@ fun EditRecipeScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        OutlinedTextField(
-                            value = newIngredient.name,
-                            onValueChange = { newIngredient = newIngredient.copy(name = it) },
-                            label = { Text(stringResource(R.string.ingredient)) },
-                            modifier = Modifier.weight(0.35f),
-                            singleLine = true
-                        )
-                        OutlinedTextField(
-                            value = newIngredient.quantity,
-                            onValueChange = { newIngredient = newIngredient.copy(quantity = it) },
-                            label = { Text(stringResource(R.string.quantity)) },
-                            modifier = Modifier.weight(0.35f),
-                            singleLine = true
-                        )
-                        OutlinedTextField(
-                            value = newIngredient.measurement ?: "",
-                            onValueChange = {
-                                newIngredient = newIngredient.copy(measurement = it)
-                            },
-                            label = { Text(stringResource(R.string.measurement)) },
-                            modifier = Modifier.weight(0.3f),
-                            singleLine = true
-                        )
-                        IconButton(onClick = {
-                            if (newIngredient.name.isNotBlank()) {
-                                val ingredients: MutableList<Ingredient> =
-                                    mutableListOf<Ingredient>()
-                                ingredients.addAll(editRecipeState.recipe.ingredients)
-                                ingredients.add(
-                                    Ingredient(
-                                        name = newIngredient.name,
-                                        quantity = newIngredient.quantity,
-                                        measurement = newIngredient.measurement,
-                                        recipeId = editRecipeState.recipe.id
-                                    )
+                        Column(modifier = Modifier.weight(1f)) {
+                            OutlinedTextField(
+                                value = newIngredient.name,
+                                onValueChange = { newIngredient = newIngredient.copy(name = it) },
+                                label = { Text(stringResource(R.string.ingredient)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                            Row {
+                                OutlinedTextField(
+                                    value = newIngredient.quantity,
+                                    onValueChange = {
+                                        newIngredient = newIngredient.copy(quantity = it)
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    label = { Text(stringResource(R.string.quantity)) },
+                                    singleLine = true
                                 )
-                                viewModel.onRecipeChange(editRecipeState.recipe.copy(ingredients = ingredients))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                OutlinedTextField(
+                                    value = newIngredient.measurement ?: "",
+                                    onValueChange = {
+                                        newIngredient = newIngredient.copy(measurement = it)
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    label = { Text(stringResource(R.string.measurement)) },
+                                    singleLine = true
+                                )
+                            }
+                        }
+                        IconButton(onClick = {
+                            if (newIngredient.name.isNotBlank() && newIngredient.quantity.isNotBlank()) {
+                                viewModel.onIngredientAdd(newIngredient)
                                 newIngredient = Ingredient(
                                     name = "",
                                     quantity = "",
@@ -295,7 +299,7 @@ fun EditRecipeScreen(
                                 .fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            editRecipeState.recipe.ingredients.forEachIndexed { index, ingredient ->
+                            editRecipeState.recipe.ingredients.forEach { ingredient ->
                                 IngredientPreviewItem(
                                     ingredient = ingredient,
                                     onDeleteRequest = {
@@ -313,6 +317,64 @@ fun EditRecipeScreen(
                         text = stringResource(R.string.steps),
                         style = MaterialTheme.typography.titleLarge
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = newStep.content,
+                            onValueChange = {
+                                newStep = newStep.copy(content = it)
+                            },
+                            modifier = Modifier.weight(1f),
+                            label = { Text(stringResource(R.string.instructions)) },
+                            maxLines = 4
+                        )
+                        IconButton(onClick = {
+                            if (newStep.content.isNotBlank()) {
+                                viewModel.onStepAdd(newStep)
+                                newStep = Step(
+                                    content = "",
+                                    order = 0,
+                                    recipeId = editRecipeState.recipe.id
+                                )
+                            }
+                        }) {
+                            Icon(
+                                Icons.Default.AddCircle,
+                                contentDescription = stringResource(R.string.add_step),
+                                tint = LightBlue
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    if (editRecipeState.recipe.steps.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            editRecipeState.recipe.steps.forEach { step ->
+                                StepPreviewItem(
+                                    step = step,
+                                    onDeleteRequest = {
+                                        stepToDelete = step
+                                        showDeleteConfirmationDialog = true
+                                    },
+                                    onAddPhoto = {
+                                        viewModel.onStepAdd(step)
+                                    },
+                                    onDeletePhoto = {
+                                        viewModel.onStepAdd(step)
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
@@ -338,15 +400,13 @@ fun EditRecipeScreen(
                 title = stringResource(R.string.confirm_delete_title),
                 message = stringResource(R.string.confirm_delete_photo_message),
                 onConfirmDelete = {
-                    val recipePhotos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
-                    recipePhotos.addAll(editRecipeState.recipe.recipePhotos)
-                    recipePhotos.remove(recipePhotoToDelete)
-                    viewModel.onRecipeChange(editRecipeState.recipe.copy(recipePhotos = recipePhotos))
+                    viewModel.onPhotoRemove(recipePhotoToDelete!!)
                     showDeleteConfirmationDialog = false
                     recipePhotoToDelete = null
                 },
                 onDismiss = {
                     showDeleteConfirmationDialog = false
+                    recipePhotoToDelete = null
                 }
             )
         } else if (ingredientToDelete != null) {
@@ -354,15 +414,27 @@ fun EditRecipeScreen(
                 title = stringResource(R.string.confirm_delete_title),
                 message = stringResource(R.string.confirm_delete_ingredient_message),
                 onConfirmDelete = {
-                    val ingredients: MutableList<Ingredient> = mutableListOf<Ingredient>()
-                    ingredients.addAll(editRecipeState.recipe.ingredients)
-                    ingredients.remove(ingredientToDelete)
-                    viewModel.onRecipeChange(editRecipeState.recipe.copy(ingredients = ingredients))
+                    viewModel.onIngredientRemove(ingredientToDelete!!)
                     showDeleteConfirmationDialog = false
                     ingredientToDelete = null
                 },
                 onDismiss = {
                     showDeleteConfirmationDialog = false
+                    ingredientToDelete = null
+                }
+            )
+        } else if (stepToDelete != null) {
+            DeleteConfirmationDialog(
+                title = stringResource(R.string.confirm_delete_title),
+                message = stringResource(R.string.confirm_delete_step_message),
+                onConfirmDelete = {
+                    viewModel.onStepRemove(stepToDelete!!)
+                    showDeleteConfirmationDialog = false
+                    stepToDelete = null
+                },
+                onDismiss = {
+                    showDeleteConfirmationDialog = false
+                    stepToDelete = null
                 }
             )
         }

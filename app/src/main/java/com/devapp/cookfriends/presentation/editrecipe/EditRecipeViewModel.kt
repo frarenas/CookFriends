@@ -6,8 +6,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.devapp.cookfriends.domain.model.Ingredient
 import com.devapp.cookfriends.domain.model.Recipe
+import com.devapp.cookfriends.domain.model.RecipePhoto
 import com.devapp.cookfriends.domain.model.RecipeType
+import com.devapp.cookfriends.domain.model.Step
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
@@ -99,6 +102,63 @@ class EditRecipeViewModel @Inject constructor(
     }
 
     fun onRecipeChange(recipe: Recipe) {
+        _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun onPhotoAdd(recipePhoto: RecipePhoto) {
+        var recipe = _editRecipeState.value.recipe
+        val photos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
+        photos.addAll(recipe.recipePhotos)
+        photos.remove(recipePhoto)
+        photos.add(recipePhoto)
+        recipe.recipePhotos = photos
+        _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun onPhotoRemove(recipePhoto: RecipePhoto) {
+        var recipe = _editRecipeState.value.recipe
+        val photos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
+        photos.addAll(recipe.recipePhotos)
+        photos.remove(recipePhoto)
+        recipe.recipePhotos = photos
+        _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun onIngredientAdd(ingredient: Ingredient) {
+        var recipe = _editRecipeState.value.recipe
+        val ingredients: MutableList<Ingredient> = mutableListOf<Ingredient>()
+        ingredients.addAll(recipe.ingredients)
+        ingredients.remove(ingredient)
+        ingredients.add(ingredient)
+        recipe.ingredients = ingredients
+        _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun onIngredientRemove(ingredient: Ingredient) {
+        var recipe = _editRecipeState.value.recipe
+        val ingredients: MutableList<Ingredient> = mutableListOf<Ingredient>()
+        ingredients.addAll(recipe.ingredients)
+        ingredients.remove(ingredient)
+        recipe.ingredients = ingredients
+        _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun onStepAdd(step: Step) {
+        var recipe = _editRecipeState.value.recipe
+        val steps: MutableList<Step> = mutableListOf<Step>()
+        steps.addAll(recipe.steps)
+        steps.remove(step)
+        steps.add(step)
+        recipe.steps = steps
+        _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun onStepRemove(step: Step) {
+        var recipe = _editRecipeState.value.recipe
+        val steps: MutableList<Step> = mutableListOf<Step>()
+        steps.addAll(recipe.steps)
+        steps.remove(step)
+        recipe.steps = steps
         _editRecipeState.update { it.copy(recipe = recipe) }
     }
 }
