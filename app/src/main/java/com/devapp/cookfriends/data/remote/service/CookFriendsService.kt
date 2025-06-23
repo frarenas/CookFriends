@@ -20,7 +20,7 @@ interface CookFriendsService {
     suspend fun getRecipeTypes(
     ): List<RecipeTypeModel>
 
-    @GET("exec?function=getUser")
+    @GET("exec?function=login")
     suspend fun login(
         @Query("username") username: String,
         @Query("password") password: String
