@@ -3,12 +3,14 @@ package com.devapp.cookfriends.presentation.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Kitchen
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -28,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devapp.cookfriends.R
@@ -42,7 +43,8 @@ import com.devapp.cookfriends.presentation.home.navigation.Recipes
 
 @Composable
 fun HomeScreen(
-    mainNavController: NavHostController,
+    navigateToNewRecipe: () -> Unit,
+    navigateToLogin: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -105,11 +107,23 @@ fun HomeScreen(
                 } else {
                     {}
                 },
-                snackbarHost = { SnackbarHost(snackbarHostState) }
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                floatingActionButton = if (isUserLogged && selectedItem.route == MyRecipes) {
+                    {
+                        FloatingActionButton(onClick = { navigateToNewRecipe() }) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(R.string.new_recipe)
+                            )
+                        }
+                    }
+                } else {
+                    {}
+                }
             ) { innerPadding ->
                 HomeNavGraph(
-                    mainNavController = mainNavController,
                     homeNavController = homeNavController,
+                    navigateToLogin = navigateToLogin,
                     isUserLogged = isUserLogged,
                     paddingValues = innerPadding,
                     snackbarHostState = snackbarHostState

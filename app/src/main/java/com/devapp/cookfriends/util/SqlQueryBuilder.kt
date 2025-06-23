@@ -69,6 +69,11 @@ object SqlQueryBuilder {
             whereClauses.add("isUserFavorite = 1")
         }
 
+        // Only my recipes
+        options.currentUserId?.let {
+            whereClauses.add("r.user_id = '$it'")
+        }
+
         // Add WHERE clause if any filters are present
         if (whereClauses.isNotEmpty()) {
             queryBuilder.append("WHERE ")
