@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -32,20 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.home.Header
-import com.devapp.cookfriends.presentation.navigation.RecoveryPassword
 import com.devapp.cookfriends.ui.theme.White
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    navController: NavHostController,
     snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit
 ) {
@@ -67,6 +64,11 @@ fun ProfileScreen(
         }
     }
 
+    LaunchedEffect(profileState.loggedOut) {
+        if (profileState.loggedOut)
+            onLogout()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,7 +76,9 @@ fun ProfileScreen(
         Header(
             modifier = Modifier,
             title = stringResource(R.string.profile),
-            showSearchBar = false
+            showSearchBar = false,
+            onSearchClick = {},
+            onSearchOptionsClick = { }
         )
         Box(modifier = Modifier.fillMaxSize()) {
             if (profileState.isLoading) {
@@ -85,7 +89,10 @@ fun ProfileScreen(
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
-                    Text(stringResource(R.string.change_password))
+                    Text(
+                        text = stringResource(R.string.change_password),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                     OutlinedTextField(
                         value = password,
                         onValueChange = { newText -> password = newText },
@@ -161,7 +168,7 @@ fun ProfileScreen(
 //                    }
                     Spacer(Modifier.weight(1f))
                     Button(
-                        onClick = onLogout,
+                        onClick = { viewModel.logout() },
                         Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
@@ -172,10 +179,4 @@ fun ProfileScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PreviewProfileScreen () {
-    //ProfileScreen(snackbarHostState = SnackbarHostState(), onLogout = {})
 }

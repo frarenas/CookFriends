@@ -23,9 +23,15 @@ object DatabaseModule {
             context.applicationContext,
             AppDatabase::class.java,
             DB_NAME
-        ).fallbackToDestructiveMigration(false)
+        ).fallbackToDestructiveMigration(true)
             .build()
 
     @Provides
-    fun provideSomeDao(appDatabase: AppDatabase) = appDatabase.recipeDao()
+    fun provideRecipeDao(appDatabase: AppDatabase) = appDatabase.recipeDao()
+
+    @Provides
+    fun provideRecipeTypeDao(appDatabase: AppDatabase) = appDatabase.recipeTypeDao()
+
+    @Provides
+    fun provideFavoriteDao(appDatabase: AppDatabase) = appDatabase.favoriteDao()
 }
