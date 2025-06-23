@@ -2,7 +2,7 @@ package com.devapp.cookfriends
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devapp.cookfriends.domain.usecase.IsUserLoggedInUseCase
+import com.devapp.cookfriends.domain.usecase.IsSessionActiveUseCase
 import com.devapp.cookfriends.presentation.navigation.Home
 import com.devapp.cookfriends.presentation.navigation.Login
 import com.devapp.cookfriends.presentation.navigation.Screen
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    isLoggedUseCase: IsUserLoggedInUseCase
+    isLoggedUseCase: IsSessionActiveUseCase
 ) : ViewModel() {
     val startDestination: StateFlow<Screen?> = isLoggedUseCase()
         .map { isActiveSession ->
