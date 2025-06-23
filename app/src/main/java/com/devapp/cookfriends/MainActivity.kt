@@ -19,10 +19,9 @@ class MainActivity : ComponentActivity() {
             CookFriendsTheme {
                 val mainViewModel: MainViewModel = hiltViewModel()
                 val startDestination = mainViewModel.startDestination.collectAsState()
-                if (startDestination.value != null) { // Wait until DataStore provides the initial route
+                if (startDestination.value != null) {
                     AppNavGraph(startDestination = startDestination.value!!)
                 }
-                //AppNavGraph()
             }
         }
     }

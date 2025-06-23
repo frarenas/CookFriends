@@ -4,7 +4,7 @@ import com.devapp.cookfriends.data.remote.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class IsUserLoggedInUseCase @Inject constructor(
+class IsSessionActiveUseCase @Inject constructor(
     val repository: ProfileRepository
 ) {
     operator fun invoke(): Flow<Boolean> {

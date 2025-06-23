@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 interface HomeSection
 
 @Serializable
-object Recipes: HomeSection
+data class  Recipes(val isUserLogged: Boolean): HomeSection
 
 @Serializable
 object Favorites: HomeSection

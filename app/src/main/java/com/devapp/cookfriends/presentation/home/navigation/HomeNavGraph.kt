@@ -19,16 +19,17 @@ import com.devapp.cookfriends.presentation.profile.ProfileScreen
 fun HomeNavGraph(
     mainNavController: NavHostController,
     homeNavController: NavHostController,
+    isUserLogged: Boolean = false,
     paddingValues: PaddingValues,
     snackbarHostState: SnackbarHostState
 ) {
     NavHost(
         navController = homeNavController,
-        startDestination = Recipes,
+        startDestination = Recipes(isUserLogged = isUserLogged),
         modifier = Modifier.padding(paddingValues)
     ) {
         composable<Recipes> {
-            RecipesScreen()
+            RecipesScreen(isUserLogged = isUserLogged)
         }
         composable<Favorites> {
             FavoritesScreen()
