@@ -9,8 +9,12 @@ data class EditRecipeState(
     val nameErrorMessage: String? = null,
     val descriptionErrorMessage: String? = null,
     val recipePhotoErrorMessage: String? = null,
+    val recipePhotosErrorMessage: String? = null,
     val portionsErrorMessage: String? = null,
     val ingredientsErrorMessage: String? = null,
     val stepsErrorMessage: String? = null,
     val recipeTypeErrorMessage: String? = null,
+    val ingredientNameErrorMessage: String? = null,
+    val ingredientQuantityErrorMessage: String? = null,
+    val stepContentErrorMessage: String? = null,
 )
