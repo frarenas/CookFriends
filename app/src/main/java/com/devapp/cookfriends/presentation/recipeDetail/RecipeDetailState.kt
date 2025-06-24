@@ -1,7 +1,6 @@
 package com.devapp.cookfriends.presentation.recipeDetail
 
-import com.devapp.cookfriends.domain.models.Recipe
-import com.devapp.cookfriends.domain.models.Step
+import com.devapp.cookfriends.domain.model.Step
 
 data class RecipeDetailState(
     val recipeName: String = "Receta",

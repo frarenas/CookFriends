@@ -31,46 +31,52 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
-import com.devapp.cookfriends.domain.models.Comment
-import com.devapp.cookfriends.domain.models.Ingredient
-import com.devapp.cookfriends.domain.models.Recipe
-import com.devapp.cookfriends.domain.models.Step
+import com.devapp.cookfriends.domain.model.Comment
+import com.devapp.cookfriends.domain.model.Ingredient
+import com.devapp.cookfriends.domain.model.Recipe
+import com.devapp.cookfriends.domain.model.Step
+import com.devapp.cookfriends.domain.model.StepPhoto
+import kotlin.uuid.Uuid
+
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 //fun RecipeDetailScreen(viewModel: RecipeDetailViewModel = hiltViewModel()){
 fun RecipeDetailScreen(navHostController: NavHostController){
 
     val exampleRecipe = Recipe(
         name = "Ravioles",
-        author = "Chef Giovanni",
-        type = "Italian",
-        rate = 5.0,
-        favorite = false,
         portions = 4,
-        ingredients = listOf(
-            Ingredient("Agua","2", "lts."),
-            Ingredient("Harina", "1", "Kg."),
-            Ingredient("Sal", "1", "crd.")),
+        ingredients = listOf(),
         steps = listOf(
-            Step(1, "descripcion paso 1."),
-            Step(2, "descripcion paso 2."),
-            Step(3, "descripcion paso 3"),
+            Step(
+                order = 1,
+                content = "descripcion paso 1.",
+                recipeId = Uuid.random(),
+                photos = listOf(StepPhoto(Uuid.random(),"url",Uuid.random()))
+            ),
+            Step(
+                order = 2,
+                content = "descripcion paso 1.",
+                recipeId = Uuid.random(),
+                photos = listOf(StepPhoto(Uuid.random(),"url",Uuid.random()))
+            )
         )
     )
 
     val comments = listOf(
-        Comment("1","Gerardo","Simple y rendidora"),
-        Comment("2","Paulina","agregale algo mas"),
-        Comment("3","Cuccinare","Le agregaria una salsita"),
-        Comment("4","Chorly","Ideal para invitar a la familia"),
-    )
+        Comment(
+            id = Uuid.random(),
+            comment = "sample Text",
+            userId = Uuid.random(),
+            recipeId = Uuid.random(),
+        )
+    );
 
     Scaffold (
         topBar = {
             TopAppBar(
-                title = { Text(exampleRecipe.name) },
+                title = { Text(exampleRecipe.name.toString()) },
                 navigationIcon = {
                     IconButton(onClick = { navHostController.popBackStack() }) {
                         Icon(
@@ -203,8 +209,8 @@ fun commentSection(comments: List<Comment>){
 fun commentItem(comment: Comment){
 
     Column {
-        Text(comment.user)
-        Text(comment.text)
+        Text("UserName1")
+        Text("Sample text")
         HorizontalDivider()
     }
 }
