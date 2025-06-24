@@ -28,7 +28,8 @@ fun RecipeTypeDropDownMenu(
     availableRecipeTypes: List<RecipeType>,
     onSelectItem: (RecipeType?) -> Unit,
     modifier: Modifier = Modifier,
-    label: String = stringResource(R.string.label_recipe_type)
+    label: String = stringResource(R.string.label_recipe_type),
+    errorMessage: String? = null,
 ) {
     val selectOneRecipeTypePlaceholder = stringResource(R.string.select_recipe_type)
     var recipeTypeMenuExpanded by remember { mutableStateOf(false) }
@@ -56,7 +57,17 @@ fun RecipeTypeDropDownMenu(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             ),
-            singleLine = true
+            singleLine = true,
+            isError = errorMessage != null,
+            supportingText = {
+                if (errorMessage != null) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         )
 
         ExposedDropdownMenu(

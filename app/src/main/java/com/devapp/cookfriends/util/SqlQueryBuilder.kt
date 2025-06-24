@@ -84,7 +84,7 @@ object SqlQueryBuilder {
         when (options.order) {
             OrderBy.NAME -> queryBuilder.append(" ORDER BY name ASC")
             OrderBy.AUTHOR -> queryBuilder.append(" ORDER BY u.username ASC, name ASC")
-            OrderBy.DATE -> queryBuilder.append(" ORDER BY date ASC, name ASC")
+            OrderBy.DATE -> queryBuilder.append(" ORDER BY date DESC, name ASC")
         }
 
         val rawQuery = SimpleSQLiteQuery(queryBuilder.toString())

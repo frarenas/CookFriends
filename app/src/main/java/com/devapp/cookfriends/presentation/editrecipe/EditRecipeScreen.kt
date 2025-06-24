@@ -159,7 +159,17 @@ fun EditRecipeScreen(
                         onValueChange = { viewModel.onRecipeChange(editRecipeState.recipe.copy(name = it)) },
                         label = { Text(stringResource(R.string.name)) },
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        isError = editRecipeState.nameErrorMessage != null,
+                        supportingText = {
+                            if (editRecipeState.nameErrorMessage != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = editRecipeState.nameErrorMessage!!,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
@@ -173,7 +183,17 @@ fun EditRecipeScreen(
                         },
                         label = { Text(stringResource(R.string.description)) },
                         modifier = Modifier.fillMaxWidth(),
-                        maxLines = 4
+                        maxLines = 4,
+                        isError = editRecipeState.descriptionErrorMessage != null,
+                        supportingText = {
+                            if (editRecipeState.descriptionErrorMessage != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = editRecipeState.descriptionErrorMessage!!,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     RecipeTypeDropDownMenu(
@@ -182,6 +202,7 @@ fun EditRecipeScreen(
                         onSelectItem = { recipeType ->
                             viewModel.onRecipeChange(editRecipeState.recipe.copy(recipeType = recipeType))
                         },
+                        errorMessage = editRecipeState.recipeTypeErrorMessage
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     // Images
@@ -219,6 +240,13 @@ fun EditRecipeScreen(
                             )
                         }
                     }
+                    if (editRecipeState.recipePhotoErrorMessage != null) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = editRecipeState.recipePhotoErrorMessage!!,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (editRecipeState.recipe.recipePhotos.isNotEmpty()) {
                         Row(
@@ -250,7 +278,17 @@ fun EditRecipeScreen(
                         label = { Text(stringResource(R.string.portions)) },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true
+                        singleLine = true,
+                        isError = editRecipeState.portionsErrorMessage != null,
+                        supportingText = {
+                            if (editRecipeState.portionsErrorMessage != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = editRecipeState.portionsErrorMessage!!,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
@@ -305,6 +343,13 @@ fun EditRecipeScreen(
                                 tint = LightBlue
                             )
                         }
+                    }
+                    if (editRecipeState.ingredientsErrorMessage != null) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = editRecipeState.ingredientsErrorMessage!!,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (editRecipeState.recipe.ingredients.isNotEmpty()) {
@@ -362,6 +407,13 @@ fun EditRecipeScreen(
                                 tint = LightBlue
                             )
                         }
+                    }
+                    if (editRecipeState.stepsErrorMessage != null) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = editRecipeState.stepsErrorMessage!!,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (editRecipeState.recipe.steps.isNotEmpty()) {
