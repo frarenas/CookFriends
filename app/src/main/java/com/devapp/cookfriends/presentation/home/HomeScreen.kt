@@ -12,6 +12,7 @@ import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -108,9 +109,12 @@ fun HomeScreen(
                     {}
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                floatingActionButton = if (isUserLogged && selectedItem.route == MyRecipes) {
+                floatingActionButton = if (isUserLogged && currentRoute == MyRecipes.javaClass.name) {
                     {
-                        FloatingActionButton(onClick = { navigateToNewRecipe() }) {
+                        FloatingActionButton(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            onClick = { navigateToNewRecipe() }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = stringResource(R.string.new_recipe)
