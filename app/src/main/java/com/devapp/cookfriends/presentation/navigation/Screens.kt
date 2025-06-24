@@ -19,3 +19,6 @@ object RecoveryPassword: Screen
 
 @Serializable
 data class  EditRecipe (val id: Uuid? = null): Screen
+
+@Serializable
+data class IngredientCalculator  (val id: Uuid? = null): Screen

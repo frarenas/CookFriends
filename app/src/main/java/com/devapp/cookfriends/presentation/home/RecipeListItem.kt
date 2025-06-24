@@ -32,6 +32,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun RecipeListItem(
     recipe: Recipe,
+    isUserLogged: Boolean = false,
     onFavoriteClick: (Uuid) -> Unit
 ) {
     Row(
@@ -58,14 +59,16 @@ fun RecipeListItem(
         }
         Spacer(modifier = Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            IconButton(onClick = { onFavoriteClick(recipe.id) }) {
-                Icon(
-                    imageVector = if (recipe.isUserFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = stringResource(R.string.favorite),
-                    tint = if (recipe.isUserFavorite) Red else Color.Gray
-                )
+            if (isUserLogged) {
+                IconButton(onClick = { onFavoriteClick(recipe.id) }) {
+                    Icon(
+                        imageVector = if (recipe.isUserFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = stringResource(R.string.favorite),
+                        tint = if (recipe.isUserFavorite) Red else Color.Gray
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
             }
-            Spacer(modifier = Modifier.width(8.dp))
             Row {
                 Icon(
                     imageVector = Icons.Default.Star,

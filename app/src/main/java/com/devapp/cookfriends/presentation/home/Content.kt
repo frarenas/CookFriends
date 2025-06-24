@@ -19,6 +19,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun Content(
+    isUserLogged: Boolean = false,
     recipesState: RecipesState = RecipesState(),
     onFavoriteClick: (Uuid) -> Unit
 ) {
@@ -38,9 +39,10 @@ fun Content(
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(recipesState.recipeList) { item ->
+                    items(recipesState.recipeList) { recipe ->
                         RecipeListItem(
-                            item,
+                            recipe = recipe,
+                            isUserLogged = isUserLogged,
                             onFavoriteClick = { recipeId ->
                                 onFavoriteClick(recipeId)
                             }
