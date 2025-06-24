@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.devapp.cookfriends.domain.model.Ingredient
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
+import com.devapp.cookfriends.domain.usecase.SaveRecipeUseCase
+import com.devapp.cookfriends.presentation.common.SnackbarMessage
 import com.devapp.cookfriends.presentation.navigation.IngredientCalculator
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +24,7 @@ import kotlin.uuid.Uuid
 @HiltViewModel
 class IngredientCalculatorViewModel @Inject constructor(
     private val getRecipeUseCase: GetRecipeUseCase,
+    private val saveRecipeUseCase: SaveRecipeUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -32,6 +35,9 @@ class IngredientCalculatorViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(IngredientCalculatorState())
     val state: StateFlow<IngredientCalculatorState> = _state
+
+    private val _snackbarFlow = MutableStateFlow<SnackbarMessage?>(null)
+    val snackbarFlow: StateFlow<SnackbarMessage?> = _snackbarFlow
 
     init {
         loadRecipe()
@@ -70,9 +76,66 @@ class IngredientCalculatorViewModel @Inject constructor(
         desired: Int
     ): List<Ingredient> {
         return ingredients.map { ingredient ->
-            val quantity = ingredient.quantity.toFloatOrNull() ?: 0f
-            val scaled = quantity * desired / original
-            ingredient.copy(quantity = "%.2f".format(scaled))
+            val quantityFloat = ingredient.quantity.toFloatOrNull()
+            if (quantityFloat != null) {
+                val scaled = quantityFloat * desired / original
+                ingredient.copy(quantity = "%.2f".format(scaled))
+            } else {
+                // Para mostrar los valores de ingredientes que no son numericos
+                ingredient
+            }
+        }
+    }
+
+    fun saveAdjustedRecipeLocally() {
+        if (recipeId != null) {
+            viewModelScope.launch {
+                val currentState = _state.value
+                val originalRecipe = getRecipeUseCase(recipeId)
+
+                originalRecipe?.let { original ->
+                    // Nuevo id
+                    val newRecipeId = Uuid.random()
+                    // Ingredientes ajustados
+                    val copiedIngredients = currentState.adjustedIngredients.map {
+                        it.copy(
+                            id = Uuid.random(),
+                            recipeId = newRecipeId
+                        )
+                    }
+                    // Cambia id de pasos y fotos
+                    val copiedSteps = original.steps.map { step ->
+                        val newStepId = Uuid.random()
+                        step.copy(
+                            id = newStepId,
+                            recipeId = newRecipeId,
+                            photos = step.photos.map { photo ->
+                                photo.copy(id = Uuid.random(), stepId = newStepId)
+                            }
+                        )
+                    }
+
+                    val copiedRecipePhotos = original.recipePhotos.map {
+                        it.copy(id = Uuid.random(), recipeId = newRecipeId)
+                    }
+
+                    // Se copia lo demas y se guarda como estaba, pero con el id nuevo
+                    val copiedRecipe = original.copy(
+                        id = newRecipeId,
+                        portions = currentState.desiredPortions,
+                        ingredients = copiedIngredients,
+                        steps = copiedSteps,
+                        recipePhotos = copiedRecipePhotos,
+                    )
+                    try {
+                        saveRecipeUseCase(copiedRecipe)
+                        _snackbarFlow.emit(SnackbarMessage.Success("Se guardaron los cambios."))
+                    }
+                    catch (e: Exception) {
+                        _snackbarFlow.emit(SnackbarMessage.Error("Error al guardar la receta"))
+                    }
+                }
+            }
         }
     }
 }

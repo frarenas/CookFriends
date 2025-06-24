@@ -15,63 +15,54 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
+import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IngredientCalculatorScreen(
-    modifier: Modifier = Modifier,
-    onBack: () -> Unit = {},
-    onAddToMyRecipes: () -> Unit = {},
-    recipeId: Uuid? = null,
     mainNavController: NavHostController,
+    recipeId: Uuid? = null,
     viewModel: IngredientCalculatorViewModel = hiltViewModel()
 ) {
-    val basePortions = 4f
-    val baseAgua = 2f
-    val baseHarina = 1
-    val baseSal = 1f
 
-    //val state = viewModel.state.value
     val state by viewModel.state.collectAsState()
     // Editable campo de porciones
     val porcionesState = remember { mutableStateOf(state.desiredPortions.toString()) }
-    val ingredients = state.ingredients
-    val desiredPortions = state.desiredPortions
-    val originalPortions = state.originalPortions
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
 
-    val porcionesFloat = porcionesState.value.toFloatOrNull() ?: basePortions
-
-    val agua = remember(porcionesFloat) {
-        String.format("%.2f", baseAgua * porcionesFloat / basePortions)
+    LaunchedEffect(viewModel.snackbarFlow) {
+        viewModel.snackbarFlow.collect { message ->
+            message?.let {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(it.message)
+                }
+            }
+        }
     }
-    val harina = remember(porcionesFloat) {
-        String.format("%.2f", baseHarina * porcionesFloat / basePortions)
-    }
-    val sal = remember(porcionesFloat) {
-        String.format("%.2f", baseSal * porcionesFloat / basePortions)
-    }
-
 
     Scaffold(
         topBar = {
@@ -91,14 +82,17 @@ fun IngredientCalculatorScreen(
         },
         bottomBar = {
             Button(
-                onClick = onAddToMyRecipes,
+                onClick = {
+                    viewModel.saveAdjustedRecipeLocally()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text("Agregar a mis recetas")
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -108,35 +102,29 @@ fun IngredientCalculatorScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Porciones: ", modifier = Modifier.padding(end = 8.dp))
-//                TextField(
-//                    value = porcionesState.value,
-//                    onValueChange = { porcionesState.value = it },
-//                    modifier = Modifier.width(60.dp),
-//                    singleLine = true
-//                )
                 TextField(
                     value = porcionesState.value,
                     onValueChange = {
                         porcionesState.value = it
-                        it.toIntOrNull()?.let { newVal -> viewModel.onPortionChange(newVal) }
                     },
-                    modifier = Modifier.width(60.dp),
+                    modifier = Modifier
+                        .width(60.dp)
+                        .onFocusChanged { focus ->
+                            if (!focus.isFocused) {
+                                val parsed = porcionesState.value.toFloatOrNull()
+                                if (parsed != null) {
+                                    val rounded = kotlin.math.ceil(parsed).toInt()
+                                    porcionesState.value = rounded.toString()
+                                    viewModel.onPortionChange(rounded)
+                                }
+                            }
+                        },
                     singleLine = true
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-//            IngredientDisplayRow("Agua", agua, "lts")
-//            IngredientDisplayRow("Harina", harina, "kg")
-//            IngredientDisplayRow("Sal", sal, "crd")
-
-//            ingredients.forEach { ingredient ->
-//                val adjustedQuantity = remember(porcionesState.value) {
-//                    val qty = ingredient.quantity.toFloatOrNull() ?: 0f
-//                    val adjusted = qty * desiredPortions / originalPortions
-//                    String.format("%.2f", adjusted)
-//                }
             state.adjustedIngredients.forEach { ingredient ->
                 IngredientDisplayRow(ingredient.name, ingredient.quantity, ingredient.measurement)
             }
@@ -158,7 +146,7 @@ fun IngredientDisplayRow(
         TextField(
             value = quantity,
             onValueChange = {}, // deshabilitado (solo lectura por ahora)
-            modifier = Modifier.width(60.dp),
+            modifier = Modifier.width(200.dp),
             singleLine = true,
             enabled = false
         )
