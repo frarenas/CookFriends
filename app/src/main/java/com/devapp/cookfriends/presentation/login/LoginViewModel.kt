@@ -23,14 +23,23 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState
 
+    private val _username = MutableStateFlow<String>("")
+    val username: StateFlow<String> = _username
+
+    private val _password = MutableStateFlow<String>("")
+    val password: StateFlow<String> = _password
+
+    private val _keepMeLoggedInChecked = MutableStateFlow<Boolean>(false)
+    val keepMeLoggedInChecked: StateFlow<Boolean> = _keepMeLoggedInChecked
+
     private val _snackbarFlow = MutableSharedFlow<SnackbarMessage>()
     val snackbarFlow: SharedFlow<SnackbarMessage> = _snackbarFlow
 
-    fun login(username: String, password: String, keepMeLoggedIn: Boolean) {
+    fun login() {
         viewModelScope.launch {
             _loginState.update { it.copy(isLoading = true) }
             try {
-                loginUseCase(username, password, keepMeLoggedIn)
+                loginUseCase(_username.value, _password.value, _keepMeLoggedInChecked.value)
                 _loginState.update { it.copy(continueToHome = true) }
             } catch (e: Exception) {
                 _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))
@@ -50,5 +59,17 @@ class LoginViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun onUsernameChange(username: String) {
+        _username.update { username }
+    }
+
+    fun onPasswordChange(password: String) {
+        _password.update { password }
+    }
+
+    fun onKeepMeLoggedInCheckedChange(keepMeLoggedInChecked: Boolean) {
+        _keepMeLoggedInChecked.update { keepMeLoggedInChecked }
     }
 }
