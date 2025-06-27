@@ -2,8 +2,11 @@ package com.devapp.cookfriends.presentation.home.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
+import com.devapp.cookfriends.domain.model.UiError
+import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipesUseCase
 import com.devapp.cookfriends.domain.usecase.ToggleFavoriteUseCase
@@ -56,7 +59,10 @@ class FavoritesViewModel @Inject constructor(
                     _recipesState.update {
                         it.copy(
                             isLoading = false,
-                            error = exception.localizedMessage ?: "An error occurred"
+                            error = UiError(
+                                UiText.StringResource(R.string.generic_error),
+                                blocking = true
+                            )
                         )
                     }
                 }

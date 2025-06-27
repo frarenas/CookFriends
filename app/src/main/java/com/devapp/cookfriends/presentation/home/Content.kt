@@ -11,8 +11,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.domain.model.UiError
+import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import kotlin.uuid.Uuid
@@ -23,12 +26,14 @@ fun Content(
     recipesState: RecipesState = RecipesState(),
     onFavoriteClick: (Uuid) -> Unit
 ) {
+    val context = LocalContext.current
+
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else if (recipesState.error != null) {
             MessageScreen(
-                message = recipesState.error,
+                message = recipesState.error.uiText.asString(context),
                 imageVector = Icons.Default.Error
             )
         } else {
@@ -70,7 +75,12 @@ fun ContentPreviewLoading() {
 fun ContentPreviewError() {
     CookFriendsTheme {
         Content(
-            recipesState = RecipesState(error = "Error"),
+            recipesState = RecipesState(
+                error = UiError(
+                    UiText.StringResource(R.string.generic_error),
+                    blocking = true
+                )
+            ),
             onFavoriteClick = {}
         )
     }
