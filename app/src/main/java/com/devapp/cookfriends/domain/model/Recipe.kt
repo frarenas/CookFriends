@@ -22,7 +22,9 @@ data class Recipe(
     var comments: List<Comment> = arrayListOf(),
     var ratings: List<Rating> = arrayListOf(),
     var favorites: List<Favorite> = arrayListOf(),
-    var date: Instant = Clock.System.now()
+    var date: Instant = Clock.System.now(),
+    var userCalculated: Boolean = false,
+    var updatePending: Boolean = false
 )
 
 fun RecipeModel.toDomain() = Recipe(
@@ -34,7 +36,7 @@ fun RecipeModel.toDomain() = Recipe(
     portions = portions,
     ingredients = ingredients.map { ingredient -> ingredient.toDomain() },
     steps = steps.map { step -> step.toDomain() },
-    recipePhotos = photos.map { photo -> photo.toDomain() },
+    recipePhotos = recipePhotos.map { photo -> photo.toDomain() },
     comments = comments.map { comment -> comment.toDomain() },
     ratings = ratings.map { rating -> rating.toDomain() },
     favorites = favorites.map { favorite -> favorite.toDomain() },

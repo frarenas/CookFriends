@@ -4,7 +4,9 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.devapp.cookfriends.data.local.dao.RecipeDao
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.local.entity.toDatabase
+import com.devapp.cookfriends.data.remote.model.ApiResponse
 import com.devapp.cookfriends.data.remote.model.RecipeModel
+import com.devapp.cookfriends.data.remote.model.toModel
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import com.devapp.cookfriends.domain.model.Recipe
 import com.devapp.cookfriends.domain.model.toDomain
@@ -24,6 +26,9 @@ class RecipeRepository @Inject constructor(
         val recipes: List<RecipeModel> = service.getRecipes()
         return recipes.map { it.toDomain() }
     }
+
+    suspend fun upsertRecipesToApi(recipe: Recipe): ApiResponse =
+        service.upsertRecipe(recipe.toModel())
 
     fun getRecipesFromDatabase(query: SupportSQLiteQuery): Flow<List<Recipe>> {
         val recipesEntityFlow: Flow<List<RecipeWithExtraData>> = recipeDao.getDynamicRecipes(query)
@@ -51,5 +56,9 @@ class RecipeRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             recipeDao.getById(id)?.toDomain()
         }
+    }
+
+    fun setUpdated(id: Uuid) {
+        recipeDao.setUpdated(id)
     }
 }
