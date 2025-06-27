@@ -58,7 +58,9 @@ class RecipeRepository @Inject constructor(
         }
     }
 
-    fun setUpdated(id: Uuid) {
-        recipeDao.setUpdated(id)
+    suspend fun setUpdated(id: Uuid) {
+        return withContext(Dispatchers.IO) {
+            recipeDao.setUpdated(id)
+        }
     }
 }

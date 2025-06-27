@@ -110,9 +110,9 @@ interface RecipeDao {
     @RawQuery(observedEntities = [RecipeEntity::class])
     fun getDynamicRecipes(query: SupportSQLiteQuery): Flow<List<RecipeWithExtraData>>
 
-    @Query("UPDATE recipe_table SET update_pending = 1 WHERE id = :id")
+    @Query("UPDATE recipe_table SET update_pending = 0 WHERE id = :id")
     fun setUpdated(id: Uuid)
 
-    @Query("UPDATE recipe_table SET update_pending = 1 WHERE id IN(:ids)")
+    @Query("UPDATE recipe_table SET update_pending = 0 WHERE id IN(:ids)")
     fun setUpdated(ids: List<Uuid>)
 }
