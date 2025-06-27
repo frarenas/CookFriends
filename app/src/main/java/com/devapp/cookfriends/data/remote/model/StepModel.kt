@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.data.remote.model
 
+import com.devapp.cookfriends.domain.model.Step
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -10,5 +11,13 @@ data class StepModel(
     @SerialName("order"   ) var order     : Int,
     @SerialName("content" ) var content   : String,
     @SerialName("recipeId") var recipeId  : Uuid,
-    @SerialName("photos"  ) var photos    : ArrayList<StepPhotoModel> = arrayListOf()
+    @SerialName("photos"  ) var photos    : List<StepPhotoModel> = arrayListOf()
+)
+
+fun Step.toModel() = StepModel(
+    id,
+    order,
+    content,
+    recipeId,
+    photos.map { photo -> photo.toModel() }
 )

@@ -68,29 +68,12 @@ fun EditRecipeScreen(
 
     val editRecipeState by viewModel.editRecipeState.collectAsState()
     val availableRecipeTypes by viewModel.availableRecipeTypes.collectAsState()
-    var newImageUrl by remember { mutableStateOf("") }
+    val newImageUrl by viewModel.newImageUrl.collectAsState()
+    val newIngredient by viewModel.newIngredient.collectAsState()
+    val newStep by viewModel.newStep.collectAsState()
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var recipePhotoToDelete by remember { mutableStateOf<RecipePhoto?>(null) }
-    var newIngredient by remember {
-        mutableStateOf<Ingredient>(
-            Ingredient(
-                name = "",
-                quantity = "",
-                measurement = "",
-                recipeId = editRecipeState.recipe.id
-            )
-        )
-    }
     var ingredientToDelete by remember { mutableStateOf<Ingredient?>(null) }
-    var newStep by remember {
-        mutableStateOf<Step>(
-            Step(
-                content = "",
-                order = 0,
-                recipeId = editRecipeState.recipe.id
-            )
-        )
-    }
     var stepToDelete by remember { mutableStateOf<Step?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -159,7 +142,17 @@ fun EditRecipeScreen(
                         onValueChange = { viewModel.onRecipeChange(editRecipeState.recipe.copy(name = it)) },
                         label = { Text(stringResource(R.string.name)) },
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        isError = editRecipeState.nameErrorMessage != null,
+                        supportingText = {
+                            if (editRecipeState.nameErrorMessage != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = editRecipeState.nameErrorMessage!!,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
@@ -173,7 +166,17 @@ fun EditRecipeScreen(
                         },
                         label = { Text(stringResource(R.string.description)) },
                         modifier = Modifier.fillMaxWidth(),
-                        maxLines = 4
+                        maxLines = 4,
+                        isError = editRecipeState.descriptionErrorMessage != null,
+                        supportingText = {
+                            if (editRecipeState.descriptionErrorMessage != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = editRecipeState.descriptionErrorMessage!!,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     RecipeTypeDropDownMenu(
@@ -182,6 +185,7 @@ fun EditRecipeScreen(
                         onSelectItem = { recipeType ->
                             viewModel.onRecipeChange(editRecipeState.recipe.copy(recipeType = recipeType))
                         },
+                        errorMessage = editRecipeState.recipeTypeErrorMessage
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     // Images
@@ -196,21 +200,23 @@ fun EditRecipeScreen(
                     ) {
                         OutlinedTextField(
                             value = newImageUrl,
-                            onValueChange = { newImageUrl = it },
+                            onValueChange = { viewModel.onNewImageChange(it) },
                             label = { Text(stringResource(R.string.image_url)) },
                             modifier = Modifier.weight(1f),
-                            singleLine = true
+                            singleLine = true,
+                            isError = editRecipeState.recipePhotoErrorMessage != null,
+                            supportingText = {
+                                if (editRecipeState.recipePhotoErrorMessage != null) {
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = editRecipeState.recipePhotoErrorMessage!!,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
                         )
                         IconButton(onClick = {
-                            if (newImageUrl.isNotBlank()) {
-                                viewModel.onPhotoAdd(
-                                    RecipePhoto(
-                                        url = newImageUrl.trim(),
-                                        recipeId = editRecipeState.recipe.id
-                                    )
-                                )
-                                newImageUrl = ""
-                            }
+                            viewModel.onPhotoAdd()
                         }) {
                             Icon(
                                 Icons.Default.AddAPhoto,
@@ -218,6 +224,13 @@ fun EditRecipeScreen(
                                 tint = LightBlue
                             )
                         }
+                    }
+                    if (editRecipeState.recipePhotosErrorMessage != null) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = editRecipeState.recipePhotosErrorMessage!!,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (editRecipeState.recipe.recipePhotos.isNotEmpty()) {
@@ -243,14 +256,24 @@ fun EditRecipeScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     OutlinedTextField(
-                        value = (editRecipeState.recipe.portions.toString()),
+                        value = (editRecipeState.recipe.portions?.toString() ?: ""),
                         onValueChange = {
                             viewModel.onPortionsChange(it)
                         },
                         label = { Text(stringResource(R.string.portions)) },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true
+                        singleLine = true,
+                        isError = editRecipeState.portionsErrorMessage != null,
+                        supportingText = {
+                            if (editRecipeState.portionsErrorMessage != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = editRecipeState.portionsErrorMessage!!,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
@@ -261,26 +284,48 @@ fun EditRecipeScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             OutlinedTextField(
                                 value = newIngredient.name,
-                                onValueChange = { newIngredient = newIngredient.copy(name = it) },
+                                onValueChange = {
+                                    viewModel.onNewIngredientChange(newIngredient.copy(name = it))
+                                },
                                 label = { Text(stringResource(R.string.ingredient)) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                isError = editRecipeState.ingredientNameErrorMessage != null,
+                                supportingText = {
+                                    if (editRecipeState.ingredientNameErrorMessage != null) {
+                                        Text(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            text = editRecipeState.ingredientNameErrorMessage!!,
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                }
                             )
                             Row {
                                 OutlinedTextField(
                                     value = newIngredient.quantity,
                                     onValueChange = {
-                                        newIngredient = newIngredient.copy(quantity = it)
+                                        viewModel.onNewIngredientChange(newIngredient.copy(quantity = it))
                                     },
                                     modifier = Modifier.weight(1f),
                                     label = { Text(stringResource(R.string.quantity)) },
-                                    singleLine = true
+                                    singleLine = true,
+                                    isError = editRecipeState.ingredientQuantityErrorMessage != null,
+                                    supportingText = {
+                                        if (editRecipeState.ingredientQuantityErrorMessage != null) {
+                                            Text(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                text = editRecipeState.ingredientQuantityErrorMessage!!,
+                                                color = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    }
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 OutlinedTextField(
                                     value = newIngredient.measurement ?: "",
                                     onValueChange = {
-                                        newIngredient = newIngredient.copy(measurement = it)
+                                        viewModel.onNewIngredientChange(newIngredient.copy(measurement = it))
                                     },
                                     modifier = Modifier.weight(1f),
                                     label = { Text(stringResource(R.string.measurement)) },
@@ -289,15 +334,7 @@ fun EditRecipeScreen(
                             }
                         }
                         IconButton(onClick = {
-                            if (newIngredient.name.isNotBlank() && newIngredient.quantity.isNotBlank()) {
-                                viewModel.onIngredientAdd(newIngredient)
-                                newIngredient = Ingredient(
-                                    name = "",
-                                    quantity = "",
-                                    measurement = "",
-                                    recipeId = editRecipeState.recipe.id
-                                )
-                            }
+                            viewModel.onIngredientAdd()
                         }) {
                             Icon(
                                 Icons.Default.AddCircle,
@@ -305,6 +342,13 @@ fun EditRecipeScreen(
                                 tint = LightBlue
                             )
                         }
+                    }
+                    if (editRecipeState.ingredientsErrorMessage != null) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = editRecipeState.ingredientsErrorMessage!!,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (editRecipeState.recipe.ingredients.isNotEmpty()) {
@@ -340,21 +384,14 @@ fun EditRecipeScreen(
                         OutlinedTextField(
                             value = newStep.content,
                             onValueChange = {
-                                newStep = newStep.copy(content = it)
+                                viewModel.onNewStepChange(newStep.copy(content = it))
                             },
                             modifier = Modifier.weight(1f),
                             label = { Text(stringResource(R.string.instructions)) },
                             maxLines = 4
                         )
                         IconButton(onClick = {
-                            if (newStep.content.isNotBlank()) {
-                                viewModel.onStepAdd(newStep)
-                                newStep = Step(
-                                    content = "",
-                                    order = 0,
-                                    recipeId = editRecipeState.recipe.id
-                                )
-                            }
+                            viewModel.onStepAdd()
                         }) {
                             Icon(
                                 Icons.Default.AddCircle,
@@ -362,6 +399,13 @@ fun EditRecipeScreen(
                                 tint = LightBlue
                             )
                         }
+                    }
+                    if (editRecipeState.stepsErrorMessage != null) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = editRecipeState.stepsErrorMessage!!,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (editRecipeState.recipe.steps.isNotEmpty()) {
@@ -378,10 +422,12 @@ fun EditRecipeScreen(
                                         showConfirmationDialog = true
                                     },
                                     onAddPhoto = {
-                                        viewModel.onStepAdd(step)
+                                        viewModel.onNewStepChange(step)
+                                        viewModel.onStepAdd()
                                     },
                                     onDeletePhoto = {
-                                        viewModel.onStepAdd(step)
+                                        viewModel.onNewStepChange(step)
+                                        viewModel.onStepAdd()
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 )

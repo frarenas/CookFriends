@@ -34,4 +34,7 @@ object DatabaseModule {
 
     @Provides
     fun provideFavoriteDao(appDatabase: AppDatabase) = appDatabase.favoriteDao()
+
+    @Provides
+    fun provideUserDao(appDatabase: AppDatabase) = appDatabase.userDao()
 }

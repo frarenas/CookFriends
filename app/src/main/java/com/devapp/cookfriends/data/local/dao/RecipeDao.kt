@@ -10,9 +10,9 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.devapp.cookfriends.data.local.entity.CommentEntity
 import com.devapp.cookfriends.data.local.entity.FavoriteEntity
 import com.devapp.cookfriends.data.local.entity.IngredientEntity
-import com.devapp.cookfriends.data.local.entity.RecipePhotoEntity
 import com.devapp.cookfriends.data.local.entity.RatingEntity
 import com.devapp.cookfriends.data.local.entity.RecipeEntity
+import com.devapp.cookfriends.data.local.entity.RecipePhotoEntity
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.local.entity.StepEntity
 import com.devapp.cookfriends.data.local.entity.StepPhotoEntity
@@ -109,4 +109,10 @@ interface RecipeDao {
 
     @RawQuery(observedEntities = [RecipeEntity::class])
     fun getDynamicRecipes(query: SupportSQLiteQuery): Flow<List<RecipeWithExtraData>>
+
+    @Query("UPDATE recipe_table SET update_pending = 0 WHERE id = :id")
+    fun setUpdated(id: Uuid)
+
+    @Query("UPDATE recipe_table SET update_pending = 0 WHERE id IN(:ids)")
+    fun setUpdated(ids: List<Uuid>)
 }

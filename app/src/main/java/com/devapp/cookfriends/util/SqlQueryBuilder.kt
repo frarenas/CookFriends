@@ -69,6 +69,11 @@ object SqlQueryBuilder {
             whereClauses.add("isUserFavorite = 1")
         }
 
+        // Only my recipes
+        options.currentUserId?.let {
+            whereClauses.add("r.user_id = '$it'")
+        }
+
         // Add WHERE clause if any filters are present
         if (whereClauses.isNotEmpty()) {
             queryBuilder.append("WHERE ")
@@ -79,7 +84,7 @@ object SqlQueryBuilder {
         when (options.order) {
             OrderBy.NAME -> queryBuilder.append(" ORDER BY name ASC")
             OrderBy.AUTHOR -> queryBuilder.append(" ORDER BY u.username ASC, name ASC")
-            OrderBy.DATE -> queryBuilder.append(" ORDER BY date ASC, name ASC")
+            OrderBy.DATE -> queryBuilder.append(" ORDER BY date DESC, name ASC")
         }
 
         val rawQuery = SimpleSQLiteQuery(queryBuilder.toString())

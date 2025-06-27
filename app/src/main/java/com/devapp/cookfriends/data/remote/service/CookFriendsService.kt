@@ -35,4 +35,9 @@ interface CookFriendsService {
     suspend fun removeFavorite(
         @Body favorite: FavoriteModel
     ): ApiResponse
+
+    @POST("exec?function=upsertRecipe")
+    suspend fun upsertRecipe(
+        @Body recipe: RecipeModel
+    ): ApiResponse
 }

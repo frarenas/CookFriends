@@ -11,14 +11,12 @@ import androidx.navigation.compose.composable
 import com.devapp.cookfriends.presentation.home.favorites.FavoritesScreen
 import com.devapp.cookfriends.presentation.home.myrecipes.MyRecipesScreen
 import com.devapp.cookfriends.presentation.home.recipes.RecipesScreen
-import com.devapp.cookfriends.presentation.navigation.Home
-import com.devapp.cookfriends.presentation.navigation.Login
 import com.devapp.cookfriends.presentation.profile.ProfileScreen
 
 @Composable
 fun HomeNavGraph(
-    mainNavController: NavHostController,
     homeNavController: NavHostController,
+    navigateToLogin: () -> Unit,
     isUserLogged: Boolean = false,
     paddingValues: PaddingValues,
     snackbarHostState: SnackbarHostState
@@ -40,7 +38,7 @@ fun HomeNavGraph(
         composable<Profile> {
             ProfileScreen(
                 snackbarHostState = snackbarHostState,
-            ){ mainNavController.navigate(Login) { popUpTo(Home) { inclusive = true } } }
+            ){ navigateToLogin () }
         }
     }
 }
