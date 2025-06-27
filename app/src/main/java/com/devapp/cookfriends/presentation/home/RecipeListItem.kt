@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Recipe
 import com.devapp.cookfriends.presentation.common.CFAsyncImage
@@ -33,13 +36,14 @@ import kotlin.uuid.Uuid
 fun RecipeListItem(
     recipe: Recipe,
     isUserLogged: Boolean = false,
-    onFavoriteClick: (Uuid) -> Unit
+    onFavoriteClick: (Uuid) -> Unit,
+    onRecipeClick: (Uuid) -> Unit
 ) {
     Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(8.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+            .clickable { onRecipeClick(recipe.id) }
     ) {
         CFAsyncImage(
             imageUrl = recipe.recipePhotos[0].url,

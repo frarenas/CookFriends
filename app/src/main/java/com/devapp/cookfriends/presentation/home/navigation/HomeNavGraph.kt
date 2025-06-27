@@ -29,7 +29,10 @@ fun HomeNavGraph(
         modifier = Modifier.padding(paddingValues)
     ) {
         composable<Recipes> {
-            RecipesScreen(isUserLogged = isUserLogged)
+            RecipesScreen(
+                isUserLogged = isUserLogged,
+                mainNavController = mainNavController
+            )
         }
         composable<Favorites> {
             FavoritesScreen()

@@ -32,11 +32,14 @@ fun AppNavGraph(startDestination: Screen) {
             val editRecipe: EditRecipe = backStackEntry.toRoute()
             EditRecipeScreen(recipeId = editRecipe.id, mainNavController = mainNavController)
         }
-        composable<RecipeDetail>{ RecipeDetailScreen(mainNavController) }
         composable<IngredientCalculator>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) {
                 backStackEntry ->
             val ingredientCalculator: EditRecipe = backStackEntry.toRoute()
             IngredientCalculatorScreen(recipeId = ingredientCalculator.id, mainNavController = mainNavController)
         }
+
+        composable("recipe_detail/{recipeId}") { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getString("recipeId") ?: return@composable
+            RecipeDetailScreen(recipeId = Uuid.parse(recipeId))}
     }
 }

@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.devapp.cookfriends.domain.model.Comment
 import com.devapp.cookfriends.domain.model.Ingredient
@@ -42,7 +41,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 //fun RecipeDetailScreen(viewModel: RecipeDetailViewModel = hiltViewModel()){
-fun RecipeDetailScreen(navHostController: NavHostController){
+fun RecipeDetailScreen(recipeId: Uuid) {
 
     val exampleRecipe = Recipe(
         name = "Ravioles",
@@ -78,7 +77,7 @@ fun RecipeDetailScreen(navHostController: NavHostController){
             TopAppBar(
                 title = { Text(exampleRecipe.name.toString()) },
                 navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
+                    IconButton(onClick = { /*navHostController.popBackStack()*/ }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver"
