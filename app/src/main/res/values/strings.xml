@@ -63,4 +63,9 @@
     // Error messages
     <string name="generic_error">Ha ocurrido un error. Por favor, inténtalo de nuevo.</string>
     <string name="no_internet_connection">No hay conexión a internet.</string>
+
+    // Login
+    <string name="username_mandatory">Ingrese un nombre de usuario.</string>
+    <string name="password_mandatory">Ingrese una contraseña.</string>
+    <string name="password_invalid">La contraseña debe tener al menos 8 caracteres.</string>
 </resources>

@@ -2,6 +2,8 @@ package com.devapp.cookfriends.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devapp.cookfriends.R
+import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.LoginUseCase
 import com.devapp.cookfriends.domain.usecase.LogoutUseCase
 import com.devapp.cookfriends.presentation.common.SnackbarMessage
@@ -36,14 +38,17 @@ class LoginViewModel @Inject constructor(
     val snackbarFlow: SharedFlow<SnackbarMessage> = _snackbarFlow
 
     fun login() {
-        viewModelScope.launch {
-            _loginState.update { it.copy(isLoading = true) }
-            try {
-                loginUseCase(_username.value, _password.value, _keepMeLoggedInChecked.value)
-                _loginState.update { it.copy(continueToHome = true) }
-            } catch (e: Exception) {
-                _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))
-                _loginState.update { it.copy(isLoading = false) }
+        val isLoginValid = validateLogin()
+        if (isLoginValid) {
+            viewModelScope.launch {
+                _loginState.update { it.copy(isLoading = true) }
+                try {
+                    loginUseCase(_username.value, _password.value, _keepMeLoggedInChecked.value)
+                    _loginState.update { it.copy(continueToHome = true) }
+                } catch (e: Exception) {
+                    _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))
+                    _loginState.update { it.copy(isLoading = false) }
+                }
             }
         }
     }
@@ -71,5 +76,47 @@ class LoginViewModel @Inject constructor(
 
     fun onKeepMeLoggedInCheckedChange(keepMeLoggedInChecked: Boolean) {
         _keepMeLoggedInChecked.update { keepMeLoggedInChecked }
+    }
+
+    private fun validateLogin(): Boolean {
+        var isValid = true
+        if (_username.value.isBlank()) {
+            _loginState.update {
+                it.copy(
+                    usernameErrorMessage = UiText.StringResource(R.string.username_mandatory)
+                )
+            }
+            isValid = false
+        } else {
+            _loginState.update {
+                it.copy(
+                    usernameErrorMessage = null
+                )
+            }
+        }
+
+        if (_password.value.isBlank()) {
+            _loginState.update {
+                it.copy(
+                    passwordErrorMessage = UiText.StringResource(R.string.password_mandatory)
+                )
+            }
+            isValid = false
+        } else if (_password.value.length < 8) {
+            _loginState.update {
+                it.copy(
+                    passwordErrorMessage = UiText.StringResource(R.string.password_invalid)
+                )
+            }
+            isValid = false
+        } else {
+            _loginState.update {
+                it.copy(
+                    passwordErrorMessage = null
+                )
+            }
+        }
+
+        return isValid
     }
 }

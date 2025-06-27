@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -52,6 +53,7 @@ fun LoginScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
 
     LaunchedEffect(loginState.continueToHome) {
         if (loginState.continueToHome)
@@ -113,7 +115,17 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
-                        singleLine = true
+                        singleLine = true,
+                        isError = loginState.usernameErrorMessage != null,
+                        supportingText = {
+                            loginState.usernameErrorMessage?.let {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = it.asString(context),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
 
                     //Spacer(modifier = Modifier.height(16.dp))
@@ -127,7 +139,17 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true
+                        singleLine = true,
+                        isError = loginState.passwordErrorMessage != null,
+                        supportingText = {
+                            loginState.passwordErrorMessage?.let {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = it.asString(context),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
 
                     //Spacer(modifier = Modifier.height(32.dp))
