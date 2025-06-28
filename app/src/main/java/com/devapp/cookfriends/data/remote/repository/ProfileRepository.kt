@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.devapp.cookfriends.data.local.dao.UserDao
+import com.devapp.cookfriends.data.remote.model.Status
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import com.devapp.cookfriends.domain.model.User
 import com.devapp.cookfriends.domain.model.toDomain
@@ -23,13 +24,15 @@ class ProfileRepository @Inject constructor(
     private val userDao: UserDao
 ) {
 
-    suspend fun login(username: String, password: String, keepMeLoggedIn: Boolean): User? {
-        val user = service.login(username, password)
-        if (user != null) {
-            setLoggedUserId(user.id)
+    suspend fun login(username: String, password: String, keepMeLoggedIn: Boolean): User {
+        val loginResponse = service.login(username, password)
+        if (loginResponse.status == Status.SUCCESS.value) {
+            setLoggedUserId(loginResponse.user!!.id)
             setKeepMeLoggedIn(keepMeLoggedIn)
+            return loginResponse.user.toDomain()
+        } else {
+            throw Exception(loginResponse.message)
         }
-        return user?.toDomain()
     }
 
     suspend fun updatePassword(newPassword: String) {
