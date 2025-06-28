@@ -54,12 +54,14 @@ class LoginViewModel @Inject constructor(
                     try {
                         loginUseCase(_username.value, _password.value, _keepMeLoggedInChecked.value)
                         _loginState.update { it.copy(continueToHome = true) }
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
                         _loginState.update {
                             it.copy(
                                 isLoading = false,
                                 error = UiError(
-                                    UiText.StringResource(R.string.generic_error),
+                                    uiText = if (e.message != null) UiText.DynamicString(
+                                        e.message ?: ""
+                                    ) else UiText.StringResource(R.string.generic_error),
                                     blocking = false
                                 )
                             )
