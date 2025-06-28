@@ -8,10 +8,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.devapp.cookfriends.presentation.home.favorites.FavoritesScreen
 import com.devapp.cookfriends.presentation.home.myrecipes.MyRecipesScreen
 import com.devapp.cookfriends.presentation.home.recipes.RecipesScreen
+import com.devapp.cookfriends.presentation.navigation.RecipeDetail
+import com.devapp.cookfriends.presentation.navigation.UuidNavType
 import com.devapp.cookfriends.presentation.profile.ProfileScreen
+import com.devapp.cookfriends.presentation.recipeDetail.RecipeDetailScreen
+import kotlin.reflect.typeOf
+import kotlin.uuid.Uuid
 
 @Composable
 fun HomeNavGraph(
@@ -29,7 +35,7 @@ fun HomeNavGraph(
         composable<Recipes> {
             RecipesScreen(
                 isUserLogged = isUserLogged,
-                mainNavController = mainNavController
+                mainNavController = homeNavController
             )
         }
         composable<Favorites> {
@@ -42,6 +48,14 @@ fun HomeNavGraph(
             ProfileScreen(
                 snackbarHostState = snackbarHostState,
             ){ navigateToLogin () }
+        }
+
+        composable<RecipeDetail>(typeMap = mapOf(typeOf<Uuid>() to UuidNavType)) {
+            val args = it.toRoute<RecipeDetail>()
+            RecipeDetailScreen(
+                recipeId = args.id,
+                navigateBack = { homeNavController.popBackStack() }
+            )
         }
     }
 }

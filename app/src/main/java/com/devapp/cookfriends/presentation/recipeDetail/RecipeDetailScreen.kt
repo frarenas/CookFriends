@@ -41,7 +41,10 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 //fun RecipeDetailScreen(viewModel: RecipeDetailViewModel = hiltViewModel()){
-fun RecipeDetailScreen(recipeId: Uuid) {
+fun RecipeDetailScreen(
+    recipeId: Uuid,
+    navigateBack: () -> Boolean
+) {
 
     val exampleRecipe = Recipe(
         name = "Ravioles",

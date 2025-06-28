@@ -7,7 +7,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.devapp.cookfriends.presentation.editrecipe.EditRecipeScreen
 import com.devapp.cookfriends.presentation.home.HomeScreen
-import com.devapp.cookfriends.presentation.home.navigation.RecipeDetail
 import com.devapp.cookfriends.presentation.ingredientcalculator.IngredientCalculatorScreen
 import com.devapp.cookfriends.presentation.login.LoginScreen
 import com.devapp.cookfriends.presentation.recipeDetail.RecipeDetailScreen
@@ -39,9 +38,5 @@ fun AppNavGraph(startDestination: Screen) {
             val ingredientCalculator: EditRecipe = backStackEntry.toRoute()
             IngredientCalculatorScreen(recipeId = ingredientCalculator.id, mainNavController = mainNavController)
         }
-
-        composable("recipe_detail/{recipeId}") { backStackEntry ->
-            val recipeId = backStackEntry.arguments?.getString("recipeId") ?: return@composable
-            RecipeDetailScreen(recipeId = Uuid.parse(recipeId))}
     }
 }

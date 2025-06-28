@@ -13,13 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.UiError
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.presentation.common.MessageScreen
+import com.devapp.cookfriends.presentation.navigation.RecipeDetail
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import kotlin.uuid.Uuid
 
@@ -53,7 +52,8 @@ fun Content(
                             recipe = recipe,
                             isUserLogged = isUserLogged,
                             onFavoriteClick = { recipeId ->onFavoriteClick(recipeId)},
-                            onRecipeClick = { recipeId -> navController?.navigate("recipe_detail/${recipeId}") }
+                            //onRecipeClick = { recipeId -> navController?.navigate("recipe_detail/${recipe.id}") }
+                            onRecipeClick = { recipeId -> navController?.navigate(RecipeDetail(recipeId)) }
                         )
                     }
                 }

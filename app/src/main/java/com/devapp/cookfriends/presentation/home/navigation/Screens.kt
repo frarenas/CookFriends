@@ -1,6 +1,8 @@
 package com.devapp.cookfriends.presentation.home.navigation
 
+import com.devapp.cookfriends.presentation.navigation.Screen
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 interface HomeSection
 
@@ -15,6 +17,3 @@ data class MyRecipes(val isUserLogged: Boolean): HomeSection
 
 @Serializable
 object Profile: HomeSection
-
-@Serializable
-object RecipeDetail: HomeSection
