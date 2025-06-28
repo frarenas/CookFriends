@@ -1,6 +1,8 @@
 package com.devapp.cookfriends.data.remote.service
 
 import com.devapp.cookfriends.data.remote.model.ApiResponse
+import com.devapp.cookfriends.data.remote.model.ChangePasswordRequest
+import com.devapp.cookfriends.data.remote.model.ChangePasswordResponse
 import com.devapp.cookfriends.data.remote.model.FavoriteModel
 import com.devapp.cookfriends.data.remote.model.LoginResponse
 import com.devapp.cookfriends.data.remote.model.RecipeModel
@@ -40,4 +42,9 @@ interface CookFriendsService {
     suspend fun upsertRecipe(
         @Body recipe: RecipeModel
     ): ApiResponse
+
+    @POST("exec?function=updateUserPassword")
+    suspend fun changePassword(
+        @Body request: ChangePasswordRequest
+    ): ChangePasswordResponse
 }

@@ -75,4 +75,9 @@
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="no_account">¿No tienes una cuenta?</string>
     <string name="link_could_not_be_opened">No se pudo abrir el enlace.</string>
+
+    // Profile
+    <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
+    <string name="repeat_password_mandatory">Vuelva a ingresar la contraseña.</string>
+    <string name="password_was_updated">La contraseña se actualizó correctamente.</string>
 </resources>
