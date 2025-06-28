@@ -3,7 +3,7 @@ package com.devapp.cookfriends.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.R
-import com.devapp.cookfriends.domain.model.UiError
+import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.LoginUseCase
 import com.devapp.cookfriends.domain.usecase.LogoutUseCase
@@ -43,7 +43,7 @@ class LoginViewModel @Inject constructor(
                     _loginState.update {
                         it.copy(
                             isLoading = false,
-                            error = UiError(
+                            error = UiMessage(
                                 UiText.StringResource(R.string.no_internet_connection),
                                 blocking = false
                             )
@@ -58,7 +58,7 @@ class LoginViewModel @Inject constructor(
                         _loginState.update {
                             it.copy(
                                 isLoading = false,
-                                error = UiError(
+                                error = UiMessage(
                                     uiText = if (e.message != null) UiText.DynamicString(
                                         e.message ?: ""
                                     ) else UiText.StringResource(R.string.generic_error),

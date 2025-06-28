@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.domain.model
 
-data class UiError(
+data class UiMessage(
     val uiText: UiText,
     val blocking: Boolean = false
 )

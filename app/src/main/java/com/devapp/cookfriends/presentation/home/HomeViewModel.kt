@@ -3,7 +3,7 @@ package com.devapp.cookfriends.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.R
-import com.devapp.cookfriends.domain.model.UiError
+import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.FetchDataUseCase
 import com.devapp.cookfriends.domain.usecase.IsDataFirstSyncedUseCase
@@ -45,7 +45,7 @@ class HomeViewModel @Inject constructor(
                 _recipesState.update {
                     it.copy(
                         isLoading = false,
-                        error = UiError(UiText.StringResource(R.string.no_internet_connection), !dataFirstSynced)
+                        error = UiMessage(UiText.StringResource(R.string.no_internet_connection), !dataFirstSynced)
                     )
                 }
             } else {
@@ -58,7 +58,7 @@ class HomeViewModel @Inject constructor(
                     _recipesState.update {
                         it.copy(
                             isLoading = false,
-                            error = UiError(UiText.StringResource(R.string.generic_error), !dataFirstSynced)
+                            error = UiMessage(UiText.StringResource(R.string.generic_error), !dataFirstSynced)
                         )
                     }
                 }
