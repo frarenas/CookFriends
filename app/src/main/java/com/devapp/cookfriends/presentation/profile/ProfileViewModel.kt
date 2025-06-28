@@ -7,6 +7,8 @@ import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.ChangePasswordUseCase
 import com.devapp.cookfriends.domain.usecase.LogoutUseCase
+import com.devapp.cookfriends.util.ConnectivityObserver
+import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val changePasswordUseCase: ChangePasswordUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val connectivityObserver: ConnectivityObserver
 ): ViewModel() {
 
     private val _profileState = MutableStateFlow(ProfileState())
@@ -33,24 +36,44 @@ class ProfileViewModel @Inject constructor(
         val isChangePasswordValid = validateChangePassword()
         if (isChangePasswordValid) {
             viewModelScope.launch {
-                _profileState.update { it.copy(isLoading = true) }
-                try {
-                    changePasswordUseCase.execute(_newPassword.value, _repeatPassword.value)
-                    _profileState.update { it.copy(isLoading = false,
-                        message = UiMessage(
-                            uiText = UiText.StringResource(R.string.password_was_updated),
-                            blocking = false
-                        )) }
-                    onNewPasswordChange("")
-                    onRepeatPasswordChange("")
-                } catch (e: Exception) {
-                    _profileState.update { it.copy(isLoading = true,
-                        message = UiMessage(
-                            uiText = if (e.message != null) UiText.DynamicString(
-                                e.message ?: ""
-                            ) else UiText.StringResource(R.string.generic_error),
-                            blocking = false
-                        )) }
+                if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
+                    _profileState.update {
+                        it.copy(
+                            isLoading = false,
+                            message = UiMessage(
+                                UiText.StringResource(R.string.no_internet_connection),
+                                blocking = false
+                            )
+                        )
+                    }
+                } else {
+                    _profileState.update { it.copy(isLoading = true) }
+                    try {
+                        changePasswordUseCase.execute(_newPassword.value, _repeatPassword.value)
+                        _profileState.update {
+                            it.copy(
+                                isLoading = false,
+                                message = UiMessage(
+                                    uiText = UiText.StringResource(R.string.password_was_updated),
+                                    blocking = false
+                                )
+                            )
+                        }
+                        onNewPasswordChange("")
+                        onRepeatPasswordChange("")
+                    } catch (e: Exception) {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = true,
+                                message = UiMessage(
+                                    uiText = if (e.message != null) UiText.DynamicString(
+                                        e.message ?: ""
+                                    ) else UiText.StringResource(R.string.generic_error),
+                                    blocking = false
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
