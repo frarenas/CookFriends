@@ -14,7 +14,10 @@ import com.devapp.cookfriends.presentation.home.Header
 import com.devapp.cookfriends.presentation.home.searchoptions.SearchOptionsDialog
 
 @Composable
-fun MyRecipesScreen(viewModel: MyRecipesViewModel = hiltViewModel()) {
+fun MyRecipesScreen(
+    isUserLogged: Boolean = false,
+    viewModel: MyRecipesViewModel = hiltViewModel()
+) {
 
     val recipesState by viewModel.recipesState.collectAsState()
     val showSearchOptionsDialog by viewModel.showSearchOptionsDialog.collectAsState()
@@ -34,6 +37,7 @@ fun MyRecipesScreen(viewModel: MyRecipesViewModel = hiltViewModel()) {
         )
         Content(
             recipesState = recipesState,
+            isUserLogged = isUserLogged,
             onFavoriteClick = {viewModel.toggleFavorite(it)}
         )
     }

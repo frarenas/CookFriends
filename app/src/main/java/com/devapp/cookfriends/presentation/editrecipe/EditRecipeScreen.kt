@@ -46,7 +46,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Ingredient
 import com.devapp.cookfriends.domain.model.RecipePhoto
@@ -62,7 +61,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun EditRecipeScreen(
     recipeId: Uuid? = null,
-    mainNavController: NavHostController,
+    navigateBack: () -> Unit,
     viewModel: EditRecipeViewModel = hiltViewModel()
 ) {
 
@@ -102,7 +101,7 @@ fun EditRecipeScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        mainNavController.popBackStack()
+                        navigateBack()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,

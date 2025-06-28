@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 interface HomeSection
 
 @Serializable
-data class  Recipes(val isUserLogged: Boolean): HomeSection
+data class Recipes(val isUserLogged: Boolean): HomeSection
 
 @Serializable
-object Favorites: HomeSection
+data class Favorites(val isUserLogged: Boolean): HomeSection
 
 @Serializable
-object MyRecipes: HomeSection
+data class MyRecipes(val isUserLogged: Boolean): HomeSection
 
 @Serializable
 object Profile: HomeSection

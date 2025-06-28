@@ -30,10 +30,10 @@ fun HomeNavGraph(
             RecipesScreen(isUserLogged = isUserLogged)
         }
         composable<Favorites> {
-            FavoritesScreen()
+            FavoritesScreen(isUserLogged = isUserLogged)
         }
         composable<MyRecipes> {
-            MyRecipesScreen()
+            MyRecipesScreen(isUserLogged = isUserLogged)
         }
         composable<Profile> {
             ProfileScreen(
