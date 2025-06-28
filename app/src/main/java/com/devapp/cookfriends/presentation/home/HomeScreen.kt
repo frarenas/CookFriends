@@ -81,9 +81,9 @@ fun HomeScreen(
             )
         } else {
             LaunchedEffect(key1 = recipesState.error) {
-                if( recipesState.error != null) {
+                recipesState.error?.let {
                     snackbarHostState.showSnackbar(
-                        message = recipesState.error!!.uiText.asString(context),
+                        message = it.uiText.asString(context),
                         duration = SnackbarDuration.Short
                     )
                 }

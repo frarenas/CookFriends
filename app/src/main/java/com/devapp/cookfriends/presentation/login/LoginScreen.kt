@@ -60,17 +60,6 @@ fun LoginScreen(
             navigateToHome()
     }
 
-    LaunchedEffect(key1 = viewModel.snackbarFlow) {
-        viewModel.snackbarFlow.collect { snackbarMessage ->
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = snackbarMessage.message,
-                    duration = SnackbarDuration.Short
-                )
-            }
-        }
-    }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
@@ -82,6 +71,15 @@ fun LoginScreen(
             if (loginState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
+                LaunchedEffect(key1 = loginState.error) {
+                    loginState.error?.let {
+                        snackbarHostState.showSnackbar(
+                            message = it.uiText.asString(context),
+                            duration = SnackbarDuration.Short
+                        )
+                        viewModel.onClearError()
+                    }
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

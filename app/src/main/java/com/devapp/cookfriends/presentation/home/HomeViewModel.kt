@@ -13,9 +13,7 @@ import com.devapp.cookfriends.util.ConnectivityObserver
 import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +24,7 @@ class HomeViewModel @Inject constructor(
     private val isUserLoggedUseCase: IsUserLoggedUseCase,
     private val isDataFirstSyncedUseCase: IsDataFirstSyncedUseCase,
     private val setDataFirstSyncedUseCase: SetDataFirstSyncedUseCase,
-    connectivityObserver: ConnectivityObserver
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
 
     private val _recipesState = MutableStateFlow(RecipesState())
@@ -34,13 +32,6 @@ class HomeViewModel @Inject constructor(
 
     private val _isUserLogged = MutableStateFlow(false)
     val isUserLogged: StateFlow<Boolean> = _isUserLogged
-
-    val networkStatus: StateFlow<NetworkStatus> = connectivityObserver.observe()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = connectivityObserver.getCurrentNetworkStatus()
-        )
 
     init {
         fetchData()
@@ -50,7 +41,7 @@ class HomeViewModel @Inject constructor(
     private fun fetchData() {
         viewModelScope.launch {
             val dataFirstSynced = isDataFirstSyncedUseCase()
-            if (networkStatus.value == NetworkStatus.Unavailable) {
+            if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                 _recipesState.update {
                     it.copy(
                         isLoading = false,

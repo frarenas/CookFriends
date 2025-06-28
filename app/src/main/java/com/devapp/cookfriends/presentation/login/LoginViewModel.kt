@@ -3,14 +3,14 @@ package com.devapp.cookfriends.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.domain.model.UiError
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.LoginUseCase
 import com.devapp.cookfriends.domain.usecase.LogoutUseCase
-import com.devapp.cookfriends.presentation.common.SnackbarMessage
+import com.devapp.cookfriends.util.ConnectivityObserver
+import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,8 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val logoutUseCase: LogoutUseCase
-): ViewModel() {
+    private val logoutUseCase: LogoutUseCase,
+    private val connectivityObserver: ConnectivityObserver
+) : ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState
@@ -34,20 +35,36 @@ class LoginViewModel @Inject constructor(
     private val _keepMeLoggedInChecked = MutableStateFlow<Boolean>(false)
     val keepMeLoggedInChecked: StateFlow<Boolean> = _keepMeLoggedInChecked
 
-    private val _snackbarFlow = MutableSharedFlow<SnackbarMessage>()
-    val snackbarFlow: SharedFlow<SnackbarMessage> = _snackbarFlow
-
     fun login() {
         val isLoginValid = validateLogin()
         if (isLoginValid) {
             viewModelScope.launch {
-                _loginState.update { it.copy(isLoading = true) }
-                try {
-                    loginUseCase(_username.value, _password.value, _keepMeLoggedInChecked.value)
-                    _loginState.update { it.copy(continueToHome = true) }
-                } catch (e: Exception) {
-                    _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))
-                    _loginState.update { it.copy(isLoading = false) }
+                if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
+                    _loginState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = UiError(
+                                UiText.StringResource(R.string.no_internet_connection),
+                                blocking = false
+                            )
+                        )
+                    }
+                } else {
+                    _loginState.update { it.copy(isLoading = true) }
+                    try {
+                        loginUseCase(_username.value, _password.value, _keepMeLoggedInChecked.value)
+                        _loginState.update { it.copy(continueToHome = true) }
+                    } catch (_: Exception) {
+                        _loginState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = UiError(
+                                    UiText.StringResource(R.string.generic_error),
+                                    blocking = false
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -76,6 +93,10 @@ class LoginViewModel @Inject constructor(
 
     fun onKeepMeLoggedInCheckedChange(keepMeLoggedInChecked: Boolean) {
         _keepMeLoggedInChecked.update { keepMeLoggedInChecked }
+    }
+
+    fun onClearError() {
+        _loginState.update { it.copy(error = null) }
     }
 
     private fun validateLogin(): Boolean {
