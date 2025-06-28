@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.data.remote.model
 
+import com.devapp.cookfriends.domain.model.User
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -11,3 +12,5 @@ data class UserModel(
     @SerialName("password") var password : String? = "",
     @SerialName("name"    ) var name     : String? = ""
 )
+
+fun User.toModel() = UserModel(id = id, username = username)

@@ -2,8 +2,12 @@ package com.devapp.cookfriends.presentation.home.myrecipes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
+import com.devapp.cookfriends.domain.model.UiError
+import com.devapp.cookfriends.domain.model.UiText
+import com.devapp.cookfriends.domain.usecase.GetLoggedUserIdUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipesUseCase
 import com.devapp.cookfriends.domain.usecase.ToggleFavoriteUseCase
@@ -25,7 +29,8 @@ import kotlin.uuid.Uuid
 class MyRecipesViewModel @Inject constructor(
     private val getRecipesUseCase: GetRecipesUseCase,
     private val getRecipeTypesUseCase: GetRecipeTypesUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val getLoggedUserIdUseCase: GetLoggedUserIdUseCase
 ) : ViewModel() {
 
     private val _recipesState = MutableStateFlow(RecipesState())
@@ -41,13 +46,15 @@ class MyRecipesViewModel @Inject constructor(
     val currentSearchOptions: StateFlow<SearchOptions> = _currentSearchOptions.asStateFlow()
 
     init {
-        searchRecipes(_currentSearchOptions.value)
+        searchRecipes()
     }
 
-    fun searchRecipes(options: SearchOptions) {
+    fun searchRecipes() {
         viewModelScope.launch {
             _recipesState.update { it.copy(isLoading = true, error = null) }
-            getRecipesUseCase(options)
+            val loggedUserId = getLoggedUserIdUseCase()
+            _currentSearchOptions.update { _currentSearchOptions.value.copy(currentUserId = loggedUserId) }
+            getRecipesUseCase(_currentSearchOptions.value)
                 .onStart {
                     _recipesState.update { it.copy(isLoading = true, error = null) }
                 }
@@ -55,7 +62,10 @@ class MyRecipesViewModel @Inject constructor(
                     _recipesState.update {
                         it.copy(
                             isLoading = false,
-                            error = exception.localizedMessage ?: "An error occurred"
+                            error = UiError(
+                                UiText.StringResource(R.string.generic_error),
+                                blocking = true
+                            )
                         )
                     }
                 }
@@ -85,7 +95,7 @@ class MyRecipesViewModel @Inject constructor(
         _currentSearchOptions.value = options
         dismissSearchOptionsDialog()
 
-        searchRecipes(options)
+        searchRecipes()
     }
 
     fun openSearchOptionsDialog() {

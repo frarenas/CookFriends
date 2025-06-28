@@ -59,4 +59,20 @@
     <string name="add_step">Agregar paso</string>
     <string name="confirm_save_recipe_title">Confirmar guardado</string>
     <string name="confirm_save_recipe_message">¿Estás seguro de que quieres guardar esta receta?</string>
+
+    // Error messages
+    <string name="generic_error">Ha ocurrido un error. Por favor, inténtalo de nuevo.</string>
+    <string name="no_internet_connection">No hay conexión a internet.</string>
+
+    // Login
+    <string name="username_mandatory">Ingrese un nombre de usuario.</string>
+    <string name="password_mandatory">Ingrese una contraseña.</string>
+    <string name="password_invalid">La contraseña debe tener al menos 8 caracteres.</string>
+    <string name="username">Usuario</string>
+    <string name="keep_me_logged_in">Mantenerme conectado</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="continue_as_guest">Continuar como invitado</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="no_account">¿No tienes una cuenta?</string>
+    <string name="link_could_not_be_opened">No se pudo abrir el enlace.</string>
 </resources>

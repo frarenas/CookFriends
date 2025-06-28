@@ -1,5 +1,7 @@
 package com.devapp.cookfriends.domain.model
 
+import kotlin.uuid.Uuid
+
 data class SearchOptions(
     val searchText: String = "",
     val username: String? = null,
@@ -7,6 +9,7 @@ data class SearchOptions(
     val includedIngredients: List<String> = emptyList(),
     val excludedIngredients: List<String> = emptyList(),
     val onlyFavorites: Boolean = false,
+    val currentUserId: Uuid? = null,
     val order: OrderBy = OrderBy.NAME
 )
 

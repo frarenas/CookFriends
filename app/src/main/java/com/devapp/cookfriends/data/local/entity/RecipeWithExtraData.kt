@@ -61,7 +61,9 @@ fun Recipe.toDatabase() = RecipeWithExtraData(
         userId = user?.id,
         portions = portions ?: 1,
         recipeTypeId = recipeType?.id,
-        date = date
+        date = date,
+        updatePending = updatePending,
+        userCalculated = userCalculated
     ),
     ingredients = ingredients.map { ingredient -> ingredient.toDatabase() },
     steps = steps.map { step -> step.toDatabase() },

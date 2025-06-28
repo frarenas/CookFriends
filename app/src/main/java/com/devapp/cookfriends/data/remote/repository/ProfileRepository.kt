@@ -5,27 +5,34 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.devapp.cookfriends.data.local.dao.UserDao
+import com.devapp.cookfriends.data.remote.model.Status
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import com.devapp.cookfriends.domain.model.User
 import com.devapp.cookfriends.domain.model.toDomain
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.Uuid
 
 class ProfileRepository @Inject constructor(
     private val service: CookFriendsService,
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val userDao: UserDao
 ) {
 
-    suspend fun login(username: String, password: String, keepMeLoggedIn: Boolean): User? {
-        val user = service.login(username, password)
-        if (user != null) {
-            setLoggedUserId(user.id)
+    suspend fun login(username: String, password: String, keepMeLoggedIn: Boolean): User {
+        val loginResponse = service.login(username, password)
+        if (loginResponse.status == Status.SUCCESS.value) {
+            setLoggedUserId(loginResponse.user!!.id)
             setKeepMeLoggedIn(keepMeLoggedIn)
+            return loginResponse.user.toDomain()
+        } else {
+            throw Exception(loginResponse.message)
         }
-        return user?.toDomain()
     }
 
     suspend fun updatePassword(newPassword: String) {
@@ -38,7 +45,7 @@ class ProfileRepository @Inject constructor(
         }
     }
 
-    suspend fun  getLoggedUserId(): Uuid? {
+    suspend fun getLoggedUserId(): Uuid? {
         val userId = dataStore.data.map { preferences -> preferences[USER_ID]}.firstOrNull()
         return if (userId != null)
             Uuid.parse(userId)
@@ -61,6 +68,13 @@ class ProfileRepository @Inject constructor(
     suspend fun setKeepMeLoggedIn(keepLoggedIn: Boolean) {
         dataStore.edit { preferences ->
             preferences[KEEP_ME_LOGGED_IN] = keepLoggedIn
+        }
+    }
+
+    suspend fun getLoggedUser(): User {
+        return withContext(Dispatchers.IO) {
+            val userId = getLoggedUserId()
+            userDao.getById(userId!!).toDomain()
         }
     }
 

@@ -19,18 +19,20 @@ import kotlin.uuid.Uuid
 fun AppNavGraph(startDestination: Screen) {
     val mainNavController = rememberNavController()
     NavHost(navController = mainNavController, startDestination = startDestination) {
-        //NavHost(navController = mainNavController, startDestination = IngredientCalculator(id = Uuid.parse("a5e1edb0-4028-4668-a392-e32727dc1424"))) {
         composable<Login> {
             LoginScreen(
                 navigateToHome = { mainNavController.navigate(Home){ popUpTo(Login) { inclusive = true } } },
                 navigateToRecoveryPassword = { mainNavController.navigate(RecoveryPassword) })
         }
-        composable<Home> { HomeScreen(mainNavController = mainNavController) }
+        composable<Home> { HomeScreen(
+            navigateToNewRecipe = { mainNavController.navigate(EditRecipe()) },
+            navigateToLogin = { mainNavController.navigate(Login) { popUpTo(Home) { inclusive = true } } }
+        ) }
         //composable<Recipe> { RecipeScreen() }
         composable<RecoveryPassword> { RecoveryPasswordScreen(mainNavController) }
         composable<EditRecipe>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)){ backStackEntry ->
             val editRecipe: EditRecipe = backStackEntry.toRoute()
-            EditRecipeScreen(recipeId = editRecipe.id, mainNavController = mainNavController)
+            EditRecipeScreen(recipeId = editRecipe.id, navigateBack = { mainNavController.popBackStack() })
         }
         composable<IngredientCalculator>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) {
                 backStackEntry ->
