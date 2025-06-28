@@ -49,7 +49,7 @@ class ProfileViewModel @Inject constructor(
                 } else {
                     _profileState.update { it.copy(isLoading = true) }
                     try {
-                        changePasswordUseCase.execute(_newPassword.value, _repeatPassword.value)
+                        changePasswordUseCase(_newPassword.value)
                         _profileState.update {
                             it.copy(
                                 isLoading = false,
