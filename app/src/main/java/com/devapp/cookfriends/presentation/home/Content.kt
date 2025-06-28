@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.devapp.cookfriends.R
-import com.devapp.cookfriends.domain.model.UiError
+import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
@@ -76,7 +76,7 @@ fun ContentPreviewError() {
     CookFriendsTheme {
         Content(
             recipesState = RecipesState(
-                error = UiError(
+                error = UiMessage(
                     UiText.StringResource(R.string.generic_error),
                     blocking = true
                 )

@@ -19,17 +19,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -37,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.home.Header
-import com.devapp.cookfriends.ui.theme.White
-import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -46,23 +43,12 @@ fun ProfileScreen(
     snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit
 ) {
-    var password by remember { mutableStateOf("") }
-    var repeatPassword by remember { mutableStateOf("") }
+    val newPassword by viewModel.newPassword.collectAsState()
+    val repeatPassword by viewModel.repeatPassword.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     val profileState by viewModel.profileState.collectAsState()
-
-    LaunchedEffect(key1 = viewModel.snackbarFlow) {
-        viewModel.snackbarFlow.collect { snackbarMessage ->
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = snackbarMessage.message,
-                    duration = SnackbarDuration.Short
-                )
-            }
-        }
-    }
 
     LaunchedEffect(profileState.loggedOut) {
         if (profileState.loggedOut)
@@ -84,6 +70,15 @@ fun ProfileScreen(
             if (profileState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
+                LaunchedEffect(key1 = profileState.message) {
+                    profileState.message?.let {
+                        snackbarHostState.showSnackbar(
+                            message = it.uiText.asString(context),
+                            duration = SnackbarDuration.Short
+                        )
+                        viewModel.onClearMessage()
+                    }
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -94,8 +89,8 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     OutlinedTextField(
-                        value = password,
-                        onValueChange = { newText -> password = newText },
+                        value = newPassword,
+                        onValueChange = { viewModel.onNewPasswordChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -115,15 +110,21 @@ fun ProfileScreen(
                             }
                         },
                         label = { Text(stringResource(R.string.password)) },
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = White,
-                            unfocusedContainerColor = White
-                        ),
-                        singleLine = true
+                        singleLine = true,
+                        isError = profileState.passwordErrorMessage != null,
+                        supportingText = {
+                            profileState.passwordErrorMessage?.let {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = it.asString(context),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     OutlinedTextField(
                         value = repeatPassword,
-                        onValueChange = { newText -> repeatPassword = newText },
+                        onValueChange = { viewModel.onRepeatPasswordChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -143,14 +144,20 @@ fun ProfileScreen(
                             }
                         },
                         label = { Text(stringResource(R.string.repeat_password)) },
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = White,
-                            unfocusedContainerColor = White
-                        ),
-                        singleLine = true
+                        singleLine = true,
+                        isError = profileState.repeatPasswordErrorMessage != null,
+                        supportingText = {
+                            profileState.repeatPasswordErrorMessage?.let {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = it.asString(context),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     Button(
-                        onClick = { viewModel.updatePassword(password, repeatPassword) },
+                        onClick = { viewModel.updatePassword() },
                         Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
@@ -158,14 +165,6 @@ fun ProfileScreen(
                         Text(stringResource(R.string.change_password))
                     }
                     HorizontalDivider()
-//                    Button(
-//                        onClick = { navController.navigate(RecoveryPassword) },
-//                        Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp)
-//                    ) {
-//                        Text(stringResource(R.string.recovery_password))
-//                    }
                     Spacer(Modifier.weight(1f))
                     Button(
                         onClick = { viewModel.logout() },
