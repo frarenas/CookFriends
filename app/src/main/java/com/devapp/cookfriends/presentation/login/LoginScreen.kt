@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -91,25 +92,22 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    // 1. Título
                     Text(
-                        text = "Cook Friends",
+                        text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.headlineLarge
                     )
-                    // 2. Logo
                     Image(
                         painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "Logo de la aplicación",
+                        contentDescription = stringResource(R.string.app_name),
                         modifier = Modifier
                             .size(270.dp)
                             .padding(bottom = 6.dp)
                     )
 
-                    // 3. Campo de Usuario
                     OutlinedTextField(
                         value = username,
                         onValueChange = { viewModel.onUsernameChange(it) },
-                        label = { Text("Usuario") },
+                        label = { Text(stringResource(R.string.username)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
@@ -126,13 +124,10 @@ fun LoginScreen(
                         }
                     )
 
-                    //Spacer(modifier = Modifier.height(16.dp))
-
-                    // 4. Campo de Contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = { viewModel.onPasswordChange(it) },
-                        label = { Text("Contraseña") },
+                        label = { Text(stringResource(R.string.password)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
@@ -150,9 +145,6 @@ fun LoginScreen(
                         }
                     )
 
-                    //Spacer(modifier = Modifier.height(32.dp))
-
-                    // 5. Checkbox de Recordar Usuario
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -163,10 +155,9 @@ fun LoginScreen(
                             checked = keepMeLoggedInChecked,
                             onCheckedChange = { viewModel.onKeepMeLoggedInCheckedChange(it) }
                         )
-                        Text("Mantenerme conectado")
+                        Text(stringResource(R.string.keep_me_logged_in))
                     }
 
-                    // 6. Botón de Login
                     Button(
                         onClick = {
                             viewModel.login()
@@ -175,20 +166,18 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        Text("Login")
+                        Text(stringResource(R.string.login))
                     }
 
-                    // 7. Botón de Continuar como Invitado
                     Button(
                         onClick = {
                             viewModel.guestLogin()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Continuar como invitado")
+                        Text(stringResource(R.string.continue_as_guest))
                     }
 
-                    // 8. Opciones alternativas
                     Row(
                         modifier = Modifier
                             .padding(top = 16.dp)
@@ -203,7 +192,7 @@ fun LoginScreen(
                             modifier = Modifier.wrapContentWidth()
                         ) {
                             Text(
-                                text = "¿Olvidaste tu contraseña?",
+                                text = stringResource(R.string.forgot_password),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -215,7 +204,7 @@ fun LoginScreen(
                                 } catch (_: Exception) {
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar(
-                                            message = "No se pudo abrir el enlace.",
+                                            message = context.getString(R.string.link_could_not_be_opened),
                                             duration = SnackbarDuration.Short
                                         )
                                     }
@@ -224,7 +213,7 @@ fun LoginScreen(
                             modifier = Modifier.wrapContentWidth()
                         ) {
                             Text(
-                                text = "¿No tienes una cuenta?",
+                                text = stringResource(R.string.no_account),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
