@@ -6,9 +6,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Kitchen
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,6 +44,7 @@ import com.devapp.cookfriends.presentation.home.navigation.MyRecipes
 import com.devapp.cookfriends.presentation.home.navigation.NavigationItem
 import com.devapp.cookfriends.presentation.home.navigation.Profile
 import com.devapp.cookfriends.presentation.home.navigation.Recipes
+import com.devapp.cookfriends.ui.theme.LightBlue50
 
 @Composable
 fun HomeScreen(
@@ -63,8 +64,16 @@ fun HomeScreen(
             Recipes(isUserLogged = isUserLogged),
             Icons.Outlined.Kitchen
         ),
-        NavigationItem(stringResource(R.string.favorites), Favorites, Icons.Sharp.Favorite),
-        NavigationItem(stringResource(R.string.my_recipes), MyRecipes, Icons.Outlined.Book),
+        NavigationItem(
+            stringResource(R.string.favorites),
+            Favorites(isUserLogged = isUserLogged),
+            Icons.Outlined.FavoriteBorder
+        ),
+        NavigationItem(
+            stringResource(R.string.my_recipes),
+            MyRecipes(isUserLogged = isUserLogged),
+            Icons.Outlined.Book
+        ),
         NavigationItem(stringResource(R.string.profile), Profile, Icons.Outlined.Person)
     )
     var selectedItem by remember { mutableStateOf(items[0]) }
@@ -93,20 +102,20 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = if (isUserLogged) {
                     {
-                        NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+                        NavigationBar(
+                            windowInsets = NavigationBarDefaults.windowInsets,
+                            containerColor = LightBlue50
+                        ) {
                             items.forEach { item ->
                                 NavigationBarItem(
                                     icon = { Icon(item.icon, contentDescription = item.title) },
                                     label = { Text(item.title) },
-                                    selected = currentRoute == item.route.javaClass.name,
+                                    selected = currentRoute?.startsWith(item.route.javaClass.name) == true,
                                     onClick = {
                                         selectedItem = item
                                         homeNavController.navigate(item.route) {
-                                            // Evitar que se creen muchas instancias del mismo destino al re-seleccionar
                                             launchSingleTop = true
-                                            // Restaurar el estado al re-seleccionar un item previamente seleccionado
                                             restoreState = true
-                                            // Limpiar la pila de navegación al seleccionar un nuevo item raíz
                                             popUpTo(homeNavController.graph.findStartDestination().id) {
                                                 saveState = true
                                             }
@@ -120,7 +129,7 @@ fun HomeScreen(
                     {}
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                floatingActionButton = if (isUserLogged && currentRoute == MyRecipes.javaClass.name) {
+                floatingActionButton = if (isUserLogged && selectedItem == items[2]) {
                     {
                         FloatingActionButton(
                             containerColor = MaterialTheme.colorScheme.primary,
