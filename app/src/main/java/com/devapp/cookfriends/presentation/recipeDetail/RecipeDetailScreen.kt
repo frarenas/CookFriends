@@ -1,7 +1,9 @@
 package com.devapp.cookfriends.presentation.recipeDetail
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,6 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,118 +54,88 @@ import kotlin.uuid.Uuid
 fun RecipeDetailScreen(
     recipeId: Uuid,
     viewModel: RecipeDetailViewModel = hiltViewModel(),
-    navigateBack: () -> Boolean
+    navigateBack: () -> Unit
 ) {
-    val viewModel: RecipeDetailViewModel = hiltViewModel()
     val state by viewModel.recipeDetailState.collectAsState()
+    val recipe = state.recipe
 
     LaunchedEffect(recipeId) {
         viewModel.loadRecipe(recipeId)
     }
-    val exampleRecipe = Recipe(
-        name = state.recipe?.name,
-        portions = 4,
-        ingredients = listOf(),
-        steps = listOf(
-            Step(
-                order = 1,
-                content = "descripcion paso 1.",
-                recipeId = Uuid.random(),
-                photos = listOf(StepPhoto(Uuid.random(),"url",Uuid.random()))
-            ),
-            Step(
-                order = 2,
-                content = "descripcion paso 1.",
-                recipeId = Uuid.random(),
-                photos = listOf(StepPhoto(Uuid.random(),"url",Uuid.random()))
-            )
-        )
-    )
 
-    val comments = listOf(
-        Comment(
-            id = Uuid.random(),
-            comment = "sample Text",
-            userId = Uuid.random(),
-            recipeId = Uuid.random(),
-        )
-    );
-
-    Scaffold (
+    Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(state.recipe?.name.toString()) },
+                title = { Text(recipe?.name ?: "Cargando...") },
                 navigationIcon = {
-                    IconButton(onClick = { /*navHostController.popBackStack()*/ }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
-                        )
+                    IconButton(onClick = navigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
                     }
                 },
                 actions = {
-                    Text("5.0", color = Color(255,165,52))
+                    Text(recipe?.averageRating?.toString() ?: "-", color = Color(0xFFFFA534))
                     IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            tint = Color(255,165,52),
-                            contentDescription = "Valorar"
-                        )
+                        Icon(Icons.Filled.Star, tint = Color(0xFFFFA534), contentDescription = "Valorar")
                     }
                     IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite,
-                            contentDescription = "Agregar a favoritos"
-                        )
+                        Icon(Icons.Filled.Favorite, contentDescription = "Agregar a favoritos")
                     }
                 }
-
-        )}
-    ){
-        innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            recipeHeader()
-            ingredientsSection(exampleRecipe.ingredients)
-            HorizontalDivider()
-            stepsSection(exampleRecipe.steps)
-            HorizontalDivider()
-            commentSection(comments)
+            )
+        }
+    ) { innerPadding ->
+        if (recipe != null) {
+            Column(modifier = Modifier.padding(innerPadding)) {
+                recipeHeader(recipe.recipePhotos.firstOrNull()?.url)
+                ingredientsSection(recipe.ingredients)
+                HorizontalDivider()
+                stepsSection(recipe.steps)
+                HorizontalDivider()
+                commentSection(recipe.comments)
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
     }
 }
 
 @Composable
-fun recipeHeader(){
+fun recipeHeader(imageUrl: String?) {
     AsyncImage(
-        model = "https://www.clarin.com/2024/03/12/1jgNm90_r_340x340__1.jpg",
-        contentDescription = "foto portada de la receta"
+        model = imageUrl ?: "",
+        contentDescription = "foto portada de la receta",
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
     )
 }
 
 @Composable
 fun ingredientsSection(ingredients: List<Ingredient>) {
     Text("Ingredientes", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-    Row (modifier = Modifier.fillMaxWidth()){
+    Row(modifier = Modifier.fillMaxWidth()) {
         Column {
-            ingredients.forEach(){
-                i->Row(){
-                    Text(i.name.toString())
+            ingredients.forEach { i ->
+                Row {
+                    Text(i.name ?: "")
                 }
             }
         }
-        Column(modifier = Modifier.padding(start = 20.dp )){
-            ingredients.forEach(){
-                    i->Row(){
-                Text(i.quantity.toString())
-                Text(i.measurement.toString())
-            }
+        Column(modifier = Modifier.padding(start = 20.dp)) {
+            ingredients.forEach { i ->
+                Row {
+                    Text(i.quantity.toString())
+                    Text(" ${i.measurement}")
+                }
             }
         }
         Column(modifier = Modifier.fillMaxWidth()) {
             Button(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                colors = ButtonColors(Color.LightGray, Color.Black, Color.LightGray, Color.Gray),
-                onClick = { onEditProportions() }) {
+                onClick = { /* TODO: Calcular proporciones */ }
+            ) {
                 Text("Calcular proporciones")
             }
         }
@@ -167,46 +143,43 @@ fun ingredientsSection(ingredients: List<Ingredient>) {
 }
 
 @Composable
-fun stepsSection(steps: List<Step>){
+fun stepsSection(steps: List<Step>) {
     Column {
-        Text("Preparacion", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-        steps.forEach(){
-            s -> Row {
-                Column(){
-                    AsyncImage(
-                        model = "https://www.clarin.com/2024/03/12/1jgNm90_r_340x340__1.jpg",
-                        contentDescription = "foto portada de la receta",
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(100.dp)
-                    )
+        Text("Preparación", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
+        steps.forEach { s ->
+            Row {
+                AsyncImage(
+                    model = s.photos.firstOrNull()?.url ?: "",
+                    contentDescription = "Foto del paso",
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(100.dp)
+                )
+                Column(Modifier.padding(start = 10.dp)) {
+                    Text("Paso ${s.order}", fontSize = 18.sp)
+                    Text(s.content ?: "")
                 }
-                Column(Modifier.padding(start = 10.dp )) {
-                    Text("Paso "+s.order, fontSize = 18.sp)
-                    Text(s.content.toString())
-                }
-        }}
+            }
+        }
     }
 }
 
 @Composable
-fun commentSection(comments: List<Comment>){
+fun commentSection(comments: List<Comment>) {
     Column {
         Text("Comentarios", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-        // Campo para ingresar nuevos comentarios
+        var newComment by remember { mutableStateOf("") }
+
         TextField(
-            value = "",
-            onValueChange = {},
+            value = newComment,
+            onValueChange = { newComment = it },
             label = { Text("Escribe un comentario") },
             modifier = Modifier.fillMaxWidth()
         )
-        Button(
-            onClick = { onNewComment("Texto del comentario") }
-            ) {
+        Button(onClick = { /* TODO: enviar comentario */ }) {
             Text("Enviar")
         }
 
-        // Lista de comentarios existentes
         LazyColumn {
             items(comments) { comment ->
                 commentItem(comment)
@@ -215,14 +188,11 @@ fun commentSection(comments: List<Comment>){
     }
 }
 
-
-
 @Composable
-fun commentItem(comment: Comment){
-
+fun commentItem(comment: Comment) {
     Column {
-        Text("UserName1")
-        Text("Sample text")
+        Text(comment.userId.toString() ?: "Usuario")
+        Text(comment.comment ?: "")
         HorizontalDivider()
     }
 }
