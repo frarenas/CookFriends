@@ -24,7 +24,8 @@ import kotlin.uuid.Uuid
 fun Content(
     isUserLogged: Boolean = false,
     recipesState: RecipesState = RecipesState(),
-    onFavoriteClick: (Uuid) -> Unit
+    onFavoriteClick: (Uuid) -> Unit,
+    onItemClick: (Uuid) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -50,6 +51,9 @@ fun Content(
                             isUserLogged = isUserLogged,
                             onFavoriteClick = { recipeId ->
                                 onFavoriteClick(recipeId)
+                            },
+                            onItemClick = { recipeId ->
+                                onItemClick(recipeId)
                             }
                         )
                     }
@@ -65,7 +69,8 @@ fun ContentPreviewLoading() {
     CookFriendsTheme {
         Content(
             recipesState = RecipesState(isLoading = true),
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            onItemClick = {}
         )
     }
 }
@@ -81,7 +86,8 @@ fun ContentPreviewError() {
                     blocking = true
                 )
             ),
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            onItemClick = {}
         )
     }
 }
@@ -92,7 +98,8 @@ fun ContentPreviewEmpty() {
     CookFriendsTheme {
         Content(
             recipesState = RecipesState(recipeList = emptyList()),
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            onItemClick = {}
         )
     }
 }

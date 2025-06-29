@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,12 +33,14 @@ import kotlin.uuid.Uuid
 fun RecipeListItem(
     recipe: Recipe,
     isUserLogged: Boolean = false,
-    onFavoriteClick: (Uuid) -> Unit
+    onFavoriteClick: (Uuid) -> Unit,
+    onItemClick: (Uuid) -> Unit
 ) {
     Row(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = { onItemClick(recipe.id) }),
         verticalAlignment = Alignment.CenterVertically
     ) {
         CFAsyncImage(

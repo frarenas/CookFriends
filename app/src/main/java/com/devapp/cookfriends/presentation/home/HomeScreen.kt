@@ -45,11 +45,13 @@ import com.devapp.cookfriends.presentation.home.navigation.NavigationItem
 import com.devapp.cookfriends.presentation.home.navigation.Profile
 import com.devapp.cookfriends.presentation.home.navigation.Recipes
 import com.devapp.cookfriends.ui.theme.LightBlue50
+import kotlin.uuid.Uuid
 
 @Composable
 fun HomeScreen(
     navigateToNewRecipe: () -> Unit,
     navigateToLogin: () -> Unit,
+    navigateToDetail: (recipeId: Uuid) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val recipesState by viewModel.recipesState.collectAsState()
@@ -148,6 +150,7 @@ fun HomeScreen(
                 HomeNavGraph(
                     homeNavController = homeNavController,
                     navigateToLogin = navigateToLogin,
+                    navigateToDetail = navigateToDetail,
                     isUserLogged = isUserLogged,
                     paddingValues = innerPadding,
                     snackbarHostState = snackbarHostState

@@ -12,13 +12,13 @@ object Login: Screen
 object Home: Screen
 
 @Serializable
-object Recipe: Screen
+data class Recipe(val id: Uuid? = null): Screen
 
 @Serializable
 object RecoveryPassword: Screen
 
 @Serializable
-data class  EditRecipe (val id: Uuid? = null): Screen
+data class EditRecipe(val id: Uuid? = null): Screen
 
 @Serializable
-data class IngredientCalculator  (val id: Uuid? = null): Screen
+data class IngredientCalculator(val id: Uuid? = null): Screen

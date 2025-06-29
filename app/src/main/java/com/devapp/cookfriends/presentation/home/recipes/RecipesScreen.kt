@@ -12,10 +12,12 @@ import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.home.Content
 import com.devapp.cookfriends.presentation.home.Header
 import com.devapp.cookfriends.presentation.home.searchoptions.SearchOptionsDialog
+import kotlin.uuid.Uuid
 
 @Composable
 fun RecipesScreen(
     isUserLogged: Boolean = false,
+    navigateToDetail: (recipeId: Uuid) -> Unit,
     viewModel: RecipesViewModel = hiltViewModel()
 ) {
 
@@ -40,7 +42,10 @@ fun RecipesScreen(
         Content(
             recipesState = recipesState,
             isUserLogged = isUserLogged,
-            onFavoriteClick = {viewModel.toggleFavorite(it)}
+            onFavoriteClick = { viewModel.toggleFavorite(it) },
+            onItemClick = { recipeId ->
+                navigateToDetail(recipeId)
+            }
         )
     }
 

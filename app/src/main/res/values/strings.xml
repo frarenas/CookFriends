@@ -80,4 +80,8 @@
     <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
     <string name="repeat_password_mandatory">Vuelva a ingresar la contraseña.</string>
     <string name="password_was_updated">La contraseña se actualizó correctamente.</string>
+
+    // Recipe detail
+    <string name="recipe_not_found">Receta no encontrada.</string>"
+    <string name="loaded_recipe_format">Receta creada por: %1s el %1s</string>
 </resources>
