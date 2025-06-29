@@ -13,15 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.presentation.common.MessageScreen
+import com.devapp.cookfriends.presentation.navigation.RecipeDetail
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import kotlin.uuid.Uuid
 
 @Composable
 fun Content(
+    navController: NavHostController? = null,
     isUserLogged: Boolean = false,
     recipesState: RecipesState = RecipesState(),
     onFavoriteClick: (Uuid) -> Unit
@@ -48,9 +51,9 @@ fun Content(
                         RecipeListItem(
                             recipe = recipe,
                             isUserLogged = isUserLogged,
-                            onFavoriteClick = { recipeId ->
-                                onFavoriteClick(recipeId)
-                            }
+                            onFavoriteClick = { recipeId ->onFavoriteClick(recipeId)},
+                            //onRecipeClick = { recipeId -> navController?.navigate("recipe_detail/${recipe.id}") }
+                            onRecipeClick = { recipeId -> navController?.navigate(RecipeDetail(recipeId)) }
                         )
                     }
                 }
