@@ -23,12 +23,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.devapp.cookfriends.domain.model.Comment
 import com.devapp.cookfriends.domain.model.Ingredient
@@ -40,14 +45,19 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-//fun RecipeDetailScreen(viewModel: RecipeDetailViewModel = hiltViewModel()){
 fun RecipeDetailScreen(
     recipeId: Uuid,
+    viewModel: RecipeDetailViewModel = hiltViewModel(),
     navigateBack: () -> Boolean
 ) {
+    val viewModel: RecipeDetailViewModel = hiltViewModel()
+    val state by viewModel.recipeDetailState.collectAsState()
 
+    LaunchedEffect(recipeId) {
+        viewModel.loadRecipe(recipeId)
+    }
     val exampleRecipe = Recipe(
-        name = "Ravioles",
+        name = state.recipe?.name,
         portions = 4,
         ingredients = listOf(),
         steps = listOf(
@@ -78,7 +88,7 @@ fun RecipeDetailScreen(
     Scaffold (
         topBar = {
             TopAppBar(
-                title = { Text(exampleRecipe.name.toString()) },
+                title = { Text(state.recipe?.name.toString()) },
                 navigationIcon = {
                     IconButton(onClick = { /*navHostController.popBackStack()*/ }) {
                         Icon(
