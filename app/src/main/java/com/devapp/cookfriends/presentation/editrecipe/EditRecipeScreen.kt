@@ -38,10 +38,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -54,7 +54,6 @@ import com.devapp.cookfriends.presentation.common.ConfirmationDialog
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.presentation.common.RecipeTypeDropDownMenu
 import com.devapp.cookfriends.ui.theme.LightBlue
-import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,19 +74,8 @@ fun EditRecipeScreen(
     var ingredientToDelete by remember { mutableStateOf<Ingredient?>(null) }
     var stepToDelete by remember { mutableStateOf<Step?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     var saveRecipeConfirmation by remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = viewModel.snackbarFlow) {
-        viewModel.snackbarFlow.collect { snackbarMessage ->
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = snackbarMessage.message,
-                    duration = SnackbarDuration.Short
-                )
-            }
-        }
-    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -120,12 +108,21 @@ fun EditRecipeScreen(
         ) {
             if (editRecipeState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (editRecipeState.error != null) {
+            } else if (editRecipeState.message?.blocking == true) {
                 MessageScreen(
-                    message = editRecipeState.error!!,
+                    message = editRecipeState.message!!.uiText.asString(context),
                     imageVector = Icons.Default.Error
                 )
             } else {
+                LaunchedEffect(key1 = editRecipeState.message) {
+                    editRecipeState.message?.let {
+                        snackbarHostState.showSnackbar(
+                            message = it.uiText.asString(context),
+                            duration = SnackbarDuration.Short
+                        )
+                        viewModel.onClearMessage()
+                    }
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -145,10 +142,10 @@ fun EditRecipeScreen(
                         singleLine = true,
                         isError = editRecipeState.nameErrorMessage != null,
                         supportingText = {
-                            if (editRecipeState.nameErrorMessage != null) {
+                            editRecipeState.nameErrorMessage?.let {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = editRecipeState.nameErrorMessage!!,
+                                    text = it.asString(context),
                                     color = MaterialTheme.colorScheme.error
                                 )
                             }
@@ -168,10 +165,10 @@ fun EditRecipeScreen(
                         maxLines = 4,
                         isError = editRecipeState.descriptionErrorMessage != null,
                         supportingText = {
-                            if (editRecipeState.descriptionErrorMessage != null) {
+                            editRecipeState.descriptionErrorMessage?.let {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = editRecipeState.descriptionErrorMessage!!,
+                                    text = it.asString(context),
                                     color = MaterialTheme.colorScheme.error
                                 )
                             }
@@ -204,10 +201,10 @@ fun EditRecipeScreen(
                             singleLine = true,
                             isError = editRecipeState.recipePhotoErrorMessage != null,
                             supportingText = {
-                                if (editRecipeState.recipePhotoErrorMessage != null) {
+                                editRecipeState.recipePhotoErrorMessage?.let {
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = editRecipeState.recipePhotoErrorMessage!!,
+                                        text = it.asString(context),
                                         color = MaterialTheme.colorScheme.error
                                     )
                                 }
@@ -223,10 +220,10 @@ fun EditRecipeScreen(
                             )
                         }
                     }
-                    if (editRecipeState.recipePhotosErrorMessage != null) {
+                    editRecipeState.recipePhotosErrorMessage?.let {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = editRecipeState.recipePhotosErrorMessage!!,
+                            text = it.asString(context),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -265,10 +262,10 @@ fun EditRecipeScreen(
                         singleLine = true,
                         isError = editRecipeState.portionsErrorMessage != null,
                         supportingText = {
-                            if (editRecipeState.portionsErrorMessage != null) {
+                            editRecipeState.portionsErrorMessage?.let {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = editRecipeState.portionsErrorMessage!!,
+                                    text = it.asString(context),
                                     color = MaterialTheme.colorScheme.error
                                 )
                             }
@@ -289,10 +286,10 @@ fun EditRecipeScreen(
                                 singleLine = true,
                                 isError = editRecipeState.ingredientNameErrorMessage != null,
                                 supportingText = {
-                                    if (editRecipeState.ingredientNameErrorMessage != null) {
+                                    editRecipeState.ingredientNameErrorMessage?.let {
                                         Text(
                                             modifier = Modifier.fillMaxWidth(),
-                                            text = editRecipeState.ingredientNameErrorMessage!!,
+                                            text = it.asString(context),
                                             color = MaterialTheme.colorScheme.error
                                         )
                                     }
@@ -309,10 +306,10 @@ fun EditRecipeScreen(
                                     singleLine = true,
                                     isError = editRecipeState.ingredientQuantityErrorMessage != null,
                                     supportingText = {
-                                        if (editRecipeState.ingredientQuantityErrorMessage != null) {
+                                        editRecipeState.ingredientQuantityErrorMessage?.let {
                                             Text(
                                                 modifier = Modifier.fillMaxWidth(),
-                                                text = editRecipeState.ingredientQuantityErrorMessage!!,
+                                                text = it.asString(context),
                                                 color = MaterialTheme.colorScheme.error
                                             )
                                         }
@@ -340,10 +337,10 @@ fun EditRecipeScreen(
                             )
                         }
                     }
-                    if (editRecipeState.ingredientsErrorMessage != null) {
+                    editRecipeState.ingredientsErrorMessage?.let {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = editRecipeState.ingredientsErrorMessage!!,
+                            text = it.asString(context),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -385,7 +382,17 @@ fun EditRecipeScreen(
                             },
                             modifier = Modifier.weight(1f),
                             label = { Text(stringResource(R.string.instructions)) },
-                            maxLines = 4
+                            maxLines = 4,
+                            isError = editRecipeState.stepContentErrorMessage != null,
+                            supportingText = {
+                                editRecipeState.stepContentErrorMessage?.let {
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = it.asString(context),
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
                         )
                         IconButton(onClick = {
                             viewModel.onStepAdd()
@@ -397,10 +404,10 @@ fun EditRecipeScreen(
                             )
                         }
                     }
-                    if (editRecipeState.stepsErrorMessage != null) {
+                    editRecipeState.stepsErrorMessage?.let {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = editRecipeState.stepsErrorMessage!!,
+                            text = it.asString(context),
                             color = MaterialTheme.colorScheme.error
                         )
                     }

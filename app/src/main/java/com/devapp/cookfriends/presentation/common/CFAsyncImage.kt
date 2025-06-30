@@ -19,7 +19,7 @@ fun CFAsyncImage(
         model = imageUrl,
         contentDescription = imageDescription,
         error = painterResource(errorImage),
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.FillHeight,
         modifier = modifier
     )
 }

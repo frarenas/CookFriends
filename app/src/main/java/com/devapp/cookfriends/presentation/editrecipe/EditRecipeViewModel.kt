@@ -7,22 +7,22 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Ingredient
 import com.devapp.cookfriends.domain.model.Recipe
 import com.devapp.cookfriends.domain.model.RecipePhoto
 import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.Step
+import com.devapp.cookfriends.domain.model.UiMessage
+import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.GetLoggedUserUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.SaveRecipeUseCase
-import com.devapp.cookfriends.presentation.common.SnackbarMessage
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -80,9 +80,6 @@ class EditRecipeViewModel @Inject constructor(
     )
     val newStep: StateFlow<Step> = _newStep
 
-    private val _snackbarFlow = MutableSharedFlow<SnackbarMessage>()
-    val snackbarFlow: SharedFlow<SnackbarMessage> = _snackbarFlow
-
     init {
         getAvailableRecipeTypes()
         getRecipe()
@@ -91,20 +88,25 @@ class EditRecipeViewModel @Inject constructor(
     fun getRecipe() {
         if (recipeId == null) {
             _editRecipeState.update {
-                it.copy(isLoading = false, recipe = Recipe(), error = null)
+                it.copy(isLoading = false, recipe = Recipe(), message = null)
             }
             return
         }
         viewModelScope.launch {
             getRecipeUseCase(recipeId)
                 .onStart {
-                    _editRecipeState.update { it.copy(isLoading = true, error = null) }
+                    _editRecipeState.update { it.copy(isLoading = true, message = null) }
                 }
                 .catch { e ->
                     _editRecipeState.update {
                         it.copy(
                             isLoading = false,
-                            error = e.localizedMessage ?: "An error occurred"
+                            message = UiMessage(
+                                uiText = if (e.message != null) UiText.DynamicString(
+                                    e.message ?: ""
+                                ) else UiText.StringResource(R.string.generic_error),
+                                blocking = false
+                            )
                         )
                     }
                 }
@@ -113,7 +115,10 @@ class EditRecipeViewModel @Inject constructor(
                         _editRecipeState.update {
                             it.copy(
                                 isLoading = false,
-                                error = "Recipe not found"
+                                message = UiMessage(
+                                    uiText = UiText.StringResource(R.string.recipe_not_found),
+                                    blocking = true
+                                )
                             )
                         }
                     } else {
@@ -121,7 +126,7 @@ class EditRecipeViewModel @Inject constructor(
                             it.copy(
                                 recipe = recipe,
                                 isLoading = false,
-                                error = null
+                                message = null
                             )
                         }
                     }
@@ -185,8 +190,7 @@ class EditRecipeViewModel @Inject constructor(
                 url = _newImageUrl.value.trim(),
                 recipeId = _editRecipeState.value.recipe.id
             )
-            val photos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
-            photos.addAll(recipe.recipePhotos)
+            val photos = recipe.recipePhotos.toMutableList()
             photos.remove(recipePhoto)
             photos.add(recipePhoto)
             recipe.recipePhotos = photos
@@ -198,8 +202,7 @@ class EditRecipeViewModel @Inject constructor(
 
     fun onPhotoRemove(recipePhoto: RecipePhoto) {
         var recipe = _editRecipeState.value.recipe
-        val photos: MutableList<RecipePhoto> = mutableListOf<RecipePhoto>()
-        photos.addAll(recipe.recipePhotos)
+        val photos = recipe.recipePhotos.toMutableList()
         photos.remove(recipePhoto)
         recipe.recipePhotos = photos
         _editRecipeState.update { it.copy(recipe = recipe) }
@@ -210,8 +213,7 @@ class EditRecipeViewModel @Inject constructor(
         if (isIngredientValid) {
             var recipe = _editRecipeState.value.recipe
             _newIngredient.value.recipeId = recipe.id
-            val ingredients: MutableList<Ingredient> = mutableListOf<Ingredient>()
-            ingredients.addAll(recipe.ingredients)
+            val ingredients = recipe.ingredients.toMutableList()
             ingredients.remove(_newIngredient.value)
             ingredients.add(_newIngredient.value)
             recipe.ingredients = ingredients
@@ -230,8 +232,7 @@ class EditRecipeViewModel @Inject constructor(
 
     fun onIngredientRemove(ingredient: Ingredient) {
         var recipe = _editRecipeState.value.recipe
-        val ingredients: MutableList<Ingredient> = mutableListOf<Ingredient>()
-        ingredients.addAll(recipe.ingredients)
+        val ingredients = recipe.ingredients.toMutableList()
         ingredients.remove(ingredient)
         recipe.ingredients = ingredients
         _editRecipeState.update { it.copy(recipe = recipe) }
@@ -241,13 +242,16 @@ class EditRecipeViewModel @Inject constructor(
         val isStepValid = validateStep()
         if (isStepValid) {
             var recipe = _editRecipeState.value.recipe
-            newStep.value.recipeId = recipe.id
-            newStep.value.order = recipe.steps.size
-            val steps: MutableList<Step> = mutableListOf<Step>()
-            steps.addAll(recipe.steps)
-            steps.remove(_newStep.value)
-            steps.add(_newStep.value)
-            recipe.steps = steps
+            _newStep.value.recipeId = recipe.id
+            val steps = recipe.steps.toMutableList()
+            var currentStep = steps.find { step -> step.id == _newStep.value.id }
+            if(currentStep != null) {
+                currentStep = _newStep.value
+            } else {
+                steps.add(_newStep.value)
+            }
+
+            recipe.steps = steps.mapIndexed { index, step -> step.copy(order = index + 1) }
             _editRecipeState.update { it.copy(recipe = recipe) }
 
             _newStep.update {
@@ -262,18 +266,21 @@ class EditRecipeViewModel @Inject constructor(
 
     fun onStepRemove(step: Step) {
         var recipe = _editRecipeState.value.recipe
-        val steps: MutableList<Step> = mutableListOf<Step>()
-        steps.addAll(recipe.steps)
+        val steps = recipe.steps.toMutableList()
         steps.remove(step)
-        recipe.steps = steps
+        recipe.steps = steps.mapIndexed { index, step -> step.copy(order = index + 1) }
         _editRecipeState.update { it.copy(recipe = recipe) }
+    }
+
+    fun onClearMessage() {
+        _editRecipeState.update { it.copy(message = null) }
     }
 
     fun saveRecipe() {
         val isRecipeValid = validateRecipe()
         if (isRecipeValid) {
             viewModelScope.launch {
-                _editRecipeState.update { it.copy(isLoading = true, error = null) }
+                _editRecipeState.update { it.copy(isLoading = true, message = null) }
                 try {
                     val user = getLoggedUserUseCase()
                     _editRecipeState.value.recipe.apply {
@@ -282,15 +289,22 @@ class EditRecipeViewModel @Inject constructor(
                         this.updatePending = true
                     }
                     saveRecipeUseCase(_editRecipeState.value.recipe)
-                    _editRecipeState.update { it.copy(isLoading = false, error = null) }
-                    _snackbarFlow.emit(SnackbarMessage.Error("Se guardaron los cambios."))
+                    _editRecipeState.update { it.copy(isLoading = false, message = UiMessage(
+                        uiText = UiText.StringResource(R.string.changes_saved),
+                        blocking = false
+                    )) }
                 } catch (e: Exception) {
                     _editRecipeState.update {
                         it.copy(
-                            isLoading = false
+                            isLoading = false,
+                            message = UiMessage(
+                                uiText = if (e.message != null) UiText.DynamicString(
+                                    e.message ?: ""
+                                ) else UiText.StringResource(R.string.generic_error),
+                                blocking = false
+                            )
                         )
                     }
-                    _snackbarFlow.emit(SnackbarMessage.Error(e.message ?: "Se produjo un error."))
                 }
             }
         }
@@ -301,7 +315,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_editRecipeState.value.recipe.name.isNullOrBlank()) {
             _editRecipeState.update {
                 it.copy(
-                    nameErrorMessage = "Ingrese el nombre de la receta."
+                    nameErrorMessage = UiText.StringResource(R.string.recipe_name_mandatory)
                 )
             }
             isValid = false
@@ -315,7 +329,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_editRecipeState.value.recipe.description.isNullOrBlank()) {
             _editRecipeState.update {
                 it.copy(
-                    descriptionErrorMessage = "Ingrese la descripción de la receta."
+                    descriptionErrorMessage = UiText.StringResource(R.string.recipe_description_mandatory)
                 )
             }
             isValid = false
@@ -329,7 +343,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_editRecipeState.value.recipe.recipeType == null) {
             _editRecipeState.update {
                 it.copy(
-                    recipeTypeErrorMessage = "Seleccione el tipo de receta."
+                    recipeTypeErrorMessage = UiText.StringResource(R.string.recipe_type_mandatory)
                 )
             }
             isValid = false
@@ -343,7 +357,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_editRecipeState.value.recipe.recipePhotos.isEmpty()) {
             _editRecipeState.update {
                 it.copy(
-                    recipePhotosErrorMessage = "Ingrese al menos una foto."
+                    recipePhotosErrorMessage = UiText.StringResource(R.string.photos_mandatory)
                 )
             }
             isValid = false
@@ -357,7 +371,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_editRecipeState.value.recipe.portions == null) {
             _editRecipeState.update {
                 it.copy(
-                    portionsErrorMessage = "Ingrese la cantidad de porciones."
+                    portionsErrorMessage = UiText.StringResource(R.string.portions_mandatory)
                 )
             }
             isValid = false
@@ -371,7 +385,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_editRecipeState.value.recipe.ingredients.isEmpty()) {
             _editRecipeState.update {
                 it.copy(
-                    ingredientsErrorMessage = "Ingrese los ingredientes."
+                    ingredientsErrorMessage = UiText.StringResource(R.string.ingredients_mandatory)
                 )
             }
             isValid = false
@@ -385,7 +399,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_editRecipeState.value.recipe.steps.isEmpty()) {
             _editRecipeState.update {
                 it.copy(
-                    stepsErrorMessage = "Ingrese los pasos."
+                    stepsErrorMessage = UiText.StringResource(R.string.steps_mandatory)
                 )
             }
             isValid = false
@@ -404,7 +418,7 @@ class EditRecipeViewModel @Inject constructor(
         if (!URLUtil.isValidUrl(_newImageUrl.value)) {
             _editRecipeState.update {
                 it.copy(
-                    recipePhotoErrorMessage = "Ingrese una URL válida."
+                    recipePhotoErrorMessage = UiText.StringResource(R.string.photo_url_invalid)
                 )
             }
             isValid = false
@@ -424,7 +438,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_newIngredient.value.name.isBlank()) {
             _editRecipeState.update {
                 it.copy(
-                    ingredientNameErrorMessage = "Ingrese el nombre."
+                    ingredientNameErrorMessage = UiText.StringResource(R.string.ingredient_name_mandatory)
                 )
             }
             isValid = false
@@ -438,7 +452,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_newIngredient.value.quantity.isBlank()) {
             _editRecipeState.update {
                 it.copy(
-                    ingredientQuantityErrorMessage = "Ingrese la cantidad."
+                    ingredientQuantityErrorMessage = UiText.StringResource(R.string.ingredient_quantity_mandatory)
                 )
             }
             isValid = false
@@ -458,7 +472,7 @@ class EditRecipeViewModel @Inject constructor(
         if (_newStep.value.content.isBlank()) {
             _editRecipeState.update {
                 it.copy(
-                    stepContentErrorMessage = "Ingrese el paso."
+                    stepContentErrorMessage = UiText.StringResource(R.string.step_content_mandatory)
                 )
             }
             isValid = false
