@@ -9,6 +9,7 @@ import com.devapp.cookfriends.presentation.editrecipe.EditRecipeScreen
 import com.devapp.cookfriends.presentation.home.HomeScreen
 import com.devapp.cookfriends.presentation.ingredientcalculator.IngredientCalculatorScreen
 import com.devapp.cookfriends.presentation.login.LoginScreen
+import com.devapp.cookfriends.presentation.recipeDetail.RecipeDetailScreen
 import com.devapp.cookfriends.presentation.recipe.RecipeScreen
 import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordScreen
 import kotlin.reflect.typeOf
@@ -41,6 +42,14 @@ fun AppNavGraph(startDestination: Screen) {
                 backStackEntry ->
             val ingredientCalculator: EditRecipe = backStackEntry.toRoute()
             IngredientCalculatorScreen(recipeId = ingredientCalculator.id, mainNavController = mainNavController)
+        }
+
+        composable<RecipeDetail>(typeMap = mapOf(typeOf<Uuid>() to UuidNavType)) {
+            val args = it.toRoute<RecipeDetail>()
+            RecipeDetailScreen(
+                recipeId = args.id,
+                navigateBack = { mainNavController.popBackStack() }
+            )
         }
     }
 }
