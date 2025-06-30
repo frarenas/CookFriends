@@ -12,7 +12,7 @@ import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import kotlin.uuid.Uuid
 
 @Composable
-fun IngredientPreviewItem(
+fun IngredientItem(
     ingredient: Ingredient,
     modifier: Modifier = Modifier
 ) {
@@ -32,7 +32,7 @@ fun IngredientPreviewItem(
 @Composable
 fun IngredientPreviewItemPreview() {
     CookFriendsTheme {
-        IngredientPreviewItem(
+        IngredientItem(
             ingredient = Ingredient(
                 name = "Ingredient",
                 quantity = "1",
@@ -47,7 +47,7 @@ fun IngredientPreviewItemPreview() {
 @Composable
 fun IngredientPreviewItemPreviewDark() {
     CookFriendsTheme {
-        IngredientPreviewItem(
+        IngredientItem(
             ingredient = Ingredient(
                 name = "Ingredient",
                 quantity = "1",

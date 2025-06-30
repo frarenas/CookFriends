@@ -12,12 +12,11 @@ import com.devapp.cookfriends.presentation.common.CFAsyncImage
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 
 @Composable
-fun ImagePreviewItem(imageUrl: String) {
+fun ImageItem(imageUrl: String, modifier: Modifier) {
     CFAsyncImage(
         imageUrl = imageUrl,
         imageDescription = stringResource(R.string.image_preview),
-        modifier = Modifier
-            .height(200.dp)
+        modifier = modifier
     )
 }
 
@@ -25,8 +24,9 @@ fun ImagePreviewItem(imageUrl: String) {
 @Composable
 fun ImagePreviewItemPreview() {
     CookFriendsTheme {
-        ImagePreviewItem(
-            imageUrl = ""
+        ImageItem(
+            imageUrl = "",
+            Modifier.height(100.dp)
         )
     }
 }
@@ -35,8 +35,9 @@ fun ImagePreviewItemPreview() {
 @Composable
 fun ImagePreviewItemDark() {
     CookFriendsTheme {
-        ImagePreviewItem(
-            imageUrl = ""
+        ImageItem(
+            imageUrl = "",
+            Modifier.height(100.dp)
         )
     }
 }

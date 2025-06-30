@@ -88,4 +88,9 @@
     <string name="comments">Comentarios</string>
     <string name="portions_format">Para %1d porciones</string>
     <string name="calculate_ingredients">Calcular ingredientes</string>
+    <string name="write_a_comment">Escribe un comentario</string>
+    <string name="send">Enviar</string>">
+    <string name="empty_comment_error">El commentario no puede estar vacío.</string>
+    <string name="comment_sent">Comentario enviado.</string>
+    <string name="no_comments">No hay comentarios.</string>
 </resources>

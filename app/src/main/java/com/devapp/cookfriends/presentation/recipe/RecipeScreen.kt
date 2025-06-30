@@ -10,14 +10,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +28,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -44,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.common.MessageScreen
+import com.devapp.cookfriends.presentation.common.RatingStar
+import com.devapp.cookfriends.ui.theme.Gold
 import com.devapp.cookfriends.ui.theme.LightBlue
 import com.devapp.cookfriends.ui.theme.Red
 import com.devapp.cookfriends.util.toShortFormat
@@ -60,6 +66,7 @@ fun RecipeScreen(
 
     val recipeState by viewModel.recipeState.collectAsState()
     val isUserLogged by viewModel.isUserLogged.collectAsState()
+    val newComment by viewModel.newComment.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
@@ -82,8 +89,8 @@ fun RecipeScreen(
                         )
                     }
                 },
-                actions = if (isUserLogged) {
-                    {
+                actions = {
+                    if (isUserLogged) {
                         IconButton(onClick = { viewModel.toggleFavorite() }) {
                             Icon(
                                 imageVector = if (recipeState.recipe?.isUserFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
@@ -92,13 +99,11 @@ fun RecipeScreen(
                             )
                         }
                     }
-                } else {
-                    {}
                 }
             )
         },
-        floatingActionButton = if (recipeState.isEditable) {
-            {
+        floatingActionButton = {
+            if (recipeState.isEditable) {
                 FloatingActionButton(
                     containerColor = MaterialTheme.colorScheme.primary,
                     onClick = { navigateToEditRecipe(recipeState.recipe!!.id) }
@@ -109,8 +114,6 @@ fun RecipeScreen(
                     )
                 }
             }
-        } else {
-            {}
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
@@ -133,6 +136,7 @@ fun RecipeScreen(
                             message = it.uiText.asString(context),
                             duration = SnackbarDuration.Short
                         )
+                        viewModel.onClearMessage()
                     }
                 }
                 var recipe = recipeState.recipe!!
@@ -150,8 +154,9 @@ fun RecipeScreen(
                                 .horizontalScroll(rememberScrollState())
                         ) {
                             recipe.recipePhotos.forEach { photo ->
-                                ImagePreviewItem(
-                                    imageUrl = photo.url
+                                ImageItem(
+                                    imageUrl = photo.url,
+                                    modifier = Modifier.height(200.dp)
                                 )
                             }
                         }
@@ -167,6 +172,23 @@ fun RecipeScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = stringResource(R.string.rating),
+                            tint = Gold
+                        )
+                        Text(text = recipe.averageRating?.toString() ?: "-")
+                        if(isUserLogged) {
+                            Spacer(modifier = Modifier.width(16.dp))
+                            RatingStar(
+                                rating = recipe.averageRating?.toFloat() ?: 0F,
+                                maxRating = 5,
+                                onStarClick = {}
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = recipe.description ?: "",
                         style = MaterialTheme.typography.bodyLarge
@@ -178,7 +200,10 @@ fun RecipeScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Row(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = stringResource(
@@ -194,7 +219,7 @@ fun RecipeScreen(
                                         .fillMaxWidth()
                                 ) {
                                     recipe.ingredients.forEach { ingredient ->
-                                        IngredientPreviewItem(
+                                        IngredientItem(
                                             ingredient = ingredient,
                                             modifier = Modifier.fillMaxWidth()
                                         )
@@ -228,7 +253,7 @@ fun RecipeScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             recipe.steps.forEach { step ->
-                                StepPreviewItem(
+                                StepItem(
                                     step = step,
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -241,6 +266,62 @@ fun RecipeScreen(
                         text = stringResource(R.string.comments),
                         style = MaterialTheme.typography.titleLarge
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    if (isUserLogged) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            OutlinedTextField(
+                                value = newComment,
+                                onValueChange = {
+                                    viewModel.onNewCommentChange(it)
+                                },
+                                label = { Text(stringResource(R.string.write_a_comment)) },
+                                modifier = Modifier.weight(1f),
+                                maxLines = 4,
+                                isError = recipeState.commentErrorMessage != null,
+                                supportingText = {
+                                    recipeState.commentErrorMessage?.let {
+                                        Text(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            text = it.asString(context),
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                }
+                            )
+                            IconButton(onClick = {
+                                viewModel.sendComment()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = stringResource(R.string.send),
+                                    tint = LightBlue
+                                )
+                            }
+                        }
+                    }
+                    if (recipe.comments.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            recipe.comments.forEach { comment ->
+                                CommentItem(
+                                    comment = comment,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = stringResource(R.string.no_comments),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }

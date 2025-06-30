@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -19,6 +18,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.devapp.cookfriends.ui.theme.Gold
 
 @Composable
 fun RatingStar(
@@ -34,7 +34,7 @@ fun RatingStar(
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary,
+                    tint = Gold,
                     modifier = Modifier
                         .size(24.dp)
                         .clickable(!isIndicator) {
@@ -81,7 +81,7 @@ private fun PartialStar(fraction: Float) {
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
+                tint = Gold,
                 modifier = Modifier.size(24.dp)
             )
         }

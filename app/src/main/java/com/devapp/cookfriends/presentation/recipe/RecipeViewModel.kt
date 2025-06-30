@@ -13,6 +13,8 @@ import com.devapp.cookfriends.domain.usecase.IsUserLoggedUseCase
 import com.devapp.cookfriends.domain.usecase.ToggleFavoriteUseCase
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
+import com.devapp.cookfriends.util.ConnectivityObserver
+import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +32,7 @@ class RecipeViewModel @Inject constructor(
     private val getLoggedUserIdUseCase: GetLoggedUserIdUseCase,
     private val isUserLoggedUseCase: IsUserLoggedUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val connectivityObserver: ConnectivityObserver,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -43,6 +46,9 @@ class RecipeViewModel @Inject constructor(
 
     private val _isUserLogged = MutableStateFlow(false)
     val isUserLogged: StateFlow<Boolean> = _isUserLogged
+
+    private val _newComment = MutableStateFlow<String>("")
+    val newComment: StateFlow<String> = _newComment
 
     init {
         getRecipe()
@@ -118,5 +124,79 @@ class RecipeViewModel @Inject constructor(
                 toggleFavoriteUseCase(it.id)
             }
         }
+    }
+
+    fun onNewCommentChange(comment: String) {
+        _newComment.update { comment }
+    }
+
+    fun onClearMessage() {
+        _recipeState.update { it.copy(message = null) }
+    }
+
+    fun sendComment() {
+        val isCommentValid = validateComment()
+        if (isCommentValid) {
+            viewModelScope.launch {
+                if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
+                    _recipeState.update {
+                        it.copy(
+                            isLoading = false,
+                            message = UiMessage(
+                                UiText.StringResource(R.string.no_internet_connection),
+                                blocking = false
+                            )
+                        )
+                    }
+                } else {
+                    _recipeState.update { it.copy(isLoading = true) }
+                    try {
+                        //sentCommentUseCase(_newComment.value)
+                        _recipeState.update {
+                            it.copy(
+                                isLoading = false,
+                                message = UiMessage(
+                                    uiText = UiText.StringResource(R.string.comment_sent),
+                                    blocking = false
+                                )
+                            )
+                        }
+                        onNewCommentChange("")
+                    } catch (e: Exception) {
+                        _recipeState.update {
+                            it.copy(
+                                isLoading = true,
+                                message = UiMessage(
+                                    uiText = if (e.message != null) UiText.DynamicString(
+                                        e.message ?: ""
+                                    ) else UiText.StringResource(R.string.generic_error),
+                                    blocking = false
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun validateComment(): Boolean {
+        var isValid = true
+        if (_newComment.value.isBlank()) {
+            _recipeState.update {
+                it.copy(
+                    commentErrorMessage = UiText.StringResource(R.string.empty_comment_error)
+                )
+            }
+            isValid = false
+        } else {
+            _recipeState.update {
+                it.copy(
+                    commentErrorMessage = null
+                )
+            }
+        }
+
+        return isValid
     }
 }

@@ -3,6 +3,7 @@ package com.devapp.cookfriends.presentation.common
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import com.devapp.cookfriends.R
@@ -18,6 +19,7 @@ fun CFAsyncImage(
         model = imageUrl,
         contentDescription = imageDescription,
         error = painterResource(errorImage),
+        contentScale = ContentScale.Crop,
         modifier = modifier
     )
 }

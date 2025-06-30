@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -25,7 +26,7 @@ import com.devapp.cookfriends.ui.theme.LightBlue
 import kotlin.uuid.Uuid
 
 @Composable
-fun StepPreviewItem(
+fun StepItem(
     step: Step,
     modifier: Modifier = Modifier
 ) {
@@ -58,8 +59,9 @@ fun StepPreviewItem(
                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
                 ) {
                     step.photos.forEach { photo ->
-                        ImagePreviewItem(
-                            imageUrl = photo.url
+                        ImageItem(
+                            imageUrl = photo.url,
+                            Modifier.height(100.dp).width(100.dp)
                         )
                     }
                 }
@@ -72,7 +74,7 @@ fun StepPreviewItem(
 @Composable
 fun StepPreviewItemPreview() {
     CookFriendsTheme {
-        StepPreviewItem(
+        StepItem(
             step = Step(
                 content = "Machacar la palta en un bol y sazonar con sal y pimienta.",
                 recipeId = Uuid.random(),
@@ -86,7 +88,7 @@ fun StepPreviewItemPreview() {
 @Composable
 fun StepPreviewItemPreviewDark() {
     CookFriendsTheme {
-        StepPreviewItem(
+        StepItem(
             step = Step(
                 content = "Machacar la palta en un bol y sazonar con sal y pimienta.",
                 recipeId = Uuid.random(),

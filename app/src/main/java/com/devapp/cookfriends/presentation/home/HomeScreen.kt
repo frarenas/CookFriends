@@ -81,7 +81,6 @@ fun HomeScreen(
     var selectedItem by remember { mutableStateOf(items[0]) }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val hideBottomBar = currentRoute?.contains("RecipeDetail")
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
@@ -103,8 +102,8 @@ fun HomeScreen(
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
-                bottomBar = if (isUserLogged && !hideBottomBar!!) {
-                    {
+                bottomBar = {
+                    if (isUserLogged) {
                         NavigationBar(
                             windowInsets = NavigationBarDefaults.windowInsets,
                             containerColor = LightBlue50
@@ -128,12 +127,10 @@ fun HomeScreen(
                             }
                         }
                     }
-                } else {
-                    {}
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                floatingActionButton = if (isUserLogged && selectedItem == items[2]) {
-                    {
+                floatingActionButton = {
+                    if (isUserLogged && selectedItem == items[2]) {
                         FloatingActionButton(
                             containerColor = MaterialTheme.colorScheme.primary,
                             onClick = { navigateToNewRecipe() }
@@ -144,8 +141,6 @@ fun HomeScreen(
                             )
                         }
                     }
-                } else {
-                    {}
                 }
             ) { innerPadding ->
                 HomeNavGraph(
@@ -160,4 +155,3 @@ fun HomeScreen(
         }
     }
 }
-

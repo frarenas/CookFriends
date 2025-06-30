@@ -281,9 +281,6 @@ class EditRecipeViewModel @Inject constructor(
                         this.date = Clock.System.now()
                         this.updatePending = true
                     }
-                    /*_editRecipeState.value.recipe.user = user
-                    _editRecipeState.value.recipe.date = Clock.System.now()
-                    _editRecipeState.value.recipe.updatePending = true*/
                     saveRecipeUseCase(_editRecipeState.value.recipe)
                     _editRecipeState.update { it.copy(isLoading = false, error = null) }
                     _snackbarFlow.emit(SnackbarMessage.Error("Se guardaron los cambios."))
