@@ -25,8 +25,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -94,33 +96,36 @@ class EditRecipeViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            _editRecipeState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val recipe = getRecipeUseCase(recipeId)
-                if (recipe == null) {
+            getRecipeUseCase(recipeId)
+                .onStart {
+                    _editRecipeState.update { it.copy(isLoading = true, error = null) }
+                }
+                .catch { e ->
                     _editRecipeState.update {
                         it.copy(
                             isLoading = false,
-                            error = "Recipe not found"
-                        )
-                    }
-                } else {
-                    _editRecipeState.update {
-                        it.copy(
-                            recipe = recipe,
-                            isLoading = false,
-                            error = null
+                            error = e.localizedMessage ?: "An error occurred"
                         )
                     }
                 }
-            } catch (e: Exception) {
-                _editRecipeState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.localizedMessage ?: "An error occurred"
-                    )
+                .collect { recipe ->
+                    if (recipe == null) {
+                        _editRecipeState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = "Recipe not found"
+                            )
+                        }
+                    } else {
+                        _editRecipeState.update {
+                            it.copy(
+                                recipe = recipe,
+                                isLoading = false,
+                                error = null
+                            )
+                        }
+                    }
                 }
-            }
         }
     }
 
@@ -276,9 +281,6 @@ class EditRecipeViewModel @Inject constructor(
                         this.date = Clock.System.now()
                         this.updatePending = true
                     }
-                    /*_editRecipeState.value.recipe.user = user
-                    _editRecipeState.value.recipe.date = Clock.System.now()
-                    _editRecipeState.value.recipe.updatePending = true*/
                     saveRecipeUseCase(_editRecipeState.value.recipe)
                     _editRecipeState.update { it.copy(isLoading = false, error = null) }
                     _snackbarFlow.emit(SnackbarMessage.Error("Se guardaron los cambios."))

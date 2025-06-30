@@ -8,17 +8,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.home.Content
 import com.devapp.cookfriends.presentation.home.Header
 import com.devapp.cookfriends.presentation.home.searchoptions.SearchOptionsDialog
+import kotlin.uuid.Uuid
 
 @Composable
 fun RecipesScreen(
     isUserLogged: Boolean = false,
-    viewModel: RecipesViewModel = hiltViewModel(),
-    mainNavController: NavHostController
+    navigateToDetail: (recipeId: Uuid) -> Unit,
+    viewModel: RecipesViewModel = hiltViewModel()
 ) {
 
     val recipesState by viewModel.recipesState.collectAsState()
@@ -40,11 +40,12 @@ fun RecipesScreen(
             onSearchOptionsClick = { viewModel.openSearchOptionsDialog() }
         )
         Content(
-            navController = mainNavController,
             recipesState = recipesState,
             isUserLogged = isUserLogged,
             onFavoriteClick = { viewModel.toggleFavorite(it) },
-
+            onItemClick = { recipeId ->
+                navigateToDetail(recipeId)
+            }
         )
     }
 

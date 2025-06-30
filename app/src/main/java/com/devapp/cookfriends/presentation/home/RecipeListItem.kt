@@ -34,13 +34,14 @@ fun RecipeListItem(
     recipe: Recipe,
     isUserLogged: Boolean = false,
     onFavoriteClick: (Uuid) -> Unit,
-    onRecipeClick: (Uuid) -> Unit
+    onItemClick: (Uuid) -> Unit
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onRecipeClick(recipe.id) }
+            .fillMaxWidth()
+            .clickable(onClick = { onItemClick(recipe.id) }),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         CFAsyncImage(
             imageUrl = recipe.recipePhotos[0].url,

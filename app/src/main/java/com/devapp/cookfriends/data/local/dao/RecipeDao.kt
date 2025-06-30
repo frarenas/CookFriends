@@ -104,8 +104,18 @@ interface RecipeDao {
     fun getRecipes(userId: Uuid? = null): Flow<List<RecipeWithExtraData>>
 
     @Transaction
-    @Query("SELECT *, 0 as isUserFavorite FROM recipe_table WHERE id = :id LIMIT 1")
-    fun getById(id: Uuid): RecipeWithExtraData?
+    @Query("""
+            SELECT 
+                r.*,
+                (SELECT ROUND(AVG(rt.rate), 2) 
+                 FROM rating_table rt 
+                 WHERE rt.recipe_id = r.id) AS averageRating,
+                (EXISTS (SELECT 1 
+                         FROM favorite_table ft 
+                         WHERE ft.recipe_id = r.id AND ft.user_id = :userId)) AS isUserFavorite
+            FROM recipe_table r WHERE id = :id LIMIT 1
+        """)
+    fun getById(id: Uuid, userId: Uuid? = null): Flow<RecipeWithExtraData?>
 
     @RawQuery(observedEntities = [RecipeEntity::class])
     fun getDynamicRecipes(query: SupportSQLiteQuery): Flow<List<RecipeWithExtraData>>

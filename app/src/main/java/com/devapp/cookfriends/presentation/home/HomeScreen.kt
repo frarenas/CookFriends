@@ -45,11 +45,13 @@ import com.devapp.cookfriends.presentation.home.navigation.NavigationItem
 import com.devapp.cookfriends.presentation.home.navigation.Profile
 import com.devapp.cookfriends.presentation.home.navigation.Recipes
 import com.devapp.cookfriends.ui.theme.LightBlue50
+import kotlin.uuid.Uuid
 
 @Composable
 fun HomeScreen(
     navigateToNewRecipe: () -> Unit,
     navigateToLogin: () -> Unit,
+    navigateToDetail: (recipeId: Uuid) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val recipesState by viewModel.recipesState.collectAsState()
@@ -79,7 +81,6 @@ fun HomeScreen(
     var selectedItem by remember { mutableStateOf(items[0]) }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val hideBottomBar = currentRoute?.contains("RecipeDetail")
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
@@ -101,8 +102,8 @@ fun HomeScreen(
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
-                bottomBar = if (isUserLogged && !hideBottomBar!!) {
-                    {
+                bottomBar = {
+                    if (isUserLogged) {
                         NavigationBar(
                             windowInsets = NavigationBarDefaults.windowInsets,
                             containerColor = LightBlue50
@@ -126,12 +127,10 @@ fun HomeScreen(
                             }
                         }
                     }
-                } else {
-                    {}
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                floatingActionButton = if (isUserLogged && selectedItem == items[2]) {
-                    {
+                floatingActionButton = {
+                    if (isUserLogged && selectedItem == items[2]) {
                         FloatingActionButton(
                             containerColor = MaterialTheme.colorScheme.primary,
                             onClick = { navigateToNewRecipe() }
@@ -142,13 +141,12 @@ fun HomeScreen(
                             )
                         }
                     }
-                } else {
-                    {}
                 }
             ) { innerPadding ->
                 HomeNavGraph(
                     homeNavController = homeNavController,
                     navigateToLogin = navigateToLogin,
+                    navigateToDetail = navigateToDetail,
                     isUserLogged = isUserLogged,
                     paddingValues = innerPadding,
                     snackbarHostState = snackbarHostState
@@ -157,4 +155,3 @@ fun HomeScreen(
         }
     }
 }
-

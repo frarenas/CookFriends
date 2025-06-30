@@ -46,6 +46,7 @@
     <string name="recipe_information">Información de la receta</string>
     <string name="ingredients">Ingredientes</string>
     <string name="steps">Pasos</string>
+    <string name="preparation">Preparación</string>
     <string name="portions">Porciones</string>
     <string name="ingredient">Ingrediente</string>
     <string name="quantity">Cantidad</string>
@@ -80,4 +81,16 @@
     <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
     <string name="repeat_password_mandatory">Vuelva a ingresar la contraseña.</string>
     <string name="password_was_updated">La contraseña se actualizó correctamente.</string>
+
+    // Recipe detail
+    <string name="recipe_not_found">Receta no encontrada.</string>"
+    <string name="loaded_recipe_format">Receta creada por %1s el %1s</string>
+    <string name="comments">Comentarios</string>
+    <string name="portions_format">Para %1d porciones</string>
+    <string name="calculate_ingredients">Calcular ingredientes</string>
+    <string name="write_a_comment">Escribe un comentario</string>
+    <string name="send">Enviar</string>">
+    <string name="empty_comment_error">El commentario no puede estar vacío.</string>
+    <string name="comment_sent">Comentario enviado.</string>
+    <string name="no_comments">No hay comentarios.</string>
 </resources>
