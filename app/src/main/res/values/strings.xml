@@ -46,6 +46,7 @@
     <string name="recipe_information">Información de la receta</string>
     <string name="ingredients">Ingredientes</string>
     <string name="steps">Pasos</string>
+    <string name="preparation">Preparación</string>
     <string name="portions">Porciones</string>
     <string name="ingredient">Ingrediente</string>
     <string name="quantity">Cantidad</string>
@@ -83,5 +84,8 @@
 
     // Recipe detail
     <string name="recipe_not_found">Receta no encontrada.</string>"
-    <string name="loaded_recipe_format">Receta creada por: %1s el %1s</string>
+    <string name="loaded_recipe_format">Receta creada por %1s el %1s</string>
+    <string name="comments">Comentarios</string>
+    <string name="portions_format">Para %1d porciones</string>
+    <string name="calculate_ingredients">Calcular ingredientes</string>
 </resources>

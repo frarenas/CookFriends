@@ -14,9 +14,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,12 +42,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.common.MessageScreen
+import com.devapp.cookfriends.ui.theme.LightBlue
+import com.devapp.cookfriends.util.toShortFormat
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeScreen(
-    recipeId: Uuid? = null,
+    navigateToIngredientCalculator: (recipeId: Uuid) -> Unit,
+    navigateToEditRecipe: (recipeId: Uuid) -> Unit,
     navigateBack: () -> Unit,
     viewModel: RecipeViewModel = hiltViewModel()
 ) {
@@ -73,6 +79,21 @@ fun RecipeScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = if (recipeState.isEditable) {
+            {
+                FloatingActionButton(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    onClick = { navigateToEditRecipe(recipeState.recipe!!.id) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.edit_recipe)
+                    )
+                }
+            }
+        } else {
+            {}
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
@@ -106,8 +127,10 @@ fun RecipeScreen(
                 ) {
                     if (recipe.recipePhotos.isNotEmpty() == true) {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.horizontalScroll(rememberScrollState())
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
                         ) {
                             recipe.recipePhotos.forEach { photo ->
                                 ImagePreviewItem(
@@ -121,41 +144,62 @@ fun RecipeScreen(
                     Text(
                         text = stringResource(
                             R.string.loaded_recipe_format,
-                            recipe.user?.name!!,
-                            recipe.date
-                        )
+                            recipe.user?.username!!,
+                            recipe.date.toShortFormat()
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
                     )
-
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = recipe.description ?: "",
+                        style = MaterialTheme.typography.bodyLarge
                     )
-
                     Spacer(modifier = Modifier.height(16.dp))
                     // Ingredients
                     Text(
                         text = stringResource(R.string.ingredients),
                         style = MaterialTheme.typography.titleLarge
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(
+                                    R.string.portions_format,
+                                    recipe.portions ?: 0
+                                ),
+                                style = MaterialTheme.typography.titleMedium
+                            )
 
-
-                    if (recipe.ingredients.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            recipe.ingredients.forEach { ingredient ->
-                                IngredientPreviewItem(
-                                    ingredient = ingredient,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                            if (recipe.ingredients.isNotEmpty()) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    recipe.ingredients.forEach { ingredient ->
+                                        IngredientPreviewItem(
+                                            ingredient = ingredient,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
                             }
                         }
+                        IconButton(onClick = {
+                            navigateToIngredientCalculator(recipe.id)
+                        }) {
+                            Icon(
+                                Icons.Default.Calculate,
+                                contentDescription = stringResource(R.string.calculate_ingredients),
+                                tint = LightBlue
+                            )
+                        }
                     }
+
                     Spacer(modifier = Modifier.height(16.dp))
                     // Steps
                     Text(
-                        text = stringResource(R.string.steps),
+                        text = stringResource(R.string.preparation),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -174,6 +218,12 @@ fun RecipeScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Comments
+                    Text(
+                        text = stringResource(R.string.comments),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 }
             }
         }

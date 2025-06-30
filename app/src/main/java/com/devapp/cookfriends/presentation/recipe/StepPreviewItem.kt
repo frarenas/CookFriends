@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,8 +29,8 @@ fun StepPreviewItem(
     step: Step,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = modifier.padding(8.dp)) {
+    OutlinedCard(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = modifier.padding(end = 8.dp)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -39,7 +39,7 @@ fun StepPreviewItem(
                 Text(
                     text = step.order.toString(),
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(16.dp, end = 32.dp).drawBehind {
+                    modifier = Modifier.padding(24.dp).drawBehind {
                         drawCircle(
                             color = LightBlue,
                             radius = this.size.maxDimension * 0.8F
@@ -51,11 +51,11 @@ fun StepPreviewItem(
                     modifier = Modifier.weight(1f)
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
             if (step.photos.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.horizontalScroll(rememberScrollState())
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
                 ) {
                     step.photos.forEach { photo ->
                         ImagePreviewItem(

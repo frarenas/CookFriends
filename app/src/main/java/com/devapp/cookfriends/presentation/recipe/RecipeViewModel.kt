@@ -7,7 +7,7 @@ import androidx.navigation.toRoute
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
-import com.devapp.cookfriends.domain.usecase.GetLoggedUserUseCase
+import com.devapp.cookfriends.domain.usecase.GetLoggedUserIdUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
@@ -23,7 +23,7 @@ import kotlin.uuid.Uuid
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
     private val getRecipeUseCase: GetRecipeUseCase,
-    private val getLoggedUserUseCase: GetLoggedUserUseCase,
+    private val getLoggedUserIdUseCase: GetLoggedUserIdUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -73,6 +73,7 @@ class RecipeViewModel @Inject constructor(
                                 message  = null
                             )
                         }
+                        _recipeState.update { it.copy(isEditable = it.recipe?.user?.id == getLoggedUserIdUseCase()) }
                     }
                 } catch (e: Exception) {
                     _recipeState.update {

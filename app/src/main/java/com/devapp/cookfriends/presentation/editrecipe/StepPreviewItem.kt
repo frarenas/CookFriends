@@ -13,10 +13,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +51,7 @@ fun StepPreviewItem(
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var stepPhotoToDelete by remember { mutableStateOf<StepPhoto?>(null) }
 
-    Card(modifier = modifier.fillMaxWidth()) {
+    OutlinedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = modifier.padding(8.dp)) {
             Row(
                 modifier = Modifier
