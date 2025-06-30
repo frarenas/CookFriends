@@ -17,6 +17,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -43,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.common.MessageScreen
 import com.devapp.cookfriends.ui.theme.LightBlue
+import com.devapp.cookfriends.ui.theme.Red
 import com.devapp.cookfriends.util.toShortFormat
 import kotlin.uuid.Uuid
 
@@ -56,6 +59,7 @@ fun RecipeScreen(
 ) {
 
     val recipeState by viewModel.recipeState.collectAsState()
+    val isUserLogged by viewModel.isUserLogged.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
@@ -77,6 +81,19 @@ fun RecipeScreen(
                             contentDescription = stringResource(R.string.back)
                         )
                     }
+                },
+                actions = if (isUserLogged) {
+                    {
+                        IconButton(onClick = { viewModel.toggleFavorite() }) {
+                            Icon(
+                                imageVector = if (recipeState.recipe?.isUserFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = stringResource(R.string.favorite),
+                                tint = Red
+                            )
+                        }
+                    }
+                } else {
+                    {}
                 }
             )
         },

@@ -52,9 +52,9 @@ class RecipeRepository @Inject constructor(
             recipeDao.insert(recipe.toDatabase())
         }
 
-    suspend fun getRecipeById(id: Uuid): Recipe? {
+    suspend fun getRecipeById(id: Uuid, userId: Uuid? = null): Flow<Recipe?> {
         return withContext(Dispatchers.IO) {
-            recipeDao.getById(id)?.toDomain()
+            recipeDao.getById(id, userId).map { it?.toDomain() }
         }
     }
 

@@ -23,7 +23,9 @@ class RecipeDetailViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val recipe = recipeRepository.getRecipeById(id)
-                _recipeDetailState.value = _recipeDetailState.value.copy(recipe = recipe)
+                recipe.collect { recipe ->
+                    _recipeDetailState.value = _recipeDetailState.value.copy(recipe = recipe)
+                }
             } catch (e: Exception) {
                 // Podés loguear o actualizar un campo de error
             }
