@@ -88,13 +88,25 @@ fun RecipeDetailScreen(
         }
     ) { innerPadding ->
         if (recipe != null) {
-            Column(modifier = Modifier.padding(innerPadding)) {
-                recipeHeader(recipe.recipePhotos.firstOrNull()?.url)
-                ingredientsSection(recipe.ingredients)
-                HorizontalDivider()
-                stepsSection(recipe.steps)
-                HorizontalDivider()
-                commentSection(recipe.comments)
+            LazyColumn(modifier = Modifier.padding(innerPadding)) {
+                item {
+                    recipeHeader(recipe.recipePhotos.firstOrNull()?.url)
+                    ingredientsSection(recipe.ingredients)
+                    HorizontalDivider()
+                    stepsSection(recipe.steps)
+                    HorizontalDivider()
+                    Text(
+                        "Comentarios",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    commentInputSection()
+                    HorizontalDivider()
+                }
+                items(recipe.comments) { comment ->
+                    commentItem(comment)
+                }
             }
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -168,29 +180,24 @@ fun stepsSection(steps: List<Step>) {
 }
 
 @Composable
-fun commentSection(comments: List<Comment>) {
-    Column {
-        Text("Comentarios", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-        var newComment by remember { mutableStateOf("") }
+fun commentInputSection() {
+    var newComment by remember { mutableStateOf("") }
 
+    Column(modifier = Modifier.padding(16.dp)) {
         TextField(
             value = newComment,
             onValueChange = { newComment = it },
             label = { Text("Escribe un comentario") },
             modifier = Modifier.fillMaxWidth()
         )
-        Button(onClick = { /* TODO: enviar comentario */ }) {
+        Button(
+            onClick = { /* TODO: enviar comentario */ },
+            modifier = Modifier.align(Alignment.End)
+        ) {
             Text("Enviar")
-        }
-
-        LazyColumn {
-            items(comments) { comment ->
-                commentItem(comment)
-            }
         }
     }
 }
-
 @Composable
 fun commentItem(comment: Comment) {
     Column {
