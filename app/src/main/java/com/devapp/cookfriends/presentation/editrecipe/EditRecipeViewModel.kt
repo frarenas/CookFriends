@@ -241,13 +241,16 @@ class EditRecipeViewModel @Inject constructor(
         val isStepValid = validateStep()
         if (isStepValid) {
             var recipe = _editRecipeState.value.recipe
-            newStep.value.recipeId = recipe.id
-            newStep.value.order = recipe.steps.size
-            val steps: MutableList<Step> = mutableListOf<Step>()
-            steps.addAll(recipe.steps)
-            steps.remove(_newStep.value)
-            steps.add(_newStep.value)
-            recipe.steps = steps
+            _newStep.value.recipeId = recipe.id
+            val steps: MutableList<Step> = recipe.steps.toMutableList()
+            var currentStep = steps.find { step -> step.id == _newStep.value.id }
+            if(currentStep != null) {
+                currentStep = _newStep.value
+            } else {
+                steps.add(_newStep.value)
+            }
+
+            recipe.steps = steps.mapIndexed { index, step -> step.copy(order = index + 1) }
             _editRecipeState.update { it.copy(recipe = recipe) }
 
             _newStep.update {
@@ -262,10 +265,9 @@ class EditRecipeViewModel @Inject constructor(
 
     fun onStepRemove(step: Step) {
         var recipe = _editRecipeState.value.recipe
-        val steps: MutableList<Step> = mutableListOf<Step>()
-        steps.addAll(recipe.steps)
+        val steps: MutableList<Step> = recipe.steps.toMutableList()
         steps.remove(step)
-        recipe.steps = steps
+        recipe.steps = steps.mapIndexed { index, step -> step.copy(order = index + 1) }
         _editRecipeState.update { it.copy(recipe = recipe) }
     }
 
