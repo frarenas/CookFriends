@@ -65,6 +65,7 @@ fun StepItem(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
