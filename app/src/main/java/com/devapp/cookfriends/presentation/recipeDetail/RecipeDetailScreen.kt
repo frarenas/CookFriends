@@ -3,11 +3,13 @@ package com.devapp.cookfriends.presentation.recipeDetail
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -80,18 +82,31 @@ fun RecipeDetailScreen(
                     IconButton(onClick = {}) {
                         Icon(Icons.Filled.Favorite, contentDescription = "Agregar a favoritos")
                     }
-                }
+                },
+                windowInsets = WindowInsets(0.dp)
             )
         }
     ) { innerPadding ->
         if (recipe != null) {
-            Column(modifier = Modifier.padding(innerPadding)) {
-                recipeHeader(recipe.recipePhotos.firstOrNull()?.url)
-                ingredientsSection(recipe.ingredients)
-                HorizontalDivider()
-                stepsSection(recipe.steps)
-                HorizontalDivider()
-                commentSection(recipe.comments)
+            LazyColumn(modifier = Modifier.padding(innerPadding)) {
+                item {
+                    recipeHeader(recipe.recipePhotos.firstOrNull()?.url)
+                    ingredientsSection(recipe.ingredients)
+                    HorizontalDivider()
+                    stepsSection(recipe.steps)
+                    HorizontalDivider()
+                    Text(
+                        "Comentarios",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    commentInputSection()
+                    HorizontalDivider()
+                }
+                items(recipe.comments) { comment ->
+                    commentItem(comment)
+                }
             }
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -165,29 +180,24 @@ fun stepsSection(steps: List<Step>) {
 }
 
 @Composable
-fun commentSection(comments: List<Comment>) {
-    Column {
-        Text("Comentarios", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-        var newComment by remember { mutableStateOf("") }
+fun commentInputSection() {
+    var newComment by remember { mutableStateOf("") }
 
+    Column(modifier = Modifier.padding(16.dp)) {
         TextField(
             value = newComment,
             onValueChange = { newComment = it },
             label = { Text("Escribe un comentario") },
             modifier = Modifier.fillMaxWidth()
         )
-        Button(onClick = { /* TODO: enviar comentario */ }) {
+        Button(
+            onClick = { /* TODO: enviar comentario */ },
+            modifier = Modifier.align(Alignment.End)
+        ) {
             Text("Enviar")
-        }
-
-        LazyColumn {
-            items(comments) { comment ->
-                commentItem(comment)
-            }
         }
     }
 }
-
 @Composable
 fun commentItem(comment: Comment) {
     Column {
