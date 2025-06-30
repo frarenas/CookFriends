@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
@@ -86,11 +88,11 @@ fun LoginScreen(
                         .fillMaxSize()
                         .padding(
                             horizontal = 32.dp,
-                            vertical = 64.dp
+                            vertical = 8.dp
                         )
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = stringResource(R.string.app_name),
@@ -108,9 +110,7 @@ fun LoginScreen(
                         value = username,
                         onValueChange = { viewModel.onUsernameChange(it) },
                         label = { Text(stringResource(R.string.username)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         isError = loginState.usernameErrorMessage != null,
                         supportingText = {
@@ -129,8 +129,7 @@ fun LoginScreen(
                         onValueChange = { viewModel.onPasswordChange(it) },
                         label = { Text(stringResource(R.string.password)) },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
+                            .fillMaxWidth(),
                         visualTransformation = PasswordVisualTransformation(),
                         singleLine = true,
                         isError = loginState.passwordErrorMessage != null,
@@ -158,6 +157,7 @@ fun LoginScreen(
                         Text(stringResource(R.string.keep_me_logged_in))
                     }
 
+                    Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
                             viewModel.login()
@@ -175,7 +175,9 @@ fun LoginScreen(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(R.string.continue_as_guest))
+                        Text(
+                            text = stringResource(R.string.continue_as_guest)
+                        )
                     }
 
                     Row(
@@ -193,7 +195,8 @@ fun LoginScreen(
                         ) {
                             Text(
                                 text = stringResource(R.string.forgot_password),
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                textAlign = TextAlign.Center
                             )
                         }
                         TextButton(
@@ -214,7 +217,8 @@ fun LoginScreen(
                         ) {
                             Text(
                                 text = stringResource(R.string.no_account),
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
