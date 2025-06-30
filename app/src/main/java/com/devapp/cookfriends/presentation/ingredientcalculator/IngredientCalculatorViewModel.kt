@@ -47,15 +47,17 @@ class IngredientCalculatorViewModel @Inject constructor(
         if (recipeId != null) {
             viewModelScope.launch {
                 val recipe = getRecipeUseCase(recipeId)
-                recipe?.let {
-                    val adjusted =
-                        adjustIngredients(it.ingredients, it.portions ?: 1, it.portions ?: 1)
-                    _state.value = IngredientCalculatorState(
-                        ingredients = it.ingredients,
-                        originalPortions = it.portions ?: 1,
-                        desiredPortions = it.portions ?: 1,
-                        adjustedIngredients = adjusted
-                    )
+                recipe.collect { recipe ->
+                    recipe?.let {
+                        val adjusted =
+                            adjustIngredients(it.ingredients, it.portions ?: 1, it.portions ?: 1)
+                        _state.value = IngredientCalculatorState(
+                            ingredients = it.ingredients,
+                            originalPortions = it.portions ?: 1,
+                            desiredPortions = it.portions ?: 1,
+                            adjustedIngredients = adjusted
+                        )
+                    }
                 }
             }
         }
@@ -92,47 +94,47 @@ class IngredientCalculatorViewModel @Inject constructor(
             viewModelScope.launch {
                 val currentState = _state.value
                 val originalRecipe = getRecipeUseCase(recipeId)
+                originalRecipe.collect { originalRecipe ->
+                    originalRecipe?.let { original ->
+                        // Nuevo id
+                        val newRecipeId = Uuid.random()
+                        // Ingredientes ajustados
+                        val copiedIngredients = currentState.adjustedIngredients.map {
+                            it.copy(
+                                id = Uuid.random(),
+                                recipeId = newRecipeId
+                            )
+                        }
+                        // Cambia id de pasos y fotos
+                        val copiedSteps = original.steps.map { step ->
+                            val newStepId = Uuid.random()
+                            step.copy(
+                                id = newStepId,
+                                recipeId = newRecipeId,
+                                photos = step.photos.map { photo ->
+                                    photo.copy(id = Uuid.random(), stepId = newStepId)
+                                }
+                            )
+                        }
 
-                originalRecipe?.let { original ->
-                    // Nuevo id
-                    val newRecipeId = Uuid.random()
-                    // Ingredientes ajustados
-                    val copiedIngredients = currentState.adjustedIngredients.map {
-                        it.copy(
-                            id = Uuid.random(),
-                            recipeId = newRecipeId
+                        val copiedRecipePhotos = original.recipePhotos.map {
+                            it.copy(id = Uuid.random(), recipeId = newRecipeId)
+                        }
+
+                        // Se copia lo demas y se guarda como estaba, pero con el id nuevo
+                        val copiedRecipe = original.copy(
+                            id = newRecipeId,
+                            portions = currentState.desiredPortions,
+                            ingredients = copiedIngredients,
+                            steps = copiedSteps,
+                            recipePhotos = copiedRecipePhotos,
                         )
-                    }
-                    // Cambia id de pasos y fotos
-                    val copiedSteps = original.steps.map { step ->
-                        val newStepId = Uuid.random()
-                        step.copy(
-                            id = newStepId,
-                            recipeId = newRecipeId,
-                            photos = step.photos.map { photo ->
-                                photo.copy(id = Uuid.random(), stepId = newStepId)
-                            }
-                        )
-                    }
-
-                    val copiedRecipePhotos = original.recipePhotos.map {
-                        it.copy(id = Uuid.random(), recipeId = newRecipeId)
-                    }
-
-                    // Se copia lo demas y se guarda como estaba, pero con el id nuevo
-                    val copiedRecipe = original.copy(
-                        id = newRecipeId,
-                        portions = currentState.desiredPortions,
-                        ingredients = copiedIngredients,
-                        steps = copiedSteps,
-                        recipePhotos = copiedRecipePhotos,
-                    )
-                    try {
-                        saveRecipeUseCase(copiedRecipe)
-                        _snackbarFlow.emit(SnackbarMessage.Success("Se guardaron los cambios."))
-                    }
-                    catch (e: Exception) {
-                        _snackbarFlow.emit(SnackbarMessage.Error("Error al guardar la receta"))
+                        try {
+                            saveRecipeUseCase(copiedRecipe)
+                            _snackbarFlow.emit(SnackbarMessage.Success("Se guardaron los cambios."))
+                        } catch (e: Exception) {
+                            _snackbarFlow.emit(SnackbarMessage.Error("Error al guardar la receta"))
+                        }
                     }
                 }
             }

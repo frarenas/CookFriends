@@ -10,6 +10,7 @@ import com.devapp.cookfriends.presentation.home.HomeScreen
 import com.devapp.cookfriends.presentation.ingredientcalculator.IngredientCalculatorScreen
 import com.devapp.cookfriends.presentation.login.LoginScreen
 import com.devapp.cookfriends.presentation.recipeDetail.RecipeDetailScreen
+import com.devapp.cookfriends.presentation.recipe.RecipeScreen
 import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordScreen
 import kotlin.reflect.typeOf
 import kotlin.uuid.Uuid
@@ -20,31 +21,52 @@ fun AppNavGraph(startDestination: Screen) {
     NavHost(navController = mainNavController, startDestination = startDestination) {
         composable<Login> {
             LoginScreen(
-                navigateToHome = { mainNavController.navigate(Home){ popUpTo(Login) { inclusive = true } } },
+                navigateToHome = {
+                    mainNavController.navigate(Home) {
+                        popUpTo(Login) {
+                            inclusive = true
+                        }
+                    }
+                },
                 navigateToRecoveryPassword = { mainNavController.navigate(RecoveryPassword) })
         }
-        composable<Home> { HomeScreen(
-            navigateToNewRecipe = { mainNavController.navigate(EditRecipe()) },
-            navigateToLogin = { mainNavController.navigate(Login) { popUpTo(Home) { inclusive = true } } }
-        ) }
-        //composable<Recipe> { RecipeScreen() }
-        composable<RecoveryPassword> { RecoveryPasswordScreen(mainNavController) }
-        composable<EditRecipe>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)){ backStackEntry ->
-            val editRecipe: EditRecipe = backStackEntry.toRoute()
-            EditRecipeScreen(recipeId = editRecipe.id, navigateBack = { mainNavController.popBackStack() })
+        composable<Home> {
+            HomeScreen(
+                navigateToNewRecipe = { mainNavController.navigate(EditRecipe()) },
+                navigateToLogin = {
+                    mainNavController.navigate(Login) {
+                        popUpTo(Home) {
+                            inclusive = true
+                        }
+                    }
+                },
+                navigateToDetail = { recipeId -> mainNavController.navigate(Recipe(id = recipeId)) }
+            )
         }
-        composable<IngredientCalculator>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) {
-                backStackEntry ->
-            val ingredientCalculator: EditRecipe = backStackEntry.toRoute()
-            IngredientCalculatorScreen(recipeId = ingredientCalculator.id, mainNavController = mainNavController)
-        }
-
-        composable<RecipeDetail>(typeMap = mapOf(typeOf<Uuid>() to UuidNavType)) {
-            val args = it.toRoute<RecipeDetail>()
-            RecipeDetailScreen(
-                recipeId = args.id,
+        composable<Recipe>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) { backStackEntry ->
+            RecipeScreen(
+                navigateToIngredientCalculator = { recipeId -> mainNavController.navigate(IngredientCalculator(id = recipeId)) },
+                navigateToEditRecipe = { recipeId -> mainNavController.navigate(EditRecipe(id = recipeId)) },
                 navigateBack = { mainNavController.popBackStack() }
             )
+        }
+        composable<RecoveryPassword> { RecoveryPasswordScreen(mainNavController) }
+        composable<EditRecipe>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) { backStackEntry ->
+            val editRecipe: EditRecipe = backStackEntry.toRoute()
+            EditRecipeScreen(
+                recipeId = editRecipe.id,
+                navigateBack = { mainNavController.popBackStack() })
+        }
+        composable<IngredientCalculator>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) { backStackEntry ->
+            val ingredientCalculator: IngredientCalculator = backStackEntry.toRoute()
+            IngredientCalculatorScreen(
+                recipeId = ingredientCalculator.id,
+                mainNavController = mainNavController
+            )
+        }
+        composable<RecipeDetail>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) { backStackEntry ->
+            val recipe: Recipe = backStackEntry.toRoute()
+            RecipeDetailScreen(recipeId = recipe.id, navigateBack = { mainNavController.popBackStack() })
         }
     }
 }

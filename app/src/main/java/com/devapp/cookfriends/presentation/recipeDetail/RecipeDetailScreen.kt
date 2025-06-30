@@ -54,7 +54,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetailScreen(
-    recipeId: Uuid,
+    recipeId: Uuid? = null,
     viewModel: RecipeDetailViewModel = hiltViewModel(),
     navigateBack: () -> Unit
 ) {
@@ -62,7 +62,7 @@ fun RecipeDetailScreen(
     val recipe = state.recipe
 
     LaunchedEffect(recipeId) {
-        viewModel.loadRecipe(recipeId)
+        viewModel.loadRecipe(recipeId!!)
     }
 
     Scaffold(

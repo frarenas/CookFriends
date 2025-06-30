@@ -136,6 +136,7 @@ fun EditRecipeScreen(
                         text = stringResource(R.string.recipe_information),
                         style = MaterialTheme.typography.titleLarge
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = editRecipeState.recipe.name ?: "",
                         onValueChange = { viewModel.onRecipeChange(editRecipeState.recipe.copy(name = it)) },
@@ -153,7 +154,6 @@ fun EditRecipeScreen(
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = editRecipeState.recipe.description ?: "",
                         onValueChange = {
@@ -177,7 +177,6 @@ fun EditRecipeScreen(
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
                     RecipeTypeDropDownMenu(
                         selectedRecipeType = editRecipeState.recipe.recipeType,
                         availableRecipeTypes = availableRecipeTypes,
@@ -254,6 +253,7 @@ fun EditRecipeScreen(
                         text = stringResource(R.string.ingredients),
                         style = MaterialTheme.typography.titleLarge
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = (editRecipeState.recipe.portions?.toString() ?: ""),
                         onValueChange = {
@@ -274,10 +274,8 @@ fun EditRecipeScreen(
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
@@ -371,7 +369,7 @@ fun EditRecipeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     // Steps
                     Text(
-                        text = stringResource(R.string.steps),
+                        text = stringResource(R.string.preparation),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
