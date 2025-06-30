@@ -17,9 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.RecipeType
+import com.devapp.cookfriends.domain.model.UiText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,10 +31,11 @@ fun RecipeTypeDropDownMenu(
     onSelectItem: (RecipeType?) -> Unit,
     modifier: Modifier = Modifier,
     label: String = stringResource(R.string.label_recipe_type),
-    errorMessage: String? = null,
+    errorMessage: UiText? = null
 ) {
     val selectOneRecipeTypePlaceholder = stringResource(R.string.select_recipe_type)
     var recipeTypeMenuExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     ExposedDropdownMenuBox(
         expanded = recipeTypeMenuExpanded,
@@ -60,10 +63,10 @@ fun RecipeTypeDropDownMenu(
             singleLine = true,
             isError = errorMessage != null,
             supportingText = {
-                if (errorMessage != null) {
+                errorMessage?.let {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = errorMessage,
+                        text = it.asString(context),
                         color = MaterialTheme.colorScheme.error
                     )
                 }

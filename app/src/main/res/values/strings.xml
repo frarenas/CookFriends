@@ -93,4 +93,18 @@
     <string name="empty_comment_error">El commentario no puede estar vacío.</string>
     <string name="comment_sent">Comentario enviado.</string>
     <string name="no_comments">No hay comentarios.</string>
+
+    // Edit recipe
+    <string name="changes_saved">Los cambios se guardaron correctamente.</string>
+    <string name="recipe_name_mandatory">Ingrese el nombre de la receta.</string>
+    <string name="recipe_description_mandatory">Ingrese la descripción de la receta.</string>
+    <string name="recipe_type_mandatory">Seleccione el tipo de receta.</string>
+    <string name="photo_url_invalid">La URL de la imagen no es válida.</string>
+    <string name="ingredient_name_mandatory">Ingrese el nombre.</string>
+    <string name="ingredient_quantity_mandatory">Ingrese la cantidad.</string>
+    <string name="portions_mandatory">Ingrese la cantidad de porciones.</string>
+    <string name="photos_mandatory">Ingrese al menos una foto.</string>
+    <string name="ingredients_mandatory">Ingrese los ingredientes.</string>
+    <string name="steps_mandatory">Ingrese los pasos.</string>
+    <string name="step_content_mandatory">Ingrese el paso.</string>
 </resources>
