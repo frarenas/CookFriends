@@ -81,6 +81,7 @@ fun HomeScreen(
     var selectedItem by remember { mutableStateOf(items[0]) }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val hideBottomBar = currentRoute?.contains("RecipeDetail")
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
@@ -102,7 +103,7 @@ fun HomeScreen(
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
-                bottomBar = if (isUserLogged) {
+                bottomBar = if (isUserLogged && !hideBottomBar!!) {
                     {
                         NavigationBar(
                             windowInsets = NavigationBarDefaults.windowInsets,
