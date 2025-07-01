@@ -56,8 +56,8 @@ fun RecipeListItem(
                 recipe.name!!,
                 style = MaterialTheme.typography.headlineSmall
             )
-            Text(text = stringResource(R.string.category, recipe.recipeType!!.name))
-            Text(text = stringResource(R.string.author, recipe.user!!.username))
+            Text(text = stringResource(R.string.category, recipe.recipeType?.name ?: ""))
+            Text(text = stringResource(R.string.author, recipe.user?.username ?: ""))
         }
         Spacer(modifier = Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
