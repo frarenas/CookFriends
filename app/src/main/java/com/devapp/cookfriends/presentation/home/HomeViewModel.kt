@@ -45,7 +45,10 @@ class HomeViewModel @Inject constructor(
                 _recipesState.update {
                     it.copy(
                         isLoading = false,
-                        error = UiMessage(UiText.StringResource(R.string.no_internet_connection), !dataFirstSynced)
+                        error = UiMessage(
+                            UiText.StringResource(R.string.no_internet_connection),
+                            !dataFirstSynced
+                        )
                     )
                 }
             } else {
@@ -54,11 +57,15 @@ class HomeViewModel @Inject constructor(
                     fetchDataUseCase()
                     setDataFirstSyncedUseCase()
                     _recipesState.update { it.copy(isLoading = false, error = null) }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    e
                     _recipesState.update {
                         it.copy(
                             isLoading = false,
-                            error = UiMessage(UiText.StringResource(R.string.generic_error), !dataFirstSynced)
+                            error = UiMessage(
+                                UiText.StringResource(R.string.generic_error),
+                                !dataFirstSynced
+                            )
                         )
                     }
                 }

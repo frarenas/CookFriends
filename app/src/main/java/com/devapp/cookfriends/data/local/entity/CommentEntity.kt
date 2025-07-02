@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.devapp.cookfriends.domain.model.Comment
+import kotlinx.datetime.Instant
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -22,12 +22,6 @@ data class CommentEntity(
     @ColumnInfo(name = "id") val id: Uuid,
     @ColumnInfo(name = "comment") val comment: String,
     @ColumnInfo(name = "user_id") val userId: Uuid,
-    @ColumnInfo(name = "recipe_id", index = true) val recipeId: Uuid
-)
-
-fun Comment.toDatabase() = CommentEntity(
-    id = id,
-    comment = comment,
-    userId = userId,
-    recipeId = recipeId
+    @ColumnInfo(name = "recipe_id", index = true) val recipeId: Uuid,
+    @ColumnInfo(name = "date") val date: Instant
 )

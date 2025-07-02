@@ -29,9 +29,10 @@ data class RecipeWithExtraData(
     val ratings: List<RatingEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "recipe_id"
+        entityColumn = "recipe_id",
+        entity = CommentEntity::class
     )
-    val comments: List<CommentEntity>,
+    val comments: List<CommentWithUser>,
     @Relation(
         parentColumn = "id",
         entityColumn = "recipe_id"
