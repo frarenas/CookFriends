@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.domain.model.Comment
 import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.GetLoggedUserIdUseCase
+import com.devapp.cookfriends.domain.usecase.GetLoggedUserUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.IsUserLoggedUseCase
 import com.devapp.cookfriends.domain.usecase.ToggleFavoriteUseCase
+import com.devapp.cookfriends.domain.usecase.AddCommentUseCase
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
 import com.devapp.cookfriends.util.ConnectivityObserver
@@ -30,8 +33,10 @@ import kotlin.uuid.Uuid
 class RecipeViewModel @Inject constructor(
     private val getRecipeUseCase: GetRecipeUseCase,
     private val getLoggedUserIdUseCase: GetLoggedUserIdUseCase,
+    private val getLoggedUserUseCase: GetLoggedUserUseCase,
     private val isUserLoggedUseCase: IsUserLoggedUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val addCommentUseCase: AddCommentUseCase,
     private val connectivityObserver: ConnectivityObserver,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -47,7 +52,7 @@ class RecipeViewModel @Inject constructor(
     private val _isUserLogged = MutableStateFlow(false)
     val isUserLogged: StateFlow<Boolean> = _isUserLogged
 
-    private val _newComment = MutableStateFlow<String>("")
+    private val _newComment = MutableStateFlow("")
     val newComment: StateFlow<String> = _newComment
 
     init {
@@ -151,7 +156,14 @@ class RecipeViewModel @Inject constructor(
                 } else {
                     _recipeState.update { it.copy(isLoading = true) }
                     try {
-                        //sentCommentUseCase(_newComment.value)
+                        val comment = Comment(
+                            comment = _newComment.value,
+                            recipeId = _recipeState.value.recipe!!.id,
+                            user = getLoggedUserUseCase(),
+                            date = kotlinx.datetime.Clock.System.now(),
+                            updatePending = true
+                        )
+                        addCommentUseCase(comment)
                         _recipeState.update {
                             it.copy(
                                 isLoading = false,

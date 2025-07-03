@@ -22,7 +22,8 @@ data class RecipeModel(
     @SerialName("favorites"      ) var favorites     : List<FavoriteModel>         = arrayListOf(),
     @SerialName("date"           ) var date          : Instant,
     @SerialName("user_calculated") var userCalculated: Boolean                     = false,
-    @SerialName("update_pending" ) var updatePending : Boolean                     = false
+    @SerialName("update_pending" ) var updatePending : Boolean                     = false,
+    @SerialName("published"      ) var published     : Boolean                     = false
 )
 
 fun Recipe.toModel() = RecipeModel(
@@ -37,5 +38,6 @@ fun Recipe.toModel() = RecipeModel(
     recipePhotos = recipePhotos.map { photo -> photo.toModel() },
     date = date,
     userCalculated = userCalculated,
-    updatePending = updatePending
+    updatePending = updatePending,
+    published = published
 )

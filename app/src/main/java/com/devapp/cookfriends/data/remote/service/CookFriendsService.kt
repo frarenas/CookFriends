@@ -3,6 +3,7 @@ package com.devapp.cookfriends.data.remote.service
 import com.devapp.cookfriends.data.remote.model.ApiResponse
 import com.devapp.cookfriends.data.remote.model.ChangePasswordRequest
 import com.devapp.cookfriends.data.remote.model.ChangePasswordResponse
+import com.devapp.cookfriends.data.remote.model.CommentModel
 import com.devapp.cookfriends.data.remote.model.FavoriteModel
 import com.devapp.cookfriends.data.remote.model.LoginResponse
 import com.devapp.cookfriends.data.remote.model.RecipeModel
@@ -11,11 +12,13 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import kotlin.uuid.Uuid
 
 interface CookFriendsService {
 
     @GET("exec?function=getRecipes")
     suspend fun getRecipes(
+        @Query("userid") userId: Uuid?
     ): List<RecipeModel>
 
     @GET("exec?function=getRecipeTypes")
@@ -47,4 +50,9 @@ interface CookFriendsService {
     suspend fun changePassword(
         @Body request: ChangePasswordRequest
     ): ChangePasswordResponse
+
+    @POST("exec?function=addComment")
+    suspend fun addComment(
+        @Body request: CommentModel
+    ): ApiResponse
 }

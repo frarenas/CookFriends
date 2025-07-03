@@ -10,15 +10,25 @@ data class Comment(
     var comment: String,
     var recipeId: Uuid,
     var user: User,
-    var date: Instant
+    var date: Instant,
+    var updatePending: Boolean = false,
+    var published: Boolean = false
 )
 
-fun CommentModel.toDomain() = Comment(id, comment, recipeId, user.toDomain(), date)
+fun CommentModel.toDomain() = Comment(
+    id = id,
+    comment = comment,
+    recipeId = recipeId,
+    user = user.toDomain(),
+    date = date,
+    published = published
+)
 
 fun CommentWithUser.toDomain() = Comment(
     id = comment.id,
     comment = comment.comment,
     recipeId = comment.recipeId,
     user.toDomain(),
-    date = comment.date
+    date = comment.date,
+    published = comment.published
 )

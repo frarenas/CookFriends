@@ -139,7 +139,7 @@ fun RecipeScreen(
                         viewModel.onClearMessage()
                     }
                 }
-                var recipe = recipeState.recipe!!
+                val recipe = recipeState.recipe!!
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

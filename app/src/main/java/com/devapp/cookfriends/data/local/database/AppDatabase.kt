@@ -3,6 +3,7 @@ package com.devapp.cookfriends.data.local.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.devapp.cookfriends.data.local.dao.CommentDao
 import com.devapp.cookfriends.data.local.dao.FavoriteDao
 import com.devapp.cookfriends.data.local.dao.RecipeDao
 import com.devapp.cookfriends.data.local.dao.RecipeTypeDao
@@ -31,7 +32,7 @@ import com.devapp.cookfriends.data.local.entity.UserEntity
         UserEntity::class,
         StepPhotoEntity::class
     ],
-    version = 23,
+    version = 24,
     exportSchema = false)
 @TypeConverters(UuidConverter::class, InstantConverter::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -43,4 +44,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun favoriteDao(): FavoriteDao
 
     abstract fun userDao(): UserDao
+
+    abstract fun commentDao(): CommentDao
 }

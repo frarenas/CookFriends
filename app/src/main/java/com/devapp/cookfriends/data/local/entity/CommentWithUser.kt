@@ -22,7 +22,9 @@ fun Comment.toDatabase() = CommentWithUser(
         comment = comment,
         recipeId = recipeId,
         date = date,
-        userId = user.id
+        userId = user.id,
+        updatePending = updatePending,
+        published = published
     ),
     user = user.toDatabase()
 )

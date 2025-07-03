@@ -24,7 +24,8 @@ data class Recipe(
     var favorites: List<Favorite> = arrayListOf(),
     var date: Instant = Clock.System.now(),
     var userCalculated: Boolean = false,
-    var updatePending: Boolean = false
+    var updatePending: Boolean = false,
+    var published: Boolean = false
 )
 
 fun RecipeModel.toDomain() = Recipe(
@@ -40,7 +41,9 @@ fun RecipeModel.toDomain() = Recipe(
     comments = comments.map { comment -> comment.toDomain() },
     ratings = ratings.map { rating -> rating.toDomain() },
     favorites = favorites.map { favorite -> favorite.toDomain() },
-    date = date
+    date = date,
+    userCalculated = userCalculated,
+    published = published
 )
 
 fun RecipeWithExtraData.toDomain() = Recipe(
@@ -58,5 +61,7 @@ fun RecipeWithExtraData.toDomain() = Recipe(
     comments.map { comment -> comment.toDomain() },
     ratings.map { rating -> rating.toDomain() },
     favorites.map { favorite -> favorite.toDomain() },
-    date = recipe.date
+    date = recipe.date,
+    userCalculated = recipe.userCalculated,
+    published = recipe.published
 )

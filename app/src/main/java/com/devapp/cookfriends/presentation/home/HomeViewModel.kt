@@ -57,8 +57,7 @@ class HomeViewModel @Inject constructor(
                     fetchDataUseCase()
                     setDataFirstSyncedUseCase()
                     _recipesState.update { it.copy(isLoading = false, error = null) }
-                } catch (e: Exception) {
-                    e
+                } catch (_: Exception) {
                     _recipesState.update {
                         it.copy(
                             isLoading = false,

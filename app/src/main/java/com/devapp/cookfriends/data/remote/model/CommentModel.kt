@@ -8,11 +8,12 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class CommentModel(
-    @SerialName("id"      ) var id        : Uuid,
-    @SerialName("comment" ) var comment   : String,
-    @SerialName("recipeId") var recipeId  : Uuid,
-    @SerialName("user"    ) var user      : UserModel,
-    @SerialName("date"    ) var date      : Instant,
+    @SerialName("id"       ) var id        : Uuid,
+    @SerialName("comment"  ) var comment   : String,
+    @SerialName("recipeId" ) var recipeId  : Uuid,
+    @SerialName("user"     ) var user      : UserModel,
+    @SerialName("date"     ) var date      : Instant,
+    @SerialName("published") var published : Boolean
 )
 
 fun Comment.toModel() = CommentModel(
@@ -20,5 +21,6 @@ fun Comment.toModel() = CommentModel(
     comment = comment,
     recipeId = recipeId,
     user = user.toModel(),
-    date = date
+    date = date,
+    published = published
 )

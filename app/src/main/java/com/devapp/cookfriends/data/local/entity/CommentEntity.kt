@@ -23,5 +23,7 @@ data class CommentEntity(
     @ColumnInfo(name = "comment") val comment: String,
     @ColumnInfo(name = "user_id") val userId: Uuid,
     @ColumnInfo(name = "recipe_id", index = true) val recipeId: Uuid,
-    @ColumnInfo(name = "date") val date: Instant
+    @ColumnInfo(name = "date") val date: Instant,
+    @ColumnInfo(name = "update_pending") val updatePending: Boolean = false,
+    @ColumnInfo(name = "published") val published: Boolean
 )

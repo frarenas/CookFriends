@@ -60,10 +60,10 @@ class EditRecipeViewModel @Inject constructor(
     private val _availableRecipeTypes = MutableStateFlow<List<RecipeType>>(emptyList())
     val availableRecipeTypes: StateFlow<List<RecipeType>> = _availableRecipeTypes.asStateFlow()
 
-    private val _newImageUrl = MutableStateFlow<String>("")
+    private val _newImageUrl = MutableStateFlow("")
     val newImageUrl: StateFlow<String> = _newImageUrl
 
-    private val _newIngredient = MutableStateFlow<Ingredient>(Ingredient(
+    private val _newIngredient = MutableStateFlow(Ingredient(
         name = "",
         quantity = "",
         measurement = "",
@@ -71,7 +71,7 @@ class EditRecipeViewModel @Inject constructor(
     ))
     val newIngredient: StateFlow<Ingredient> = _newIngredient
 
-    private val _newStep = MutableStateFlow<Step>(
+    private val _newStep = MutableStateFlow(
         Step(
             content = "",
             order = 0,
@@ -185,7 +185,7 @@ class EditRecipeViewModel @Inject constructor(
     fun onPhotoAdd() {
         val isPhotoValid = validatePhotoUrl()
         if (isPhotoValid) {
-            var recipe = _editRecipeState.value.recipe
+            val recipe = _editRecipeState.value.recipe
             val recipePhoto = RecipePhoto(
                 url = _newImageUrl.value.trim(),
                 recipeId = _editRecipeState.value.recipe.id
@@ -201,7 +201,7 @@ class EditRecipeViewModel @Inject constructor(
     }
 
     fun onPhotoRemove(recipePhoto: RecipePhoto) {
-        var recipe = _editRecipeState.value.recipe
+        val recipe = _editRecipeState.value.recipe
         val photos = recipe.recipePhotos.toMutableList()
         photos.remove(recipePhoto)
         recipe.recipePhotos = photos
@@ -211,7 +211,7 @@ class EditRecipeViewModel @Inject constructor(
     fun onIngredientAdd() {
         val isIngredientValid = validateIngredient()
         if (isIngredientValid) {
-            var recipe = _editRecipeState.value.recipe
+            val recipe = _editRecipeState.value.recipe
             _newIngredient.value.recipeId = recipe.id
             val ingredients = recipe.ingredients.toMutableList()
             ingredients.remove(_newIngredient.value)
@@ -231,7 +231,7 @@ class EditRecipeViewModel @Inject constructor(
     }
 
     fun onIngredientRemove(ingredient: Ingredient) {
-        var recipe = _editRecipeState.value.recipe
+        val recipe = _editRecipeState.value.recipe
         val ingredients = recipe.ingredients.toMutableList()
         ingredients.remove(ingredient)
         recipe.ingredients = ingredients
@@ -241,13 +241,11 @@ class EditRecipeViewModel @Inject constructor(
     fun onStepAdd() {
         val isStepValid = validateStep()
         if (isStepValid) {
-            var recipe = _editRecipeState.value.recipe
+            val recipe = _editRecipeState.value.recipe
             _newStep.value.recipeId = recipe.id
             val steps = recipe.steps.toMutableList()
-            var currentStep = steps.find { step -> step.id == _newStep.value.id }
-            if(currentStep != null) {
-                currentStep = _newStep.value
-            } else {
+            val currentStep = steps.find { step -> step.id == _newStep.value.id }
+            if(currentStep == null) {
                 steps.add(_newStep.value)
             }
 
@@ -265,7 +263,7 @@ class EditRecipeViewModel @Inject constructor(
     }
 
     fun onStepRemove(step: Step) {
-        var recipe = _editRecipeState.value.recipe
+        val recipe = _editRecipeState.value.recipe
         val steps = recipe.steps.toMutableList()
         steps.remove(step)
         recipe.steps = steps.mapIndexed { index, step -> step.copy(order = index + 1) }
