@@ -104,7 +104,10 @@ interface RecipeDao {
                  WHERE rt.recipe_id = r.id) AS averageRating,
                 (EXISTS (SELECT 1 
                          FROM favorite_table ft 
-                         WHERE ft.recipe_id = r.id AND ft.user_id = :userId)) AS isUserFavorite
+                         WHERE ft.recipe_id = r.id AND ft.user_id = :userId)) AS isUserFavorite,
+                 (SELECT rt.rate 
+                 FROM rating_table rt 
+                 WHERE rt.user_id = :userId AND rt.recipe_id = r.Id LIMIT 1) AS userRating
             FROM recipe_table r WHERE id = :id LIMIT 1
         """)
     fun getById(id: Uuid, userId: Uuid? = null): Flow<RecipeWithExtraData?>

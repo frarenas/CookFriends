@@ -146,7 +146,7 @@ fun RecipeScreen(
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if (recipe.recipePhotos.isNotEmpty() == true) {
+                    if (recipe.recipePhotos.isNotEmpty()) {
                         Row(
                             horizontalArrangement = Arrangement.Center,
                             modifier = Modifier
@@ -182,9 +182,9 @@ fun RecipeScreen(
                         if(isUserLogged) {
                             Spacer(modifier = Modifier.width(16.dp))
                             RatingStar(
-                                rating = recipe.averageRating?.toFloat() ?: 0F,
+                                rating = recipe.userRating?.toFloat() ?: 0F,
                                 maxRating = 5,
-                                onStarClick = {}
+                                onStarClick = { viewModel.rateRecipe(it) }
                             )
                         }
                     }
