@@ -37,4 +37,7 @@ object DatabaseModule {
 
     @Provides
     fun provideUserDao(appDatabase: AppDatabase) = appDatabase.userDao()
+
+    @Provides
+    fun provideCommentDao(appDatabase: AppDatabase) = appDatabase.commentDao()
 }

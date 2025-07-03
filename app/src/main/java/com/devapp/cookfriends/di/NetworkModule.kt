@@ -18,8 +18,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
 
-    val API_BASE_URL = "https://script.google.com/macros/s/AKfycbwULXoOkhmIy53xGLhFm2g41sJmx_FfyE7O0lKHUjM29dXdKaGiUCrLst7HA4JOAlRw/"
-
     @Provides
     @Singleton
     fun provideKotlinXSerialization(): Json = Json { ignoreUnknownKeys = true }
@@ -53,4 +51,8 @@ class NetworkModule {
         .client(client)
         .build()
         .create(CookFriendsService::class.java)
+
+    private companion object {
+        val API_BASE_URL = "https://script.google.com/macros/s/AKfycbzYa1RDPseB3M2gtqRqZc7qWr7hSg1G43EEjYytrdDbPICWvneQ5xA0BPJncnyCHU1s/"
+    }
 }

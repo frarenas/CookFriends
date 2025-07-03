@@ -26,13 +26,13 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState
 
-    private val _username = MutableStateFlow<String>("")
+    private val _username = MutableStateFlow("")
     val username: StateFlow<String> = _username
 
-    private val _password = MutableStateFlow<String>("")
+    private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password
 
-    private val _keepMeLoggedInChecked = MutableStateFlow<Boolean>(false)
+    private val _keepMeLoggedInChecked = MutableStateFlow(false)
     val keepMeLoggedInChecked: StateFlow<Boolean> = _keepMeLoggedInChecked
 
     fun login() {

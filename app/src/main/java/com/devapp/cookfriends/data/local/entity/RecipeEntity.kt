@@ -20,5 +20,6 @@ data class RecipeEntity(
     @ColumnInfo(name = "portions") val portions: Int,
     @ColumnInfo(name = "date") val date: Instant,
     @ColumnInfo(name = "user_calculated") val userCalculated: Boolean = false,
-    @ColumnInfo(name = "update_pending") val updatePending: Boolean = false
+    @ColumnInfo(name = "update_pending") val updatePending: Boolean = false,
+    @ColumnInfo(name = "published") val published: Boolean = false
 )

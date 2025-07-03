@@ -10,6 +10,6 @@ import kotlin.uuid.Uuid
 interface UserDao {
 
     @Transaction
-    @Query("SELECT *, 0 as isUserFavorite FROM user_table WHERE id = :id LIMIT 1")
+    @Query("SELECT * FROM user_table WHERE id = :id LIMIT 1")
     fun getById(id: Uuid): UserEntity
 }

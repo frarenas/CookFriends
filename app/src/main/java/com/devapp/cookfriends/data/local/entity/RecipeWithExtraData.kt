@@ -29,9 +29,10 @@ data class RecipeWithExtraData(
     val ratings: List<RatingEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "recipe_id"
+        entityColumn = "recipe_id",
+        entity = CommentEntity::class
     )
-    val comments: List<CommentEntity>,
+    val comments: List<CommentWithUser>,
     @Relation(
         parentColumn = "id",
         entityColumn = "recipe_id"
@@ -63,7 +64,8 @@ fun Recipe.toDatabase() = RecipeWithExtraData(
         recipeTypeId = recipeType?.id,
         date = date,
         updatePending = updatePending,
-        userCalculated = userCalculated
+        userCalculated = userCalculated,
+        published = published
     ),
     ingredients = ingredients.map { ingredient -> ingredient.toDatabase() },
     steps = steps.map { step -> step.toDatabase() },

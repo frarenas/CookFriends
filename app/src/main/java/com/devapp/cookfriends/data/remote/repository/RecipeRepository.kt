@@ -22,8 +22,8 @@ class RecipeRepository @Inject constructor(
     private val recipeDao: RecipeDao
 ) {
 
-    suspend fun getRecipesFromApi(): List<Recipe> {
-        val recipes: List<RecipeModel> = service.getRecipes()
+    suspend fun getRecipesFromApi(userId: Uuid?): List<Recipe> {
+        val recipes: List<RecipeModel> = service.getRecipes(userId)
         return recipes.map { it.toDomain() }
     }
 

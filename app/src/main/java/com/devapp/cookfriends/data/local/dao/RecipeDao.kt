@@ -72,7 +72,13 @@ interface RecipeDao {
             insertRatings(recipe.ratings)
         }
         if (recipe.comments.isNotEmpty()) {
-            insertComments(recipe.comments)
+            val commentEntities = recipe.comments.map { it.comment }
+            insertComments(commentEntities)
+
+            val allCommentUsers = recipe.comments.map { it.user }
+            if (allCommentUsers.isNotEmpty()) {
+                insertUsers(allCommentUsers)
+            }
         }
         if (recipe.favorites.isNotEmpty()) {
             insertFavorites(recipe.favorites)
