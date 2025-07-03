@@ -103,11 +103,16 @@ class RecipeViewModel @Inject constructor(
                                 )
                             }
                         } else {
+                            val userId = getLoggedUserIdUseCase()
+                            val comments =
+                                recipe.comments.filter { it.user.id == userId || it.published }
+                                    .sortedByDescending { it.date }
+                            recipe.comments = comments
                             _recipeState.update {
                                 it.copy(
                                     recipe = recipe,
                                     isLoading = false,
-                                    message  = null
+                                    message = null
                                 )
                             }
                             _recipeState.update { it.copy(isEditable = it.recipe?.user?.id == getLoggedUserIdUseCase()) }
