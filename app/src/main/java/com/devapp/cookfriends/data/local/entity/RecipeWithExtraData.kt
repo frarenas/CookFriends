@@ -51,7 +51,8 @@ data class RecipeWithExtraData(
     )
     val user: UserEntity?,
     val averageRating: Double? = null,
-    val isUserFavorite: Boolean = false
+    val isUserFavorite: Boolean = false,
+    val userRating: Int? = null,
 )
 
 fun Recipe.toDatabase() = RecipeWithExtraData(

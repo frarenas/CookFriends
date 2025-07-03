@@ -40,4 +40,7 @@ object DatabaseModule {
 
     @Provides
     fun provideCommentDao(appDatabase: AppDatabase) = appDatabase.commentDao()
+
+    @Provides
+    fun provideRatingDao(appDatabase: AppDatabase) = appDatabase.ratingDao()
 }

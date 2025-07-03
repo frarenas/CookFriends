@@ -17,9 +17,6 @@ interface FavoriteDao {
     @Delete
     suspend fun delete(favorite: FavoriteEntity)
 
-    //@Query("DELETE FROM favorite_table WHERE user_id = :userId AND recipe_id = :recipeId")
-    //suspend fun deleteFavoriteByUserAndRecipeId(userId: Uuid, recipeId: Uuid)
-
     @Query("SELECT * FROM favorite_table WHERE user_id = :userId AND recipe_id = :recipeId LIMIT 1")
     fun getFavoritesByUserIdAndRecipeId(userId: Uuid, recipeId: Uuid): FavoriteEntity?
 

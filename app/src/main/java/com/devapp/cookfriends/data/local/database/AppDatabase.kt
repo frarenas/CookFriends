@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.devapp.cookfriends.data.local.dao.CommentDao
 import com.devapp.cookfriends.data.local.dao.FavoriteDao
+import com.devapp.cookfriends.data.local.dao.RatingDao
 import com.devapp.cookfriends.data.local.dao.RecipeDao
 import com.devapp.cookfriends.data.local.dao.RecipeTypeDao
 import com.devapp.cookfriends.data.local.dao.UserDao
@@ -46,4 +47,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 
     abstract fun commentDao(): CommentDao
+
+    abstract fun ratingDao(): RatingDao
 }

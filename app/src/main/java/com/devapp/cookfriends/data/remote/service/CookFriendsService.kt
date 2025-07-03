@@ -6,6 +6,7 @@ import com.devapp.cookfriends.data.remote.model.ChangePasswordResponse
 import com.devapp.cookfriends.data.remote.model.CommentModel
 import com.devapp.cookfriends.data.remote.model.FavoriteModel
 import com.devapp.cookfriends.data.remote.model.LoginResponse
+import com.devapp.cookfriends.data.remote.model.RatingModel
 import com.devapp.cookfriends.data.remote.model.RecipeModel
 import com.devapp.cookfriends.data.remote.model.RecipeTypeModel
 import retrofit2.http.Body
@@ -54,5 +55,10 @@ interface CookFriendsService {
     @POST("exec?function=addComment")
     suspend fun addComment(
         @Body request: CommentModel
+    ): ApiResponse
+
+    @POST("exec?function=rateRecipe")
+    suspend fun rateRecipe(
+        @Body request: RatingModel
     ): ApiResponse
 }

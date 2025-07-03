@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Comment
+import com.devapp.cookfriends.domain.model.Rating
 import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.GetLoggedUserIdUseCase
@@ -14,6 +15,7 @@ import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.IsUserLoggedUseCase
 import com.devapp.cookfriends.domain.usecase.ToggleFavoriteUseCase
 import com.devapp.cookfriends.domain.usecase.AddCommentUseCase
+import com.devapp.cookfriends.domain.usecase.RateRecipeUseCase
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
 import com.devapp.cookfriends.util.ConnectivityObserver
@@ -37,6 +39,7 @@ class RecipeViewModel @Inject constructor(
     private val isUserLoggedUseCase: IsUserLoggedUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val addCommentUseCase: AddCommentUseCase,
+    private val rateRecipeUseCase: RateRecipeUseCase,
     private val connectivityObserver: ConnectivityObserver,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -115,7 +118,7 @@ class RecipeViewModel @Inject constructor(
                                     message = null
                                 )
                             }
-                            _recipeState.update { it.copy(isEditable = it.recipe?.user?.id == getLoggedUserIdUseCase()) }
+                            _recipeState.update { it.copy(isEditable = it.recipe?.user?.id == userId) }
                         }
                     }
             }
@@ -142,6 +145,51 @@ class RecipeViewModel @Inject constructor(
 
     fun onClearMessage() {
         _recipeState.update { it.copy(message = null) }
+    }
+
+    fun rateRecipe(rate: Int) {
+        viewModelScope.launch {
+            if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
+                _recipeState.update {
+                    it.copy(
+                        isLoading = false,
+                        message = UiMessage(
+                            UiText.StringResource(R.string.no_internet_connection),
+                            blocking = false
+                        )
+                    )
+                }
+            } else {
+                _recipeState.update { it.copy(isLoading = true) }
+                try {
+                    val rating = Rating(
+                        recipeId = _recipeState.value.recipe!!.id,
+                        userId = getLoggedUserIdUseCase()!!,
+                        rate = rate
+                    )
+                    rateRecipeUseCase(rating)
+                    _recipeState.update {
+                        it.copy(
+                            isLoading = false,
+                            message = UiMessage(
+                                uiText = UiText.StringResource(R.string.comment_sent),
+                                blocking = false
+                            )
+                        )
+                    }
+                } catch (_: Exception) {
+                    _recipeState.update {
+                        it.copy(
+                            isLoading = true,
+                            message = UiMessage(
+                                uiText = UiText.StringResource(R.string.generic_error),
+                                blocking = false
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     fun sendComment() {
