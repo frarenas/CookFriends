@@ -25,7 +25,8 @@ import kotlin.uuid.Uuid
 fun IngredientPreviewItem(
     ingredient: Ingredient,
     onDeleteRequest: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     OutlinedCard(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -38,7 +39,10 @@ fun IngredientPreviewItem(
                 text = "${ingredient.name}: ${ingredient.quantity} ${ingredient.measurement}",
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = onDeleteRequest) {
+            IconButton(
+                onClick = onDeleteRequest,
+                enabled = enabled
+            ) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = stringResource(R.string.delete_ingredient),

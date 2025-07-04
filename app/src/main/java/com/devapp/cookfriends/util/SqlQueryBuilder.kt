@@ -18,12 +18,14 @@ object SqlQueryBuilder {
                          WHERE ft.recipe_id = r.id AND ft.user_id = '$userId')) AS isUserFavorite
             FROM recipe_table r
             LEFT JOIN user_table u ON r.user_id = u.id
-            WHERE r.user_id = '$userId' OR r.published = 1
         """)
         if (options.recipeType != null) {
             queryBuilder.append(" LEFT JOIN recipe_type_table rtt ON r.recipe_type_id = rtt.id ")
         }
         val whereClauses = mutableListOf<String>()
+
+        // Published or user's own recipes
+        whereClauses.add("(r.user_id = '$userId' OR r.published = 1)")
 
         // Search word
         options.searchText.takeIf { it.isNotBlank() }?.let { searchText ->

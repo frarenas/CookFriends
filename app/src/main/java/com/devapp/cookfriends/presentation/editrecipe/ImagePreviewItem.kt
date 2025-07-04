@@ -24,7 +24,11 @@ import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import com.devapp.cookfriends.ui.theme.LightBlue
 
 @Composable
-fun ImagePreviewItem(imageUrl: String, onDeleteRequest: () -> Unit) {
+fun ImagePreviewItem(
+    imageUrl: String,
+    enabled: Boolean = true,
+    onDeleteRequest: () -> Unit
+) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
@@ -41,7 +45,11 @@ fun ImagePreviewItem(imageUrl: String, onDeleteRequest: () -> Unit) {
                     .height(100.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            IconButton(modifier = Modifier.fillMaxWidth(), onClick = onDeleteRequest) {
+            IconButton(
+                modifier = Modifier.fillMaxWidth(),
+                enabled = enabled,
+                onClick = onDeleteRequest
+            ) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = stringResource(R.string.delete_image),

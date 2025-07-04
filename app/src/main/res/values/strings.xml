@@ -77,6 +77,9 @@
     <string name="no_account">¿No tienes una cuenta?</string>
     <string name="link_could_not_be_opened">No se pudo abrir el enlace.</string>
 
+    // Home
+    <string name="error_fetching_recipes">No pudimos obtener las últimas recetas.</string>
+
     // Profile
     <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
     <string name="repeat_password_mandatory">Vuelva a ingresar la contraseña.</string>
@@ -107,4 +110,9 @@
     <string name="ingredients_mandatory">Ingrese los ingredientes.</string>
     <string name="steps_mandatory">Ingrese los pasos.</string>
     <string name="step_content_mandatory">Ingrese el paso.</string>
+    <string name="upload_recipe_no_internet">Receta guardada.\nNo hay conexión a internet. Cargaremos la receta cuando haya conexión.</string>
+    <string name="upload_recipe_success">Receta guardada.\nCuando la aprobemos todos podrán verla</string>
+    <string name="upload_recipe_data_connectivity">Receta guardada.\nEstás conectado con datos. La receta será cargada cuando tengas WiFi.</string>
+    <string name="upload_recipe_now">Cargar ahora.</string>
+    <string name="upload_recipe_error">Receta guardada.\nNo pudimos cargar la receta. No te preocupes, lo volveremos a intentar cuando haya conexión.</string>
 </resources>

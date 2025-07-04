@@ -31,7 +31,8 @@ fun RecipeTypeDropDownMenu(
     onSelectItem: (RecipeType?) -> Unit,
     modifier: Modifier = Modifier,
     label: String = stringResource(R.string.label_recipe_type),
-    errorMessage: UiText? = null
+    errorMessage: UiText? = null,
+    enabled: Boolean = true
 ) {
     val selectOneRecipeTypePlaceholder = stringResource(R.string.select_recipe_type)
     var recipeTypeMenuExpanded by remember { mutableStateOf(false) }
@@ -70,7 +71,8 @@ fun RecipeTypeDropDownMenu(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
-            }
+            },
+            enabled = enabled
         )
 
         ExposedDropdownMenu(
@@ -84,7 +86,8 @@ fun RecipeTypeDropDownMenu(
                 onClick = {
                     onSelectItem(null)
                     recipeTypeMenuExpanded = false
-                }
+                },
+                enabled = enabled
             )
             availableRecipeTypes.forEach { recipeType ->
                 DropdownMenuItem(
