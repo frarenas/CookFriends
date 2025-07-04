@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -116,11 +118,21 @@ fun EditRecipeScreen(
             } else {
                 LaunchedEffect(key1 = editRecipeState.message) {
                     editRecipeState.message?.let {
-                        snackbarHostState.showSnackbar(
+                        val result = snackbarHostState.showSnackbar(
                             message = it.uiText.asString(context),
-                            duration = SnackbarDuration.Short
+                            duration = SnackbarDuration.Short,
+                            actionLabel = it.actionLabel?.asString(context)
                         )
-                        viewModel.onClearMessage()
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> {
+                                it.action?.let { it1 -> it1() }
+                                viewModel.onClearMessage()
+                            }
+
+                            SnackbarResult.Dismissed -> {
+                                viewModel.onClearMessage()
+                            }
+                        }
                     }
                 }
                 Column(
@@ -140,6 +152,7 @@ fun EditRecipeScreen(
                         label = { Text(stringResource(R.string.name)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
+                        enabled = !editRecipeState.isUploadingRecipe,
                         isError = editRecipeState.nameErrorMessage != null,
                         supportingText = {
                             editRecipeState.nameErrorMessage?.let {
@@ -163,6 +176,7 @@ fun EditRecipeScreen(
                         label = { Text(stringResource(R.string.description)) },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 4,
+                        enabled = !editRecipeState.isUploadingRecipe,
                         isError = editRecipeState.descriptionErrorMessage != null,
                         supportingText = {
                             editRecipeState.descriptionErrorMessage?.let {
@@ -180,7 +194,8 @@ fun EditRecipeScreen(
                         onSelectItem = { recipeType ->
                             viewModel.onRecipeChange(editRecipeState.recipe.copy(recipeType = recipeType))
                         },
-                        errorMessage = editRecipeState.recipeTypeErrorMessage
+                        errorMessage = editRecipeState.recipeTypeErrorMessage,
+                        enabled = !editRecipeState.isUploadingRecipe
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     // Images
@@ -199,6 +214,7 @@ fun EditRecipeScreen(
                             label = { Text(stringResource(R.string.image_url)) },
                             modifier = Modifier.weight(1f),
                             singleLine = true,
+                            enabled = !editRecipeState.isUploadingRecipe,
                             isError = editRecipeState.recipePhotoErrorMessage != null,
                             supportingText = {
                                 editRecipeState.recipePhotoErrorMessage?.let {
@@ -210,9 +226,12 @@ fun EditRecipeScreen(
                                 }
                             }
                         )
-                        IconButton(onClick = {
-                            viewModel.onPhotoAdd()
-                        }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onPhotoAdd()
+                            },
+                            enabled = !editRecipeState.isUploadingRecipe
+                        ) {
                             Icon(
                                 Icons.Default.AddAPhoto,
                                 contentDescription = stringResource(R.string.add_image),
@@ -239,7 +258,8 @@ fun EditRecipeScreen(
                                     onDeleteRequest = {
                                         recipePhotoToDelete = photo
                                         showConfirmationDialog = true
-                                    }
+                                    },
+                                    enabled = !editRecipeState.isUploadingRecipe
                                 )
                             }
                         }
@@ -260,6 +280,7 @@ fun EditRecipeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
+                        enabled = !editRecipeState.isUploadingRecipe,
                         isError = editRecipeState.portionsErrorMessage != null,
                         supportingText = {
                             editRecipeState.portionsErrorMessage?.let {
@@ -284,6 +305,7 @@ fun EditRecipeScreen(
                                 label = { Text(stringResource(R.string.ingredient)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
+                                enabled = !editRecipeState.isUploadingRecipe,
                                 isError = editRecipeState.ingredientNameErrorMessage != null,
                                 supportingText = {
                                     editRecipeState.ingredientNameErrorMessage?.let {
@@ -304,6 +326,7 @@ fun EditRecipeScreen(
                                     modifier = Modifier.weight(1f),
                                     label = { Text(stringResource(R.string.quantity)) },
                                     singleLine = true,
+                                    enabled = !editRecipeState.isUploadingRecipe,
                                     isError = editRecipeState.ingredientQuantityErrorMessage != null,
                                     supportingText = {
                                         editRecipeState.ingredientQuantityErrorMessage?.let {
@@ -319,17 +342,26 @@ fun EditRecipeScreen(
                                 OutlinedTextField(
                                     value = newIngredient.measurement ?: "",
                                     onValueChange = {
-                                        viewModel.onNewIngredientChange(newIngredient.copy(measurement = it))
+                                        viewModel.onNewIngredientChange(
+                                            newIngredient.copy(
+                                                measurement = it
+                                            )
+                                        )
                                     },
                                     modifier = Modifier.weight(1f),
                                     label = { Text(stringResource(R.string.measurement)) },
-                                    singleLine = true
+                                    singleLine = true,
+                                    enabled = !editRecipeState.isUploadingRecipe
                                 )
                             }
                         }
-                        IconButton(onClick = {
-                            viewModel.onIngredientAdd()
-                        }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onIngredientAdd()
+                            },
+
+                            enabled = !editRecipeState.isUploadingRecipe
+                        ) {
                             Icon(
                                 Icons.Default.AddCircle,
                                 contentDescription = stringResource(R.string.add_ingredient),
@@ -358,7 +390,8 @@ fun EditRecipeScreen(
                                         ingredientToDelete = ingredient
                                         showConfirmationDialog = true
                                     },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    enabled = !editRecipeState.isUploadingRecipe
                                 )
                             }
                         }
@@ -383,6 +416,7 @@ fun EditRecipeScreen(
                             modifier = Modifier.weight(1f),
                             label = { Text(stringResource(R.string.instructions)) },
                             maxLines = 4,
+                            enabled = !editRecipeState.isUploadingRecipe,
                             isError = editRecipeState.stepContentErrorMessage != null,
                             supportingText = {
                                 editRecipeState.stepContentErrorMessage?.let {
@@ -394,9 +428,12 @@ fun EditRecipeScreen(
                                 }
                             }
                         )
-                        IconButton(onClick = {
-                            viewModel.onStepAdd()
-                        }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onStepAdd()
+                            },
+                            enabled = !editRecipeState.isUploadingRecipe
+                        ) {
                             Icon(
                                 Icons.Default.AddCircle,
                                 contentDescription = stringResource(R.string.add_step),
@@ -433,7 +470,8 @@ fun EditRecipeScreen(
                                         viewModel.onNewStepChange(step)
                                         viewModel.onStepAdd()
                                     },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    enabled = !editRecipeState.isUploadingRecipe
                                 )
                             }
                         }
@@ -445,9 +483,14 @@ fun EditRecipeScreen(
                             saveRecipeConfirmation = true
                             showConfirmationDialog = true
                         },
+                        enabled = !editRecipeState.isUploadingRecipe,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(R.string.save))
+
+                        if (editRecipeState.isUploadingRecipe)
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                        else
+                            Text(stringResource(R.string.save))
                     }
                 }
             }

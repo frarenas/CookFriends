@@ -44,7 +44,8 @@ fun StepPreviewItem(
     onDeleteRequest: () -> Unit,
     onAddPhoto: (step: Step) -> Unit,
     onDeletePhoto: (step: Step) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
 
     var newImageUrl by remember { mutableStateOf("") }
@@ -61,19 +62,24 @@ fun StepPreviewItem(
                 Text(
                     text = step.order.toString(),
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(16.dp, end = 32.dp).drawBehind {
-                        drawCircle(
-                            color = LightBlue,
-                            radius = this.size.maxDimension * 0.8F
-                        )
-                    }
+                    modifier = Modifier
+                        .padding(16.dp, end = 32.dp)
+                        .drawBehind {
+                            drawCircle(
+                                color = LightBlue,
+                                radius = this.size.maxDimension * 0.8F
+                            )
+                        }
                 )
                 Text(
                     text = step.content,
                     modifier = Modifier.weight(1f)
                 )
 
-                IconButton(onClick = onDeleteRequest) {
+                IconButton(
+                    onClick = onDeleteRequest,
+                    enabled = enabled
+                ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = stringResource(R.string.delete_ingredient),
@@ -97,24 +103,28 @@ fun StepPreviewItem(
                     onValueChange = { newImageUrl = it },
                     label = { Text(stringResource(R.string.image_url)) },
                     modifier = Modifier.weight(1f),
-                    singleLine = true
+                    singleLine = true,
+                    enabled = enabled
                 )
-                IconButton(onClick = {
-                    if (newImageUrl.isNotBlank()) {
-                        val stepPhotos: MutableList<StepPhoto> =
-                            mutableListOf<StepPhoto>()
-                        stepPhotos.addAll(step.photos)
-                        stepPhotos.add(
-                            StepPhoto(
-                                url = newImageUrl.trim(),
-                                stepId = step.id
+                IconButton(
+                    onClick = {
+                        if (newImageUrl.isNotBlank()) {
+                            val stepPhotos: MutableList<StepPhoto> =
+                                mutableListOf()
+                            stepPhotos.addAll(step.photos)
+                            stepPhotos.add(
+                                StepPhoto(
+                                    url = newImageUrl.trim(),
+                                    stepId = step.id
+                                )
                             )
-                        )
-                        step.photos = stepPhotos
-                        onAddPhoto(step)
-                        newImageUrl = ""
-                    }
-                }) {
+                            step.photos = stepPhotos
+                            onAddPhoto(step)
+                            newImageUrl = ""
+                        }
+                    },
+                    enabled = enabled
+                ) {
                     Icon(
                         Icons.Default.AddAPhoto,
                         contentDescription = stringResource(R.string.add_image),
@@ -134,7 +144,8 @@ fun StepPreviewItem(
                             onDeleteRequest = {
                                 stepPhotoToDelete = photo
                                 showDeleteConfirmationDialog = true
-                            }
+                            },
+                            enabled = enabled
                         )
                     }
                 }
@@ -149,7 +160,7 @@ fun StepPreviewItem(
             confirmText = stringResource(R.string.delete),
             dismissText = stringResource(R.string.cancel),
             onConfirm = {
-                val stepPhotos: MutableList<StepPhoto> = mutableListOf<StepPhoto>()
+                val stepPhotos: MutableList<StepPhoto> = mutableListOf()
                 stepPhotos.addAll(step.photos)
                 stepPhotos.remove(stepPhotoToDelete)
                 step.photos = stepPhotos

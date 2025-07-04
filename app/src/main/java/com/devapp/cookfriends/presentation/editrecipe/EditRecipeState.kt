@@ -6,7 +6,7 @@ import com.devapp.cookfriends.domain.model.UiText
 
 data class EditRecipeState(
     val recipe: Recipe = Recipe(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val message: UiMessage? = null,
     val nameErrorMessage: UiText? = null,
     val descriptionErrorMessage: UiText? = null,
@@ -19,4 +19,5 @@ data class EditRecipeState(
     val ingredientNameErrorMessage: UiText? = null,
     val ingredientQuantityErrorMessage: UiText? = null,
     val stepContentErrorMessage: UiText? = null,
+    val isUploadingRecipe: Boolean = false,
 )

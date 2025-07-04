@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.home.recipes
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.R
@@ -60,11 +61,12 @@ class RecipesViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             error = UiMessage(
-                                UiText.StringResource(R.string.generic_error),
+                                UiText.StringResource(R.string.error_fetching_recipes),
                                 blocking = true
                             )
                         )
                     }
+                    Log.e("RecipesViewModel", "Error searching recipes", exception)
                 }
                 .collect { recipes ->
                     _recipesState.update {

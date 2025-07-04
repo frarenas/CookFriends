@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.editrecipe
 
+import android.util.Log
 import android.webkit.URLUtil
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -19,8 +20,11 @@ import com.devapp.cookfriends.domain.usecase.GetLoggedUserUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.SaveRecipeUseCase
+import com.devapp.cookfriends.domain.usecase.UploadRecipeUseCase
 import com.devapp.cookfriends.presentation.navigation.EditRecipe
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
+import com.devapp.cookfriends.util.ConnectivityObserver
+import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +46,9 @@ class EditRecipeViewModel @Inject constructor(
     private val getRecipeUseCase: GetRecipeUseCase,
     private val getRecipeTypesUseCase: GetRecipeTypesUseCase,
     private val saveRecipeUseCase: SaveRecipeUseCase,
+    private val uploadRecipeUseCase: UploadRecipeUseCase,
     private val getLoggedUserUseCase: GetLoggedUserUseCase,
+    private val connectivityObserver: ConnectivityObserver,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -63,12 +69,14 @@ class EditRecipeViewModel @Inject constructor(
     private val _newImageUrl = MutableStateFlow("")
     val newImageUrl: StateFlow<String> = _newImageUrl
 
-    private val _newIngredient = MutableStateFlow(Ingredient(
-        name = "",
-        quantity = "",
-        measurement = "",
-        recipeId = _editRecipeState.value.recipe.id
-    ))
+    private val _newIngredient = MutableStateFlow(
+        Ingredient(
+            name = "",
+            quantity = "",
+            measurement = "",
+            recipeId = _editRecipeState.value.recipe.id
+        )
+    )
     val newIngredient: StateFlow<Ingredient> = _newIngredient
 
     private val _newStep = MutableStateFlow(
@@ -109,6 +117,7 @@ class EditRecipeViewModel @Inject constructor(
                             )
                         )
                     }
+                    Log.e("EditRecipeViewModel", "Error getting recipe", e)
                 }
                 .collect { recipe ->
                     if (recipe == null) {
@@ -126,7 +135,7 @@ class EditRecipeViewModel @Inject constructor(
                             it.copy(
                                 recipe = recipe,
                                 isLoading = false,
-                                message = null
+                                //message = null
                             )
                         }
                     }
@@ -245,7 +254,7 @@ class EditRecipeViewModel @Inject constructor(
             _newStep.value.recipeId = recipe.id
             val steps = recipe.steps.toMutableList()
             val currentStep = steps.find { step -> step.id == _newStep.value.id }
-            if(currentStep == null) {
+            if (currentStep == null) {
                 steps.add(_newStep.value)
             }
 
@@ -278,7 +287,7 @@ class EditRecipeViewModel @Inject constructor(
         val isRecipeValid = validateRecipe()
         if (isRecipeValid) {
             viewModelScope.launch {
-                _editRecipeState.update { it.copy(isLoading = true, message = null) }
+                _editRecipeState.update { it.copy(isUploadingRecipe = true, message = null) }
                 try {
                     val user = getLoggedUserUseCase()
                     _editRecipeState.value.recipe.apply {
@@ -287,14 +296,41 @@ class EditRecipeViewModel @Inject constructor(
                         this.updatePending = true
                     }
                     saveRecipeUseCase(_editRecipeState.value.recipe)
-                    _editRecipeState.update { it.copy(isLoading = false, message = UiMessage(
-                        uiText = UiText.StringResource(R.string.changes_saved),
-                        blocking = false
-                    )) }
+                    when (connectivityObserver.getCurrentNetworkStatus()) {
+                        NetworkStatus.Unavailable -> {
+                            _editRecipeState.update {
+                                it.copy(
+                                    isUploadingRecipe = false,
+                                    message = UiMessage(
+                                        uiText = UiText.StringResource(R.string.upload_recipe_no_internet),
+                                        blocking = false
+                                    )
+                                )
+                            }
+                        }
+
+                        NetworkStatus.Cellular -> {
+                            _editRecipeState.update {
+                                it.copy(
+                                    isUploadingRecipe = false,
+                                    message = UiMessage(
+                                        uiText = UiText.StringResource(R.string.upload_recipe_data_connectivity),
+                                        blocking = false,
+                                        action = { uploadRecipe() },
+                                        actionLabel = UiText.StringResource(R.string.upload_recipe_now)
+                                    )
+                                )
+                            }
+                        }
+
+                        else -> {
+                            uploadRecipe()
+                        }
+                    }
                 } catch (e: Exception) {
                     _editRecipeState.update {
                         it.copy(
-                            isLoading = false,
+                            isUploadingRecipe = false,
                             message = UiMessage(
                                 uiText = if (e.message != null) UiText.DynamicString(
                                     e.message ?: ""
@@ -303,7 +339,41 @@ class EditRecipeViewModel @Inject constructor(
                             )
                         )
                     }
+                    Log.e("EditRecipeViewModel", "Error saving recipe", e)
                 }
+            }
+        }
+    }
+
+    fun uploadRecipe() {
+        viewModelScope.launch {
+            _editRecipeState.update {
+                it.copy(
+                    isUploadingRecipe = true
+                )
+            }
+            try {
+                uploadRecipeUseCase(_editRecipeState.value.recipe)
+                _editRecipeState.update {
+                    it.copy(
+                        isUploadingRecipe = false,
+                        message = UiMessage(
+                            uiText = UiText.StringResource(R.string.upload_recipe_success),
+                            blocking = false
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _editRecipeState.update {
+                    it.copy(
+                        isUploadingRecipe = false,
+                        message = UiMessage(
+                            uiText = UiText.StringResource(R.string.upload_recipe_error),
+                            blocking = false
+                        )
+                    )
+                }
+                Log.e("EditRecipeViewModel", "Error uploading recipe", e)
             }
         }
     }

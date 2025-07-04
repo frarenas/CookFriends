@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.R
@@ -57,7 +58,7 @@ class HomeViewModel @Inject constructor(
                     fetchDataUseCase()
                     setDataFirstSyncedUseCase()
                     _recipesState.update { it.copy(isLoading = false, error = null) }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
                     _recipesState.update {
                         it.copy(
                             isLoading = false,
@@ -67,6 +68,7 @@ class HomeViewModel @Inject constructor(
                             )
                         )
                     }
+                    Log.e("HomeViewModel", "Error fetching data", e)
                 }
             }
         }
