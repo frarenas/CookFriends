@@ -84,6 +84,8 @@
     <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
     <string name="repeat_password_mandatory">Vuelva a ingresar la contraseña.</string>
     <string name="password_was_updated">La contraseña se actualizó correctamente.</string>
+    <string name="confirm_logout_title">Confirmar cierre de sesión</string>
+    <string name="confirm_logout_message">¿Estás seguro de que quieres cerrar sesión?</string>
 
     // Recipe detail
     <string name="recipe_not_found">Receta no encontrada.</string>"

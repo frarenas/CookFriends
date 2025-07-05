@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.presentation.common.ConfirmationDialog
 import com.devapp.cookfriends.presentation.home.Header
 import com.devapp.cookfriends.util.SecureScreenEffect
 
@@ -48,6 +49,7 @@ fun ProfileScreen(
     val newPassword by viewModel.newPassword.collectAsState()
     val repeatPassword by viewModel.repeatPassword.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
+    var showConfirmationDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     SecureScreenEffect()
@@ -177,7 +179,7 @@ fun ProfileScreen(
                 HorizontalDivider()
                 Spacer(Modifier.weight(1f))
                 Button(
-                    onClick = { viewModel.logout() },
+                    onClick = { showConfirmationDialog = true },
                     Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
@@ -191,4 +193,20 @@ fun ProfileScreen(
             }
         }
     }
+
+    if (showConfirmationDialog) {
+            ConfirmationDialog(
+                title = stringResource(R.string.confirm_logout_title),
+                message = stringResource(R.string.confirm_logout_message),
+                confirmText = stringResource(R.string.logout),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
+                    viewModel.logout()
+                    showConfirmationDialog = false
+                },
+                onDismiss = {
+                    showConfirmationDialog = false
+                }
+            )
+        }
 }
