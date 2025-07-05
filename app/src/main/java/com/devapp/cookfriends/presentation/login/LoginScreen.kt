@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.util.SecureScreenEffect
 import kotlinx.coroutines.launch
 
 @Composable
@@ -67,6 +68,8 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
+
+    SecureScreenEffect()
 
     LaunchedEffect(loginState.continueToHome) {
         if (loginState.continueToHome)
