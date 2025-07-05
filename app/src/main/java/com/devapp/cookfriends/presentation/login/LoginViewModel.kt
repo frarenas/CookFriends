@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
                 if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                     _loginState.update {
                         it.copy(
-                            isLogging = false,
+                            isLoggingIn = false,
                             error = UiMessage(
                                 UiText.StringResource(R.string.no_internet_connection),
                                 blocking = false
@@ -55,7 +55,7 @@ class LoginViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    _loginState.update { it.copy(isLogging = true) }
+                    _loginState.update { it.copy(isLoggingIn = true) }
                     try {
                         loginUseCase(
                             username = _username.value,
@@ -66,7 +66,7 @@ class LoginViewModel @Inject constructor(
                     } catch (e: Exception) {
                         _loginState.update {
                             it.copy(
-                                isLogging = false,
+                                isLoggingIn = false,
                                 error = UiMessage(
                                     uiText = if (e.message != null) UiText.DynamicString(
                                         e.message ?: ""
@@ -84,11 +84,11 @@ class LoginViewModel @Inject constructor(
     fun guestLogin() {
         viewModelScope.launch {
             try {
-                _loginState.update { it.copy(isLoggingGuest = true) }
+                _loginState.update { it.copy(isLoggingInGuest = true) }
                 logoutUseCase()
                 _navigationEvent.emit(LoginNavigationEvent.NavigateToHome)
             } catch (_: Exception) {
-                _loginState.update { it.copy(isLoggingGuest = false) }
+                _loginState.update { it.copy(isLoggingInGuest = false) }
             }
 
         }

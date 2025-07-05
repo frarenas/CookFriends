@@ -10,8 +10,10 @@ import com.devapp.cookfriends.domain.usecase.LogoutUseCase
 import com.devapp.cookfriends.util.ConnectivityObserver
 import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,11 +28,14 @@ class ProfileViewModel @Inject constructor(
     private val _profileState = MutableStateFlow(ProfileState())
     val profileState: StateFlow<ProfileState> = _profileState
 
-    private val _newPassword = MutableStateFlow<String>("")
+    private val _newPassword = MutableStateFlow("")
     val newPassword: StateFlow<String> = _newPassword
 
-    private val _repeatPassword = MutableStateFlow<String>("")
+    private val _repeatPassword = MutableStateFlow("")
     val repeatPassword: StateFlow<String> = _repeatPassword
+
+    private val _navigationEvent = MutableSharedFlow<ProfileNavigationEvent>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
 
     fun updatePassword() {
         val isChangePasswordValid = validateChangePassword()
@@ -39,7 +44,6 @@ class ProfileViewModel @Inject constructor(
                 if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                     _profileState.update {
                         it.copy(
-                            isLoading = false,
                             message = UiMessage(
                                 UiText.StringResource(R.string.no_internet_connection),
                                 blocking = false
@@ -47,12 +51,12 @@ class ProfileViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    _profileState.update { it.copy(isLoading = true) }
+                    _profileState.update { it.copy(isChangingPassword = true) }
                     try {
                         changePasswordUseCase(_newPassword.value)
                         _profileState.update {
                             it.copy(
-                                isLoading = false,
+                                isChangingPassword = false,
                                 message = UiMessage(
                                     uiText = UiText.StringResource(R.string.password_was_updated),
                                     blocking = false
@@ -64,7 +68,7 @@ class ProfileViewModel @Inject constructor(
                     } catch (e: Exception) {
                         _profileState.update {
                             it.copy(
-                                isLoading = true,
+                                isChangingPassword = false,
                                 message = UiMessage(
                                     uiText = if (e.message != null) UiText.DynamicString(
                                         e.message ?: ""
@@ -82,11 +86,11 @@ class ProfileViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             try {
-                _profileState.update { it.copy(isLoading = true) }
+                _profileState.update { it.copy(isLoggingOut = true) }
                 logoutUseCase()
-                _profileState.update { it.copy(loggedOut = true) }
+                _navigationEvent.emit(ProfileNavigationEvent.NavigateToLogin)
             } catch (_: Exception) {
-                _profileState.update { it.copy(isLoading = false) }
+                _profileState.update { it.copy(isLoggingOut = false) }
             }
 
         }
