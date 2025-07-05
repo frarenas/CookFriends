@@ -10,6 +10,7 @@ import com.devapp.cookfriends.domain.usecase.FetchDataUseCase
 import com.devapp.cookfriends.domain.usecase.IsDataFirstSyncedUseCase
 import com.devapp.cookfriends.domain.usecase.IsUserLoggedUseCase
 import com.devapp.cookfriends.domain.usecase.SetDataFirstSyncedUseCase
+import com.devapp.cookfriends.domain.usecase.UploadPendingDataUseCase
 import com.devapp.cookfriends.util.ConnectivityObserver
 import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,7 @@ class HomeViewModel @Inject constructor(
     private val isUserLoggedUseCase: IsUserLoggedUseCase,
     private val isDataFirstSyncedUseCase: IsDataFirstSyncedUseCase,
     private val setDataFirstSyncedUseCase: SetDataFirstSyncedUseCase,
+    private val uploadPendingDataUseCase: UploadPendingDataUseCase,
     private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
 
@@ -37,6 +39,7 @@ class HomeViewModel @Inject constructor(
     init {
         fetchData()
         isUserLogged()
+        uploadPendingData()
     }
 
     private fun fetchData() {
@@ -69,6 +72,19 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                     Log.e("HomeViewModel", "Error fetching data", e)
+                }
+            }
+        }
+    }
+
+    private fun uploadPendingData() {
+        viewModelScope.launch {
+            if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Wifi ||
+                connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Available) {
+                try {
+                    uploadPendingDataUseCase()
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Error uploading pending data", e)
                 }
             }
         }

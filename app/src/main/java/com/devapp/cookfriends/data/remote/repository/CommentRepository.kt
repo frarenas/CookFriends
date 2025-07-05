@@ -5,6 +5,7 @@ import com.devapp.cookfriends.data.local.entity.toDatabase
 import com.devapp.cookfriends.data.remote.model.toModel
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import com.devapp.cookfriends.domain.model.Comment
+import com.devapp.cookfriends.domain.model.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -28,6 +29,12 @@ class CommentRepository @Inject constructor(
     suspend fun setUpdated(id: Uuid) {
         return withContext(Dispatchers.IO) {
             commentDao.setUpdated(id)
+        }
+    }
+
+    suspend fun getPendingUploadComments(): List<Comment> {
+        return withContext(Dispatchers.IO) {
+            commentDao.getPendingUploadComments().map { it.toDomain() }
         }
     }
 }

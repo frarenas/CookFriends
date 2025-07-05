@@ -294,6 +294,7 @@ class EditRecipeViewModel @Inject constructor(
                         this.user = user
                         this.date = Clock.System.now()
                         this.updatePending = true
+                        this.userCalculated = false
                     }
                     saveRecipeUseCase(_editRecipeState.value.recipe)
                     when (connectivityObserver.getCurrentNetworkStatus()) {
