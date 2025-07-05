@@ -120,4 +120,12 @@ interface RecipeDao {
 
     @Query("UPDATE recipe_table SET update_pending = 0 WHERE id IN(:ids)")
     fun setUpdated(ids: List<Uuid>)
+
+    @Transaction
+    @Query("""
+        SELECT *, 0 AS averageRating, 0 AS isUserFavorite, 0 AS userRating
+        FROM recipe_table r
+        WHERE update_pending = 1
+        """)
+    fun getPendingUploadRecipes(): List<RecipeWithExtraData>
 }

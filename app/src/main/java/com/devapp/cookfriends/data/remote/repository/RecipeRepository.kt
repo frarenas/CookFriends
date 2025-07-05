@@ -63,4 +63,10 @@ class RecipeRepository @Inject constructor(
             recipeDao.setUpdated(id)
         }
     }
+
+    suspend fun getPendingUploadRecipes(): List<Recipe> {
+        return withContext(Dispatchers.IO) {
+            recipeDao.getPendingUploadRecipes().map { it.toDomain() }
+        }
+    }
 }
