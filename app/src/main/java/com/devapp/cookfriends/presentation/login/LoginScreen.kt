@@ -71,9 +71,14 @@ fun LoginScreen(
 
     SecureScreenEffect()
 
-    LaunchedEffect(loginState.continueToHome) {
-        if (loginState.continueToHome)
-            navigateToHome()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is LoginNavigationEvent.NavigateToHome -> {
+                    navigateToHome()
+                }
+            }
+        }
     }
 
     Scaffold(
