@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.presentation.home.Header
+import com.devapp.cookfriends.util.SecureScreenEffect
 
 @Composable
 fun ProfileScreen(
@@ -43,12 +44,13 @@ fun ProfileScreen(
     snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit
 ) {
+    val profileState by viewModel.profileState.collectAsState()
     val newPassword by viewModel.newPassword.collectAsState()
     val repeatPassword by viewModel.repeatPassword.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    val profileState by viewModel.profileState.collectAsState()
+    SecureScreenEffect()
 
     LaunchedEffect(profileState.loggedOut) {
         if (profileState.loggedOut)
