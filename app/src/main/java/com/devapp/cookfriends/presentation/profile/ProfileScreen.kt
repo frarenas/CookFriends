@@ -52,9 +52,14 @@ fun ProfileScreen(
 
     SecureScreenEffect()
 
-    LaunchedEffect(profileState.loggedOut) {
-        if (profileState.loggedOut)
-            onLogout()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is ProfileNavigationEvent.NavigateToLogin -> {
+                    onLogout()
+                }
+            }
+        }
     }
 
     Column(
