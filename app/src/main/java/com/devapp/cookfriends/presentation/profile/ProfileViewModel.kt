@@ -44,7 +44,6 @@ class ProfileViewModel @Inject constructor(
                 if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                     _profileState.update {
                         it.copy(
-                            isLoading = false,
                             message = UiMessage(
                                 UiText.StringResource(R.string.no_internet_connection),
                                 blocking = false
@@ -52,12 +51,12 @@ class ProfileViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    _profileState.update { it.copy(isLoading = true) }
+                    _profileState.update { it.copy(isChangingPassword = true) }
                     try {
                         changePasswordUseCase(_newPassword.value)
                         _profileState.update {
                             it.copy(
-                                isLoading = false,
+                                isChangingPassword = false,
                                 message = UiMessage(
                                     uiText = UiText.StringResource(R.string.password_was_updated),
                                     blocking = false
@@ -69,7 +68,7 @@ class ProfileViewModel @Inject constructor(
                     } catch (e: Exception) {
                         _profileState.update {
                             it.copy(
-                                isLoading = true,
+                                isChangingPassword = false,
                                 message = UiMessage(
                                     uiText = if (e.message != null) UiText.DynamicString(
                                         e.message ?: ""
@@ -87,11 +86,11 @@ class ProfileViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             try {
-                _profileState.update { it.copy(isLoading = true) }
+                _profileState.update { it.copy(isLoggingOut = true) }
                 logoutUseCase()
                 _navigationEvent.emit(ProfileNavigationEvent.NavigateToLogin)
             } catch (_: Exception) {
-                _profileState.update { it.copy(isLoading = false) }
+                _profileState.update { it.copy(isLoggingOut = false) }
             }
 
         }

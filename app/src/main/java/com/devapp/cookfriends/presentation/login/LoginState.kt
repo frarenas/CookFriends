@@ -9,6 +9,6 @@ data class LoginState(
     val error: UiMessage? = null,
     val usernameErrorMessage: UiText? = null,
     val passwordErrorMessage: UiText? = null,
-    val isLogging: Boolean = false,
-    val isLoggingGuest: Boolean = false
+    val isLoggingIn: Boolean = false,
+    val isLoggingInGuest: Boolean = false
 )

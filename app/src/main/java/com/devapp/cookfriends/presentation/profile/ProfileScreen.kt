@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -26,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -61,7 +61,7 @@ fun ProfileScreen(
             }
         }
     }
-
+    val uiEnabled = !profileState.isChangingPassword && !profileState.isLoggingOut
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,113 +74,119 @@ fun ProfileScreen(
             onSearchOptionsClick = { }
         )
         Box(modifier = Modifier.fillMaxSize()) {
-            if (profileState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                LaunchedEffect(key1 = profileState.message) {
-                    profileState.message?.let {
-                        snackbarHostState.showSnackbar(
-                            message = it.uiText.asString(context),
-                            duration = SnackbarDuration.Short
-                        )
-                        viewModel.onClearMessage()
-                    }
+            LaunchedEffect(key1 = profileState.message) {
+                profileState.message?.let {
+                    snackbarHostState.showSnackbar(
+                        message = it.uiText.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                    viewModel.onClearMessage()
                 }
-                Column(
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.change_password),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                OutlinedTextField(
+                    value = newPassword,
+                    onValueChange = { viewModel.onNewPasswordChange(it) },
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    enabled = uiEnabled,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description =
+                            if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
+                                R.string.show_password
+                            )
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, description)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.password)) },
+                    singleLine = true,
+                    isError = profileState.passwordErrorMessage != null,
+                    supportingText = {
+                        profileState.passwordErrorMessage?.let {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = it.asString(context),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                )
+                OutlinedTextField(
+                    value = repeatPassword,
+                    onValueChange = { viewModel.onRepeatPasswordChange(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    enabled = uiEnabled,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description =
+                            if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
+                                R.string.show_password
+                            )
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, description)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.repeat_password)) },
+                    singleLine = true,
+                    isError = profileState.repeatPasswordErrorMessage != null,
+                    supportingText = {
+                        profileState.repeatPasswordErrorMessage?.let {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = it.asString(context),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                )
+                Button(
+                    onClick = { viewModel.updatePassword() },
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    enabled = uiEnabled
                 ) {
-                    Text(
-                        text = stringResource(R.string.change_password),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    OutlinedTextField(
-                        value = newPassword,
-                        onValueChange = { viewModel.onNewPasswordChange(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            val image = if (passwordVisible)
-                                Icons.Filled.Visibility
-                            else Icons.Filled.VisibilityOff
-
-                            val description =
-                                if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
-                                    R.string.show_password
-                                )
-
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(imageVector = image, description)
-                            }
-                        },
-                        label = { Text(stringResource(R.string.password)) },
-                        singleLine = true,
-                        isError = profileState.passwordErrorMessage != null,
-                        supportingText = {
-                            profileState.passwordErrorMessage?.let {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = it.asString(context),
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                    )
-                    OutlinedTextField(
-                        value = repeatPassword,
-                        onValueChange = { viewModel.onRepeatPasswordChange(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            val image = if (passwordVisible)
-                                Icons.Filled.Visibility
-                            else Icons.Filled.VisibilityOff
-
-                            val description =
-                                if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
-                                    R.string.show_password
-                                )
-
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(imageVector = image, description)
-                            }
-                        },
-                        label = { Text(stringResource(R.string.repeat_password)) },
-                        singleLine = true,
-                        isError = profileState.repeatPasswordErrorMessage != null,
-                        supportingText = {
-                            profileState.repeatPasswordErrorMessage?.let {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = it.asString(context),
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                    )
-                    Button(
-                        onClick = { viewModel.updatePassword() },
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
+                    if (profileState.isChangingPassword)
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    else
                         Text(stringResource(R.string.change_password))
-                    }
-                    HorizontalDivider()
-                    Spacer(Modifier.weight(1f))
-                    Button(
-                        onClick = { viewModel.logout() },
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
+                }
+                HorizontalDivider()
+                Spacer(Modifier.weight(1f))
+                Button(
+                    onClick = { viewModel.logout() },
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    enabled = uiEnabled
+                ) {
+                    if (profileState.isLoggingOut)
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    else
                         Text(stringResource(R.string.logout))
-                    }
                 }
             }
         }

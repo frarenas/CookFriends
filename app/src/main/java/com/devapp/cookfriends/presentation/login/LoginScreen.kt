@@ -98,7 +98,7 @@ fun LoginScreen(
                     viewModel.onClearError()
                 }
             }
-            val uiEnabled = !loginState.isLogging && !loginState.isLoggingGuest
+            val uiEnabled = !loginState.isLoggingIn && !loginState.isLoggingInGuest
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -200,7 +200,7 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 ) {
-                    if (loginState.isLogging)
+                    if (loginState.isLoggingIn)
                         CircularProgressIndicator(modifier = Modifier.size(16.dp))
                     else
                         Text(stringResource(R.string.login))
@@ -213,7 +213,7 @@ fun LoginScreen(
                     enabled = uiEnabled,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (loginState.isLoggingGuest)
+                    if (loginState.isLoggingInGuest)
                         CircularProgressIndicator(modifier = Modifier.size(16.dp))
                     else
                         Text(text = stringResource(R.string.continue_as_guest)
