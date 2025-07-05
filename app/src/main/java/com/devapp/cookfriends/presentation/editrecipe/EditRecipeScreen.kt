@@ -486,7 +486,6 @@ fun EditRecipeScreen(
                         enabled = !editRecipeState.isUploadingRecipe,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-
                         if (editRecipeState.isUploadingRecipe)
                             CircularProgressIndicator(modifier = Modifier.size(16.dp))
                         else

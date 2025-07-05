@@ -13,9 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -28,8 +33,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,10 +45,12 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.util.SecureScreenEffect
 import kotlinx.coroutines.launch
 
 @Composable
@@ -54,13 +64,21 @@ fun LoginScreen(
     val password by viewModel.password.collectAsState()
     val keepMeLoggedInChecked by viewModel.keepMeLoggedInChecked.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
 
-    LaunchedEffect(loginState.continueToHome) {
-        if (loginState.continueToHome)
-            navigateToHome()
+    SecureScreenEffect()
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is LoginNavigationEvent.NavigateToHome -> {
+                    navigateToHome()
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -71,156 +89,179 @@ fun LoginScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            if (loginState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                LaunchedEffect(key1 = loginState.error) {
-                    loginState.error?.let {
-                        snackbarHostState.showSnackbar(
-                            message = it.uiText.asString(context),
-                            duration = SnackbarDuration.Short
-                        )
-                        viewModel.onClearError()
-                    }
+            LaunchedEffect(key1 = loginState.error) {
+                loginState.error?.let {
+                    snackbarHostState.showSnackbar(
+                        message = it.uiText.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                    viewModel.onClearError()
                 }
-                Column(
+            }
+            val uiEnabled = !loginState.isLogging && !loginState.isLoggingGuest
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 8.dp
+                    )
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.headlineLarge
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = stringResource(R.string.app_name),
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(
-                            horizontal = 32.dp,
-                            vertical = 8.dp
-                        )
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .size(270.dp)
+                        .padding(bottom = 6.dp)
+                )
+
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { viewModel.onUsernameChange(it) },
+                    label = { Text(stringResource(R.string.username)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = uiEnabled,
+                    isError = loginState.usernameErrorMessage != null,
+                    supportingText = {
+                        loginState.usernameErrorMessage?.let {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = it.asString(context),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                )
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { viewModel.onPasswordChange(it) },
+                    label = { Text(stringResource(R.string.password)) },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    singleLine = true,
+                    enabled = uiEnabled,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description =
+                            if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
+                                R.string.show_password
+                            )
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, description)
+                        }
+                    },
+                    isError = loginState.passwordErrorMessage != null,
+                    supportingText = {
+                        loginState.passwordErrorMessage?.let {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = it.asString(context),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
                 ) {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.headlineLarge
+                    Checkbox(
+                        checked = keepMeLoggedInChecked,
+                        enabled = uiEnabled,
+                        onCheckedChange = { viewModel.onKeepMeLoggedInCheckedChange(it) }
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = stringResource(R.string.app_name),
-                        modifier = Modifier
-                            .size(270.dp)
-                            .padding(bottom = 6.dp)
-                    )
+                    Text(stringResource(R.string.keep_me_logged_in))
+                }
 
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = { viewModel.onUsernameChange(it) },
-                        label = { Text(stringResource(R.string.username)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        isError = loginState.usernameErrorMessage != null,
-                        supportingText = {
-                            loginState.usernameErrorMessage?.let {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = it.asString(context),
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                    )
-
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { viewModel.onPasswordChange(it) },
-                        label = { Text(stringResource(R.string.password)) },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true,
-                        isError = loginState.passwordErrorMessage != null,
-                        supportingText = {
-                            loginState.passwordErrorMessage?.let {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = it.asString(context),
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 24.dp)
-                    ) {
-                        Checkbox(
-                            checked = keepMeLoggedInChecked,
-                            onCheckedChange = { viewModel.onKeepMeLoggedInCheckedChange(it) }
-                        )
-                        Text(stringResource(R.string.keep_me_logged_in))
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-                    Button(
-                        onClick = {
-                            viewModel.login()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    onClick = {
+                        viewModel.login()
+                    },
+                    enabled = uiEnabled,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    if (loginState.isLogging)
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    else
                         Text(stringResource(R.string.login))
-                    }
+                }
 
-                    Button(
+                Button(
+                    onClick = {
+                        viewModel.guestLogin()
+                    },
+                    enabled = uiEnabled,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (loginState.isLoggingGuest)
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    else
+                        Text(text = stringResource(R.string.continue_as_guest)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
                         onClick = {
-                            viewModel.guestLogin()
+                            navigateToRecoveryPassword()
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        enabled = uiEnabled,
+                        modifier = Modifier.wrapContentWidth()
                     ) {
                         Text(
-                            text = stringResource(R.string.continue_as_guest)
+                            text = stringResource(R.string.forgot_password),
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center
                         )
                     }
-
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(
-                            onClick = {
-                                navigateToRecoveryPassword()
-                            },
-                            modifier = Modifier.wrapContentWidth()
-                        ) {
-                            Text(
-                                text = stringResource(R.string.forgot_password),
-                                style = MaterialTheme.typography.bodySmall,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        TextButton(
-                            onClick = {
-                                val signUpUrl = "https://www.example.com/signup"
-                                try {
-                                    uriHandler.openUri(signUpUrl)
-                                } catch (_: Exception) {
-                                    coroutineScope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            message = context.getString(R.string.link_could_not_be_opened),
-                                            duration = SnackbarDuration.Short
-                                        )
-                                    }
+                    TextButton(
+                        onClick = {
+                            val signUpUrl = "https://www.example.com/signup"
+                            try {
+                                uriHandler.openUri(signUpUrl)
+                            } catch (_: Exception) {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = context.getString(R.string.link_could_not_be_opened),
+                                        duration = SnackbarDuration.Short
+                                    )
                                 }
-                            },
-                            modifier = Modifier.wrapContentWidth()
-                        ) {
-                            Text(
-                                text = stringResource(R.string.no_account),
-                                style = MaterialTheme.typography.bodySmall,
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                            }
+                        },
+                        enabled = uiEnabled,
+                        modifier = Modifier.wrapContentWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_account),
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }

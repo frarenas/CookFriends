@@ -10,8 +10,10 @@ import com.devapp.cookfriends.domain.usecase.LogoutUseCase
 import com.devapp.cookfriends.util.ConnectivityObserver
 import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,6 +37,9 @@ class LoginViewModel @Inject constructor(
     private val _keepMeLoggedInChecked = MutableStateFlow(false)
     val keepMeLoggedInChecked: StateFlow<Boolean> = _keepMeLoggedInChecked
 
+    private val _navigationEvent = MutableSharedFlow<LoginNavigationEvent>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
+
     fun login() {
         val isLoginValid = validateLogin()
         if (isLoginValid) {
@@ -42,7 +47,7 @@ class LoginViewModel @Inject constructor(
                 if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                     _loginState.update {
                         it.copy(
-                            isLoading = false,
+                            isLogging = false,
                             error = UiMessage(
                                 UiText.StringResource(R.string.no_internet_connection),
                                 blocking = false
@@ -50,14 +55,18 @@ class LoginViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    _loginState.update { it.copy(isLoading = true) }
+                    _loginState.update { it.copy(isLogging = true) }
                     try {
-                        loginUseCase(_username.value, _password.value, _keepMeLoggedInChecked.value)
-                        _loginState.update { it.copy(continueToHome = true) }
+                        loginUseCase(
+                            username = _username.value,
+                            password = _password.value,
+                            keepMeLoggedIn = _keepMeLoggedInChecked.value
+                        )
+                        _navigationEvent.emit(LoginNavigationEvent.NavigateToHome)
                     } catch (e: Exception) {
                         _loginState.update {
                             it.copy(
-                                isLoading = false,
+                                isLogging = false,
                                 error = UiMessage(
                                     uiText = if (e.message != null) UiText.DynamicString(
                                         e.message ?: ""
@@ -75,11 +84,11 @@ class LoginViewModel @Inject constructor(
     fun guestLogin() {
         viewModelScope.launch {
             try {
-                _loginState.update { it.copy(isLoading = true) }
+                _loginState.update { it.copy(isLoggingGuest = true) }
                 logoutUseCase()
-                _loginState.update { it.copy(continueToHome = true) }
+                _navigationEvent.emit(LoginNavigationEvent.NavigateToHome)
             } catch (_: Exception) {
-                _loginState.update { it.copy(isLoading = false) }
+                _loginState.update { it.copy(isLoggingGuest = false) }
             }
 
         }
