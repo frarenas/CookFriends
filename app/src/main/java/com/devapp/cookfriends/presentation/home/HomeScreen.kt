@@ -25,8 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,7 +79,7 @@ fun HomeScreen(
         ),
         NavigationItem(stringResource(R.string.profile), Profile, Icons.Outlined.Person)
     )
-    var selectedItem by remember { mutableStateOf(items[0]) }
+    var selectedItemPosition by rememberSaveable { mutableIntStateOf(0) }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -114,7 +115,7 @@ fun HomeScreen(
                                     label = { Text(item.title) },
                                     selected = currentRoute?.startsWith(item.route.javaClass.name) == true,
                                     onClick = {
-                                        selectedItem = item
+                                        selectedItemPosition = items.indexOf(item)
                                         homeNavController.navigate(item.route) {
                                             launchSingleTop = true
                                             restoreState = true
@@ -130,7 +131,7 @@ fun HomeScreen(
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
-                    if (isUserLogged && selectedItem == items[2]) {
+                    if (isUserLogged && selectedItemPosition == 2) {
                         FloatingActionButton(
                             containerColor = MaterialTheme.colorScheme.primary,
                             onClick = { navigateToNewRecipe() }
