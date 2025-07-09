@@ -46,7 +46,7 @@ fun SearchOptionsDialog(
     var excludedIngredients by remember { mutableStateOf(initialOptions.excludedIngredients.toList()) }
     var currentOrder by remember { mutableStateOf(initialOptions.order) }
     var selectedRecipeType by remember {
-        mutableStateOf<RecipeType?>(initialOptions.recipeType)
+        mutableStateOf(initialOptions.recipeType)
     }
 
     Dialog(onDismissRequest = onDismiss) {
