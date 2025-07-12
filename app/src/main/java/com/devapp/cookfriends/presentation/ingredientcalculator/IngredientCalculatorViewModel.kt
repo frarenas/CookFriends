@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.devapp.cookfriends.domain.model.Ingredient
+import com.devapp.cookfriends.domain.usecase.GetLoggedUserUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.SaveRecipeUseCase
 import com.devapp.cookfriends.presentation.common.SnackbarMessage
@@ -17,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlin.reflect.typeOf
 import kotlin.uuid.Uuid
@@ -25,6 +27,7 @@ import kotlin.uuid.Uuid
 class IngredientCalculatorViewModel @Inject constructor(
     private val getRecipeUseCase: GetRecipeUseCase,
     private val saveRecipeUseCase: SaveRecipeUseCase,
+    private val getLoggedUserUseCase: GetLoggedUserUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -93,8 +96,7 @@ class IngredientCalculatorViewModel @Inject constructor(
         if (recipeId != null) {
             viewModelScope.launch {
                 val currentState = _state.value
-                val originalRecipe = getRecipeUseCase(recipeId)
-                originalRecipe.collect { originalRecipe ->
+                val originalRecipe = getRecipeUseCase(recipeId).firstOrNull()
                     originalRecipe?.let { original ->
                         // Nuevo id
                         val newRecipeId = Uuid.random()
@@ -124,6 +126,7 @@ class IngredientCalculatorViewModel @Inject constructor(
                         // Se copia lo demas y se guarda como estaba, pero con el id nuevo
                         val copiedRecipe = original.copy(
                             id = newRecipeId,
+                            user = getLoggedUserUseCase(),
                             portions = currentState.desiredPortions,
                             ingredients = copiedIngredients,
                             steps = copiedSteps,
@@ -136,7 +139,6 @@ class IngredientCalculatorViewModel @Inject constructor(
                             _snackbarFlow.emit(SnackbarMessage.Error("Error al guardar la receta"))
                         }
                     }
-                }
             }
         }
     }

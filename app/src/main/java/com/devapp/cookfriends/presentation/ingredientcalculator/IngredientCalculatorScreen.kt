@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
@@ -48,7 +50,11 @@ fun IngredientCalculatorScreen(
 
     val state by viewModel.state.collectAsState()
     // Editable campo de porciones
-    val porcionesState = remember { mutableStateOf(state.desiredPortions.toString()) }
+    val porcionesState = remember { mutableStateOf("") }
+
+    LaunchedEffect(state.desiredPortions) {
+        porcionesState.value = state.desiredPortions.toString()
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -104,23 +110,28 @@ fun IngredientCalculatorScreen(
                 Text("Porciones: ", modifier = Modifier.padding(end = 8.dp))
                 TextField(
                     value = porcionesState.value,
-                    onValueChange = {
-                        porcionesState.value = it
+                    onValueChange = { newValue ->
+                        // Permitir números decimales válidos (ej: 1, 2.5, 3.14)
+                        if (newValue.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                            porcionesState.value = newValue
+
+                            val parsed = newValue.toFloatOrNull()
+                            if (parsed != null) {
+                                val rounded = kotlin.math.ceil(parsed).toInt()
+                                viewModel.onPortionChange(rounded)
+                            }
+                        }
                     },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Decimal
+                    ),
                     modifier = Modifier
                         .width(60.dp)
-                        .onFocusChanged { focus ->
-                            if (!focus.isFocused) {
-                                val parsed = porcionesState.value.toFloatOrNull()
-                                if (parsed != null) {
-                                    val rounded = kotlin.math.ceil(parsed).toInt()
-                                    porcionesState.value = rounded.toString()
-                                    viewModel.onPortionChange(rounded)
-                                }
-                            }
-                        },
+            ,
                     singleLine = true
                 )
+
+
             }
 
             Spacer(modifier = Modifier.height(24.dp))
