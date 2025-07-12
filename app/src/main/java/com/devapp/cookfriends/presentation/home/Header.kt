@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -16,14 +18,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,7 +46,14 @@ fun Header(
     onSearchClick: (SearchOptions) -> Unit,
     onSearchOptionsClick: () -> Unit
 ) {
-    var currentSearchText by remember { mutableStateOf(initialOptions?.searchText) }
+    val focusManager = LocalFocusManager.current
+    var currentSearchText by remember { mutableStateOf(initialOptions?.searchText ?: "") }
+    LaunchedEffect(initialOptions?.searchText) {
+        val newSearchText = initialOptions?.searchText ?: ""
+        if (currentSearchText != newSearchText) {
+            currentSearchText = newSearchText
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -59,7 +71,7 @@ fun Header(
     ) {
         if (showSearchBar) {
             OutlinedTextField(
-                value = currentSearchText!!,
+                value = currentSearchText,
                 onValueChange = { currentSearchText = it },
                 modifier = modifier.fillMaxWidth(),
                 leadingIcon = {
@@ -72,7 +84,9 @@ fun Header(
                 },
                 trailingIcon = {
                     IconButton(onClick = {
-                        onSearchClick(initialOptions!!.copy(searchText = currentSearchText!!))
+                        onSearchClick(
+                            (initialOptions ?: SearchOptions()).copy(searchText = currentSearchText)
+                        )
                     }) {
                         Icon(
                             imageVector = Icons.Default.Search,
@@ -86,7 +100,16 @@ fun Header(
                     focusedContainerColor = White,
                     unfocusedContainerColor = White
                 ),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearchClick(
+                            (initialOptions ?: SearchOptions()).copy(searchText = currentSearchText)
+                        )
+                        focusManager.clearFocus() // Hide keyboard
+                    }
+                )
             )
         }
         Text(
