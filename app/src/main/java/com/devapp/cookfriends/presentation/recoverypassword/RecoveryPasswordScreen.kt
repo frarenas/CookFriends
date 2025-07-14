@@ -1,6 +1,5 @@
 package com.devapp.cookfriends.presentation.recoverypassword
 
-import PreviewRecoveryViewModelFactory
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -8,26 +7,25 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel // Si usas Hilt
 import androidx.lifecycle.viewmodel.compose.viewModel // Para uso sin Hilt
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.devapp.cookfriends.domain.model.RecoveryStep
+import com.devapp.cookfriends.presentation.profile.ProfileNavigationEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecoveryPasswordScreen(
     navController: NavController,
-    viewModel: RecoveryPasswordViewModel = viewModel() // O hiltViewModel()
+    viewModel: RecoveryPasswordViewModel = hiltViewModel(), // O hiltViewModel()
+    onNavigateToLogin: () -> Unit
 ) {
     val currentStep = viewModel.currentStep.value
     val isLoading = viewModel.isLoading.value
@@ -42,6 +40,16 @@ fun RecoveryPasswordScreen(
                 duration = SnackbarDuration.Short
             )
             viewModel.clearErrorMessage() // Limpiar para que no se muestre de nuevo
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is ProfileNavigationEvent.NavigateToLogin -> {
+                    onNavigateToLogin()
+                }
+            }
         }
     }
 
@@ -86,7 +94,7 @@ fun RecoveryPasswordScreen(
                 is RecoveryStep.EnterEmail -> EnterEmailStep(
                     email = viewModel.email.value,
                     onEmailChange = viewModel::onEmailChange,
-                    onSubmit = viewModel::submitEmail,
+                    onSubmit = viewModel::submitUsername,
                     isLoading = isLoading
                 )
                 is RecoveryStep.EnterCode -> EnterCodeStep(
@@ -122,12 +130,12 @@ fun EnterEmailStep(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Ingrese el mail con el que se registró a Cook Friends. Enviaremos un código para generar una nueva contraseña.", style = MaterialTheme.typography.bodyLarge)
+        Text("Ingrese el usuario con el que se registró a Cook Friends. Enviaremos un código para generar una nueva contraseña.", style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = { Text("Email") },
+            label = { Text("Username") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             singleLine = true,
@@ -218,60 +226,5 @@ fun EnterNewPasswordStep(
             if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
             else Text("Cambiar Contraseña")
         }
-    }
-}
-
-
-@Preview(showBackground = true, name = "Recovery Step: Enter Email")
-@Composable
-fun RecoveryPasswordScreenPreview_EnterEmail() {
-    val navController = rememberNavController()
-    MaterialTheme {
-        RecoveryPasswordScreen(
-            navController = navController,
-            viewModel = viewModel<PreviewRecoveryPasswordViewModel>( // Especifica el tipo aquí
-                factory = PreviewRecoveryViewModelFactory(RecoveryStep.EnterEmail)
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Recovery Step: Enter Code")
-@Composable
-fun RecoveryPasswordScreenPreview_EnterCode() {
-    val navController = rememberNavController()
-    MaterialTheme {
-        RecoveryPasswordScreen(
-            navController = navController,
-            viewModel = viewModel<PreviewRecoveryPasswordViewModel>(
-                factory = PreviewRecoveryViewModelFactory(RecoveryStep.EnterCode)
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Recovery Step: New Password")
-@Composable
-fun RecoveryPasswordScreenPreview_NewPassword() {
-    val navController = rememberNavController()
-    MaterialTheme {
-        RecoveryPasswordScreen(
-            navController = navController,
-            viewModel = viewModel<PreviewRecoveryPasswordViewModel>( // Aquí está el cambio
-                factory = PreviewRecoveryViewModelFactory(RecoveryStep.EnterNewPassword)
-            )
-        )
-    }
-}
-
-// ViewModel de utilidad para Previews
-class PreviewRecoveryPasswordViewModel(initialStep: RecoveryStep) : RecoveryPasswordViewModel() {
-    init {
-        // Truco para establecer el estado inicial para la preview
-        // Esto es un poco un hack, idealmente el ViewModel no debería exponer su _currentStep así,
-        // pero para previews es una forma sencilla.
-        val currentStepField = RecoveryPasswordViewModel::class.java.getDeclaredField("_currentStep")
-        currentStepField.isAccessible = true
-        currentStepField.set(this, mutableStateOf(initialStep))
     }
 }

@@ -49,7 +49,15 @@ fun AppNavGraph(startDestination: Screen) {
                 navigateBack = { mainNavController.popBackStack() }
             )
         }
-        composable<RecoveryPassword> { RecoveryPasswordScreen(mainNavController) }
+        composable<RecoveryPassword> {
+            RecoveryPasswordScreen(
+                mainNavController,
+                onNavigateToLogin = {
+                    mainNavController.navigate(Login) {
+                        popUpTo(RecoveryPassword) { inclusive = true }
+                    }
+                })
+        }
         composable<EditRecipe>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) { backStackEntry ->
             val editRecipe: EditRecipe = backStackEntry.toRoute()
             EditRecipeScreen(

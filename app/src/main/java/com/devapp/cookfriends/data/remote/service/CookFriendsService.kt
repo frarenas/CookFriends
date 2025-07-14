@@ -9,6 +9,7 @@ import com.devapp.cookfriends.data.remote.model.LoginResponse
 import com.devapp.cookfriends.data.remote.model.RatingModel
 import com.devapp.cookfriends.data.remote.model.RecipeModel
 import com.devapp.cookfriends.data.remote.model.RecipeTypeModel
+import com.devapp.cookfriends.data.remote.model.UserModel
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -31,6 +32,11 @@ interface CookFriendsService {
         @Query("username") username: String,
         @Query("password") password: String
     ): LoginResponse
+
+    @GET("exec?function=getUser")
+    suspend fun getUser(
+        @Query("username") username: String
+    ): retrofit2.Response<UserModel?>
 
     @POST("exec?function=addFavorite")
     suspend fun addFavorite(

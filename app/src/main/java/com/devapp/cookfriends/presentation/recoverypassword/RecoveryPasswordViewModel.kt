@@ -6,7 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.domain.model.RecoveryStep // Asegúrate de importar tu RecoveryStep
+import com.devapp.cookfriends.domain.usecase.ChangePasswordByUsernameUseCase
+import com.devapp.cookfriends.domain.usecase.GetUsernameUseCase
+import com.devapp.cookfriends.presentation.profile.ProfileNavigationEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 // Asume que tienes un repositorio o caso de uso para interactuar con el backend
@@ -16,9 +23,10 @@ import kotlinx.coroutines.launch
 //     suspend fun resetPassword(email: String, code: String, newPassword: String): Result<Unit>
 // }
 
-// @HiltViewModel // Si usas Hilt para inyección de dependencias
-open class RecoveryPasswordViewModel(
-    // private val authRepository: AuthRepository // Descomenta cuando tengas el repositorio
+@HiltViewModel
+open class RecoveryPasswordViewModel @Inject constructor(
+    private val getUsernameUseCase: GetUsernameUseCase,
+    private val changePasswordByUsernameUseCase: ChangePasswordByUsernameUseCase
 ) : ViewModel() {
 
     private val _currentStep = mutableStateOf<RecoveryStep>(RecoveryStep.EnterEmail)
@@ -42,6 +50,8 @@ open class RecoveryPasswordViewModel(
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
 
+    private val _navigationEvent = MutableSharedFlow<ProfileNavigationEvent>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
     fun onEmailChange(newEmail: String) {
         _email.value = newEmail
         _errorMessage.value = null // Limpiar error al escribir
@@ -62,55 +72,42 @@ open class RecoveryPasswordViewModel(
         _errorMessage.value = null
     }
 
-    fun submitEmail() {
-        if (!isValidEmail(email.value)) {
-            _errorMessage.value = "Por favor, ingresa un email válido."
+    fun submitUsername() {
+        println("submitUserName() llamado")
+        if (email.value.isBlank()) {
+            _errorMessage.value = "El nombre de usuario no puede estar vacío."
             return
         }
         _isLoading.value = true
+        println("Antes del launch")
         viewModelScope.launch {
+            println("Quiere lanzar api con profile:")
             // --- LÓGICA DE BACKEND (SIMULADA) ---
             delay(1500) // Simular llamada de red
-            // val result = authRepository.requestPasswordRecoveryCode(email.value)
-            // if (result.isSuccess) { // Asumiendo que tu Result tiene isSuccess
-            _currentStep.value = RecoveryStep.EnterCode
+            val user  = getUsernameUseCase(email.value)
+            println("Se ejecuto el endpoint, $user")
+            if (user != null) {
+                _currentStep.value = RecoveryStep.EnterCode
+                _errorMessage.value = null
+            } else {
+                _errorMessage.value = "No se encontró un usuario con ese nombre de usuario."
+            }
             _isLoading.value = false
-            _errorMessage.value = null
-            // } else {
-            //     _errorMessage.value = "Error al enviar el código. Intenta de nuevo." // O un mensaje del backend
-            //     _isLoading.value = false
-            // }
-            // --- FIN LÓGICA DE BACKEND (SIMULADA) ---
-
-            // Sin backend por ahora, solo avanzamos:
-            // _currentStep.value = RecoveryStep.EnterCode
-            // _isLoading.value = false
         }
     }
 
     fun submitCode() {
-        if (code.value.length < 6) { // Ejemplo de validación simple
-            _errorMessage.value = "El código debe tener al menos 6 caracteres."
+        println("submitCode() llamado")
+        if (code.value != "123456") {
+            _errorMessage.value = "El código ingresado es incorrecto."
             return
         }
-        _isLoading.value = true
-        viewModelScope.launch {
-            // --- LÓGICA DE BACKEND (SIMULADA) ---
-            delay(1500)
-            // val result = authRepository.validateRecoveryCode(email.value, code.value)
-            // if (result.isSuccess) {
-            _currentStep.value = RecoveryStep.EnterNewPassword
-            _isLoading.value = false
-            _errorMessage.value = null
-            // } else {
-            //     _errorMessage.value = "Código inválido."
-            //     _isLoading.value = false
-            // }
-            // --- FIN LÓGICA DE BACKEND (SIMULADA) ---
-        }
+        _currentStep.value = RecoveryStep.EnterNewPassword
     }
 
+
     fun submitNewPassword() {
+        println("submitNewPassword() llamado")
         if (password.value.length < 8) {
             _errorMessage.value = "La contraseña debe tener al menos 8 caracteres."
             return
@@ -121,22 +118,27 @@ open class RecoveryPasswordViewModel(
         }
         _isLoading.value = true
         viewModelScope.launch {
-            // --- LÓGICA DE BACKEND (SIMULADA) ---
-            delay(2000)
-            // val result = authRepository.resetPassword(email.value, code.value, password.value)
-            // if (result.isSuccess) {
-            _errorMessage.value = "Contraseña cambiada con éxito." // O navegar a Login
-            // _currentStep.value = RecoveryStep.Success // O navegar a otra pantalla
-            _isLoading.value = false
-            // Aquí podrías querer navegar de vuelta al Login o mostrar un mensaje de éxito
-            // y luego limpiar el estado o usar un evento para la navegación.
-            // } else {
-            //     _errorMessage.value = "Error al cambiar la contraseña."
-            //     _isLoading.value = false
-            // }
-            // --- FIN LÓGICA DE BACKEND (SIMULADA) ---
+            try {
+                val response = changePasswordByUsernameUseCase(
+                    username = email.value,
+                    newPassword = password.value
+                )
+
+                if (response?.status == "SUCCESS") {
+                    _errorMessage.value = "Contraseña cambiada con éxito."
+                    _navigationEvent.emit(ProfileNavigationEvent.NavigateToLogin)
+                } else {
+                    _errorMessage.value = response?.message ?: "Error al cambiar la contraseña."
+                }
+
+            } catch (e: Exception) {
+                _errorMessage.value = "Error inesperado: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
+
 
     private fun isValidEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()

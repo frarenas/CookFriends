@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.devapp.cookfriends.data.local.dao.UserDao
 import com.devapp.cookfriends.data.remote.model.ChangePasswordRequest
+import com.devapp.cookfriends.data.remote.model.ChangePasswordResponse
 import com.devapp.cookfriends.data.remote.model.Status
+import com.devapp.cookfriends.data.remote.model.UserModel
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
 import com.devapp.cookfriends.domain.model.User
 import com.devapp.cookfriends.domain.model.toDomain
@@ -43,6 +45,12 @@ class ProfileRepository @Inject constructor(
         if (changePasswordResponse.status == Status.ERROR.value) {
             throw Exception(changePasswordResponse.message)
         }
+    }
+
+    suspend fun updatePasswordByUsername(username: String, newPassword: String): ChangePasswordResponse {
+        val request = ChangePasswordRequest(username = username, newPassword = newPassword)
+        val response = service.changePassword(request)
+        return response
     }
 
     suspend fun setLoggedUserId(userId: Uuid) {
@@ -81,6 +89,27 @@ class ProfileRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             val userId = getLoggedUserId()
             userDao.getById(userId!!).toDomain()
+        }
+    }
+
+    suspend fun findUserByUsername(username: String): UserModel? {
+        return try {
+            println("Buscando usuario con username: $username")
+            val response = service.getUser(username)
+
+            val rawBody = response.errorBody()?.string() ?: response.body()?.toString() ?: "null"
+            println("Raw Body: $rawBody")
+
+            if (response.isSuccessful && rawBody != "null") {
+                println("Respuesta exitosa del servicio")
+                response.body()
+            } else {
+                println("Respuesta no exitosa o body nulo")
+                null
+            }
+        } catch (e: Exception) {
+            println("Excepción en findUserByUsername: ${e.message}")
+            null
         }
     }
 
