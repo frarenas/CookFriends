@@ -63,13 +63,13 @@ class MyRecipesViewModel @Inject constructor(
             recipesJob?.cancel()
             val loggedUserId = getLoggedUserIdUseCase()
             val updatedOptions = _currentSearchOptions.value.copy(
-                    currentUserId = loggedUserId,
-                    userCalculated = selectedTab.value == 1
-                )
+                currentUserId = loggedUserId,
+                userCalculated = selectedTab.value == 1
+            )
             _currentSearchOptions.value = updatedOptions
             recipesJob = getRecipesUseCase(updatedOptions)
                 .onStart {
-                    _recipesState.update { it.copy(isLoading = true, message = null) }
+                    _recipesState.update { it.copy(isLoading = true) }
                 }
                 .catch { exception ->
                     _recipesState.update {
@@ -86,8 +86,7 @@ class MyRecipesViewModel @Inject constructor(
                     _recipesState.update {
                         it.copy(
                             recipeList = recipes,
-                            isLoading = false,
-                            message = null
+                            isLoading = false
                         )
                     }
                 }
@@ -97,10 +96,16 @@ class MyRecipesViewModel @Inject constructor(
 
     fun deleteRecipe(recipeId: Uuid) {
         viewModelScope.launch {
-            _recipesState.update { it.copy(message = null) }
             try {
                 deleteRecipeUseCase(recipeId)
-                _recipesState.update { it.copy(message = UiMessage(UiText.StringResource(R.string.recipe_deleted_successfully))) }
+                _recipesState.update {
+                    it.copy(
+                        message = UiMessage(
+                            UiText.StringResource(R.string.recipe_deleted_successfully),
+                            blocking = false
+                        )
+                    )
+                }
             } catch (e: Exception) {
                 _recipesState.update {
                     it.copy(
@@ -157,5 +162,9 @@ class MyRecipesViewModel @Inject constructor(
         if (_selectedTab.value == index) return
         _selectedTab.value = index
         searchRecipes()
+    }
+
+    fun onClearMessage() {
+        _recipesState.update { it.copy(message = null) }
     }
 }

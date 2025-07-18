@@ -33,7 +33,7 @@ fun Content(
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (recipesState.message != null) {
+        } else if (recipesState.message?.blocking == true) {
             MessageScreen(
                 message = recipesState.message.uiText.asString(context),
                 imageVector = Icons.Default.Error

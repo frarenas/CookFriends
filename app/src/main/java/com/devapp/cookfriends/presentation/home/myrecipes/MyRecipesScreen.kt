@@ -2,13 +2,17 @@ package com.devapp.cookfriends.presentation.home.myrecipes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
@@ -20,6 +24,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun MyRecipesScreen(
     isUserLogged: Boolean = false,
+    snackbarHostState: SnackbarHostState,
     navigateToDetail: (recipeId: Uuid) -> Unit,
     viewModel: MyRecipesViewModel = hiltViewModel()
 ) {
@@ -30,6 +35,17 @@ fun MyRecipesScreen(
     val availableRecipeTypes by viewModel.availableRecipeTypes.collectAsState()
     val tabs = listOf(stringResource(R.string.owned), stringResource(R.string.calculated))
     val selectedTab = viewModel.selectedTab.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = recipesState.message) {
+        recipesState.message?.let {
+            snackbarHostState.showSnackbar(
+                message = it.uiText.asString(context),
+                duration = SnackbarDuration.Short
+            )
+            viewModel.onClearMessage()
+        }
+    }
 
     Column(
         modifier = Modifier
