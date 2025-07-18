@@ -1,6 +1,7 @@
 package com.devapp.cookfriends.presentation.home
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,14 +25,18 @@ import kotlin.uuid.Uuid
 fun Content(
     isUserLogged: Boolean = false,
     recipesState: RecipesState = RecipesState(),
+    filterTabGroup: @Composable (() -> Unit)? = null,
     onFavoriteClick: (Uuid) -> Unit,
     onItemClick: (Uuid) -> Unit
 ) {
     val context = LocalContext.current
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        filterTabGroup?.let { it() }
         if (recipesState.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         } else if (recipesState.error != null) {
             MessageScreen(
                 message = recipesState.error.uiText.asString(context),

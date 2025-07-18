@@ -45,6 +45,9 @@ class MyRecipesViewModel @Inject constructor(
     private val _currentSearchOptions = MutableStateFlow(SearchOptions())
     val currentSearchOptions: StateFlow<SearchOptions> = _currentSearchOptions.asStateFlow()
 
+    private val _selectedTab = MutableStateFlow(0)
+    val selectedTab: StateFlow<Int> = _selectedTab
+
     init {
         searchRecipes()
     }
@@ -110,5 +113,9 @@ class MyRecipesViewModel @Inject constructor(
         viewModelScope.launch {
             toggleFavoriteUseCase(recipeId)
         }
+    }
+
+    fun setSelectedTab(index: Int) {
+        _selectedTab.value = index
     }
 }

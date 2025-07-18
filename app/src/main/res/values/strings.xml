@@ -80,6 +80,10 @@
     // Home
     <string name="error_fetching_recipes">No pudimos obtener las últimas recetas.</string>
 
+    // My recipes
+    <string name="owned">Propias</string>
+    <string name="calculated">Calculadas</string>
+
     // Profile
     <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
     <string name="repeat_password_mandatory">Vuelva a ingresar la contraseña.</string>

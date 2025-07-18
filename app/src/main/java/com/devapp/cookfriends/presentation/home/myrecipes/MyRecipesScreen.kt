@@ -2,6 +2,9 @@ package com.devapp.cookfriends.presentation.home.myrecipes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,9 +28,13 @@ fun MyRecipesScreen(
     val showSearchOptionsDialog by viewModel.showSearchOptionsDialog.collectAsState()
     val currentSearchOptions by viewModel.currentSearchOptions.collectAsState()
     val availableRecipeTypes by viewModel.availableRecipeTypes.collectAsState()
+    val tabs = listOf(stringResource(R.string.owned), stringResource(R.string.calculated))
+    val selectedTab =  viewModel.selectedTab.collectAsState()
 
-    Column(modifier = Modifier
-        .fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Header(
             modifier = Modifier,
             title = stringResource(R.string.my_recipes),
@@ -40,6 +47,24 @@ fun MyRecipesScreen(
         Content(
             recipesState = recipesState,
             isUserLogged = isUserLogged,
+            filterTabGroup = {
+                TabRow(selectedTabIndex = selectedTab.value) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTab.value == index,
+                            onClick = {
+                                viewModel.setSelectedTab(index)
+                                viewModel.applySearchOptions(
+                                    currentSearchOptions.copy(
+                                        userCalculated = index == 1
+                                    )
+                                )
+                            },
+                            text = { Text(text = title) },
+                        )
+                    }
+                }
+            },
             onFavoriteClick = { viewModel.toggleFavorite(it) },
             onItemClick = { recipeId ->
                 navigateToDetail(recipeId)
