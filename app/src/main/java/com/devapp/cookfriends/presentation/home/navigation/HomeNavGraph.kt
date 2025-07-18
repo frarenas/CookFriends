@@ -12,7 +12,6 @@ import com.devapp.cookfriends.presentation.home.favorites.FavoritesScreen
 import com.devapp.cookfriends.presentation.home.myrecipes.MyRecipesScreen
 import com.devapp.cookfriends.presentation.home.recipes.RecipesScreen
 import com.devapp.cookfriends.presentation.profile.ProfileScreen
-import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordScreen
 import kotlin.uuid.Uuid
 
 @Composable
@@ -43,12 +42,5 @@ fun HomeNavGraph(
                 snackbarHostState = snackbarHostState,
             ){ navigateToLogin () }
         }
-        composable("recovery_password") {
-            RecoveryPasswordScreen(
-                navController = homeNavController,
-                onNavigateToLogin = { navigateToLogin() }
-            )
-        }
-
     }
 }
