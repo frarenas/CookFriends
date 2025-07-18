@@ -11,11 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.presentation.common.ConfirmationDialog
 import com.devapp.cookfriends.presentation.home.Content
 import com.devapp.cookfriends.presentation.home.Header
 import com.devapp.cookfriends.presentation.home.searchoptions.SearchOptionsDialog
@@ -36,6 +40,8 @@ fun MyRecipesScreen(
     val tabs = listOf(stringResource(R.string.owned), stringResource(R.string.calculated))
     val selectedTab = viewModel.selectedTab.collectAsState()
     val context = LocalContext.current
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var recipeIdToDelete by remember { mutableStateOf<Uuid?>(null) }
 
     LaunchedEffect(key1 = recipesState.message) {
         recipesState.message?.let {
@@ -75,7 +81,10 @@ fun MyRecipesScreen(
             recipesState = recipesState,
             isUserLogged = isUserLogged,
             onFavoriteClick = { viewModel.toggleFavorite(it) },
-            onDeleteClick = { viewModel.deleteRecipe(it) },
+            onDeleteClick = {
+                recipeIdToDelete = it
+                showConfirmationDialog = true
+            },
             onItemClick = { recipeId ->
                 navigateToDetail(recipeId)
             }
@@ -91,5 +100,23 @@ fun MyRecipesScreen(
                 viewModel.applySearchOptions(newOptions)
             }
         )
+    }
+
+    if (showConfirmationDialog) {
+        recipeIdToDelete?.let { recipeId ->
+            ConfirmationDialog(
+                title = stringResource(R.string.delete_recipe),
+                message = stringResource(R.string.confirm_delete_recipe_message),
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
+                    viewModel.deleteRecipe(recipeId)
+                    showConfirmationDialog = false
+                },
+                onDismiss = {
+                    showConfirmationDialog = false
+                }
+            )
+        }
     }
 }
