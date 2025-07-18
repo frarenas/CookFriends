@@ -1,7 +1,6 @@
 package com.devapp.cookfriends.presentation.home
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,21 +24,18 @@ import kotlin.uuid.Uuid
 fun Content(
     isUserLogged: Boolean = false,
     recipesState: RecipesState = RecipesState(),
-    filterTabGroup: @Composable (() -> Unit)? = null,
     onFavoriteClick: (Uuid) -> Unit,
+    onDeleteClick: (Uuid) -> Unit = { },
     onItemClick: (Uuid) -> Unit
 ) {
     val context = LocalContext.current
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        filterTabGroup?.let { it() }
+    Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-        } else if (recipesState.error != null) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else if (recipesState.message != null) {
             MessageScreen(
-                message = recipesState.error.uiText.asString(context),
+                message = recipesState.message.uiText.asString(context),
                 imageVector = Icons.Default.Error
             )
         } else {
@@ -56,6 +52,9 @@ fun Content(
                             isUserLogged = isUserLogged,
                             onFavoriteClick = { recipeId ->
                                 onFavoriteClick(recipeId)
+                            },
+                            onDeleteClick = { recipeId ->
+                                onDeleteClick(recipeId)
                             },
                             onItemClick = { recipeId ->
                                 onItemClick(recipeId)
@@ -86,7 +85,7 @@ fun ContentPreviewError() {
     CookFriendsTheme {
         Content(
             recipesState = RecipesState(
-                error = UiMessage(
+                message = UiMessage(
                     UiText.StringResource(R.string.generic_error),
                     blocking = true
                 )

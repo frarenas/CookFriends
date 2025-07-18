@@ -29,7 +29,7 @@ fun MyRecipesScreen(
     val currentSearchOptions by viewModel.currentSearchOptions.collectAsState()
     val availableRecipeTypes by viewModel.availableRecipeTypes.collectAsState()
     val tabs = listOf(stringResource(R.string.owned), stringResource(R.string.calculated))
-    val selectedTab =  viewModel.selectedTab.collectAsState()
+    val selectedTab = viewModel.selectedTab.collectAsState()
 
     Column(
         modifier = Modifier
@@ -44,28 +44,27 @@ fun MyRecipesScreen(
             },
             onSearchOptionsClick = { viewModel.openSearchOptionsDialog() }
         )
+        TabRow(selectedTabIndex = selectedTab.value) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab.value == index,
+                    onClick = {
+                        viewModel.setSelectedTab(index)
+                        viewModel.applySearchOptions(
+                            currentSearchOptions.copy(
+                                userCalculated = index == 1
+                            )
+                        )
+                    },
+                    text = { Text(text = title) },
+                )
+            }
+        }
         Content(
             recipesState = recipesState,
             isUserLogged = isUserLogged,
-            filterTabGroup = {
-                TabRow(selectedTabIndex = selectedTab.value) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTab.value == index,
-                            onClick = {
-                                viewModel.setSelectedTab(index)
-                                viewModel.applySearchOptions(
-                                    currentSearchOptions.copy(
-                                        userCalculated = index == 1
-                                    )
-                                )
-                            },
-                            text = { Text(text = title) },
-                        )
-                    }
-                }
-            },
             onFavoriteClick = { viewModel.toggleFavorite(it) },
+            onDeleteClick = { viewModel.deleteRecipe(it) },
             onItemClick = { recipeId ->
                 navigateToDetail(recipeId)
             }

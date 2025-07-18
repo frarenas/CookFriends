@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.home.myrecipes
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.R
@@ -7,6 +8,7 @@ import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
 import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
+import com.devapp.cookfriends.domain.usecase.DeleteRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.GetLoggedUserIdUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeTypesUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipesUseCase
@@ -30,7 +32,8 @@ class MyRecipesViewModel @Inject constructor(
     private val getRecipesUseCase: GetRecipesUseCase,
     private val getRecipeTypesUseCase: GetRecipeTypesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val getLoggedUserIdUseCase: GetLoggedUserIdUseCase
+    private val getLoggedUserIdUseCase: GetLoggedUserIdUseCase,
+    private val deleteRecipeUseCase: DeleteRecipeUseCase
 ) : ViewModel() {
 
     private val _recipesState = MutableStateFlow(RecipesState())
@@ -54,18 +57,18 @@ class MyRecipesViewModel @Inject constructor(
 
     fun searchRecipes() {
         viewModelScope.launch {
-            _recipesState.update { it.copy(isLoading = true, error = null) }
+            _recipesState.update { it.copy(isLoading = true, message = null) }
             val loggedUserId = getLoggedUserIdUseCase()
             _currentSearchOptions.update { _currentSearchOptions.value.copy(currentUserId = loggedUserId) }
             getRecipesUseCase(_currentSearchOptions.value)
                 .onStart {
-                    _recipesState.update { it.copy(isLoading = true, error = null) }
+                    _recipesState.update { it.copy(isLoading = true, message = null) }
                 }
                 .catch { exception ->
                     _recipesState.update {
                         it.copy(
                             isLoading = false,
-                            error = UiMessage(
+                            message = UiMessage(
                                 UiText.StringResource(R.string.generic_error),
                                 blocking = true
                             )
@@ -77,10 +80,32 @@ class MyRecipesViewModel @Inject constructor(
                         it.copy(
                             recipeList = recipes,
                             isLoading = false,
-                            error = null
+                            message = null
                         )
                     }
                 }
+        }
+    }
+
+    fun deleteRecipe(recipeId: Uuid) {
+        viewModelScope.launch {
+            _recipesState.update { it.copy(message = null) }
+            try {
+                deleteRecipeUseCase(recipeId)
+            } catch (e: Exception) {
+                _recipesState.update {
+                    it.copy(
+                        isLoading = false,
+                        message = UiMessage(
+                            uiText = if (e.message != null) UiText.DynamicString(
+                                e.message ?: ""
+                            ) else UiText.StringResource(R.string.generic_error),
+                            blocking = false
+                        )
+                    )
+                }
+                Log.e("MyRecipesViewModel", "Error deleting recipe", e)
+            }
         }
     }
 

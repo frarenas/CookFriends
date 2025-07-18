@@ -6,5 +6,5 @@ import com.devapp.cookfriends.domain.model.UiMessage
 data class RecipesState(
     val recipeList: List<Recipe> = emptyList(),
     val isLoading: Boolean = false,
-    val error: UiMessage? = null
+    val message: UiMessage? = null
 )
