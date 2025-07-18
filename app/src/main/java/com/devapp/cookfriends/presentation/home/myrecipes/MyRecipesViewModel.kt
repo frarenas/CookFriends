@@ -15,6 +15,7 @@ import com.devapp.cookfriends.domain.usecase.GetRecipesUseCase
 import com.devapp.cookfriends.domain.usecase.ToggleFavoriteUseCase
 import com.devapp.cookfriends.presentation.home.RecipesState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,16 +52,22 @@ class MyRecipesViewModel @Inject constructor(
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab
 
+    private var recipesJob: Job? = null
+
     init {
         searchRecipes()
     }
 
     fun searchRecipes() {
         viewModelScope.launch {
-            _recipesState.update { it.copy(isLoading = true, message = null) }
+            recipesJob?.cancel()
             val loggedUserId = getLoggedUserIdUseCase()
-            _currentSearchOptions.update { _currentSearchOptions.value.copy(currentUserId = loggedUserId) }
-            getRecipesUseCase(_currentSearchOptions.value)
+            val updatedOptions = _currentSearchOptions.value.copy(
+                    currentUserId = loggedUserId,
+                    userCalculated = selectedTab.value == 1
+                )
+            _currentSearchOptions.value = updatedOptions
+            recipesJob = getRecipesUseCase(updatedOptions)
                 .onStart {
                     _recipesState.update { it.copy(isLoading = true, message = null) }
                 }
@@ -75,7 +82,7 @@ class MyRecipesViewModel @Inject constructor(
                         )
                     }
                 }
-                .collect { recipes ->
+                .onEach { recipes ->
                     _recipesState.update {
                         it.copy(
                             recipeList = recipes,
@@ -84,6 +91,7 @@ class MyRecipesViewModel @Inject constructor(
                         )
                     }
                 }
+                .launchIn(viewModelScope)
         }
     }
 
@@ -92,6 +100,7 @@ class MyRecipesViewModel @Inject constructor(
             _recipesState.update { it.copy(message = null) }
             try {
                 deleteRecipeUseCase(recipeId)
+                _recipesState.update { it.copy(message = UiMessage(UiText.StringResource(R.string.recipe_deleted_successfully))) }
             } catch (e: Exception) {
                 _recipesState.update {
                     it.copy(
@@ -120,10 +129,14 @@ class MyRecipesViewModel @Inject constructor(
     }
 
     fun applySearchOptions(options: SearchOptions) {
-        _currentSearchOptions.value = options
+        val newOptions = options.copy(
+            currentUserId = _currentSearchOptions.value.currentUserId,
+            userCalculated = _selectedTab.value == 1
+        )
+        _currentSearchOptions.value = newOptions
         dismissSearchOptionsDialog()
-
         searchRecipes()
+
     }
 
     fun openSearchOptionsDialog() {
@@ -141,6 +154,8 @@ class MyRecipesViewModel @Inject constructor(
     }
 
     fun setSelectedTab(index: Int) {
+        if (_selectedTab.value == index) return
         _selectedTab.value = index
+        searchRecipes()
     }
 }

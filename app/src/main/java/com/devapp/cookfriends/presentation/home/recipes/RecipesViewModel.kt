@@ -51,7 +51,6 @@ class RecipesViewModel @Inject constructor(
 
     fun searchRecipes(options: SearchOptions) {
         viewModelScope.launch {
-            _recipesState.update { it.copy(isLoading = true, message = null) }
             getRecipesUseCase(options)
                 .onStart {
                     _recipesState.update { it.copy(isLoading = true, message = null) }

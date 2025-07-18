@@ -50,11 +50,6 @@ fun MyRecipesScreen(
                     selected = selectedTab.value == index,
                     onClick = {
                         viewModel.setSelectedTab(index)
-                        viewModel.applySearchOptions(
-                            currentSearchOptions.copy(
-                                userCalculated = index == 1
-                            )
-                        )
                     },
                     text = { Text(text = title) },
                 )

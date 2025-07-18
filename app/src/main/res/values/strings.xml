@@ -83,6 +83,7 @@
     // My recipes
     <string name="owned">Propias</string>
     <string name="calculated">Calculadas</string>
+    <string name="recipe_deleted_successfully">Se eliminó la receta.</string>
 
     // Profile
     <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
