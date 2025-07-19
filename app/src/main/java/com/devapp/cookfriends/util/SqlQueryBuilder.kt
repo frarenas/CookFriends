@@ -77,6 +77,9 @@ object SqlQueryBuilder {
             whereClauses.add("r.user_id = '$it'")
         }
 
+        // Recipes with calculated ingredients
+        whereClauses.add("r.user_calculated = ${options.userCalculated}")
+
         // Add WHERE clause if any filters are present
         if (whereClauses.isNotEmpty()) {
             queryBuilder.append("WHERE ")

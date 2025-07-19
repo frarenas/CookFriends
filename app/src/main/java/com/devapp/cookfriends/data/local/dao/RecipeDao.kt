@@ -128,4 +128,10 @@ interface RecipeDao {
         WHERE update_pending = 1
         """)
     fun getPendingUploadRecipes(): List<RecipeWithExtraData>
+
+    @Query("DELETE FROM recipe_table WHERE id = :recipeId")
+    suspend fun deleteRecipeById(recipeId: Uuid)
+
+    @Query("SELECT COUNT(*) FROM recipe_table WHERE user_calculated = 1 AND user_id = :userId")
+    suspend fun countUserCalculatedRecipes(userId: Uuid): Int
 }

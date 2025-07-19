@@ -51,16 +51,15 @@ class RecipesViewModel @Inject constructor(
 
     fun searchRecipes(options: SearchOptions) {
         viewModelScope.launch {
-            _recipesState.update { it.copy(isLoading = true, error = null) }
             getRecipesUseCase(options)
                 .onStart {
-                    _recipesState.update { it.copy(isLoading = true, error = null) }
+                    _recipesState.update { it.copy(isLoading = true, message = null) }
                 }
                 .catch { exception ->
                     _recipesState.update {
                         it.copy(
                             isLoading = false,
-                            error = UiMessage(
+                            message = UiMessage(
                                 UiText.StringResource(R.string.error_fetching_recipes),
                                 blocking = true
                             )
@@ -73,7 +72,7 @@ class RecipesViewModel @Inject constructor(
                         it.copy(
                             recipeList = recipes,
                             isLoading = false,
-                            error = null
+                            message = null
                         )
                     }
                 }

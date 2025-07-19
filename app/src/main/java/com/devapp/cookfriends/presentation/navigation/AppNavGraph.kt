@@ -65,10 +65,8 @@ fun AppNavGraph(startDestination: Screen) {
                 navigateBack = { mainNavController.popBackStack() })
         }
         composable<IngredientCalculator>(typeMap = mapOf(typeOf<Uuid?>() to UuidNavType)) { backStackEntry ->
-            val ingredientCalculator: IngredientCalculator = backStackEntry.toRoute()
             IngredientCalculatorScreen(
-                recipeId = ingredientCalculator.id,
-                mainNavController = mainNavController
+                navigateBack = { mainNavController.popBackStack() }
             )
         }
     }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,6 +35,7 @@ fun RecipeListItem(
     recipe: Recipe,
     isUserLogged: Boolean = false,
     onFavoriteClick: (Uuid) -> Unit,
+    onDeleteClick: (Uuid) -> Unit = { },
     onItemClick: (Uuid) -> Unit
 ) {
     Row(
@@ -62,22 +64,31 @@ fun RecipeListItem(
         Spacer(modifier = Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             if (isUserLogged) {
-                IconButton(onClick = { onFavoriteClick(recipe.id) }) {
-                    Icon(
-                        imageVector = if (recipe.isUserFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = stringResource(R.string.favorite),
-                        tint = Red
-                    )
+                if (recipe.userCalculated) {
+                    IconButton(onClick = { onDeleteClick(recipe.id) }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.delete)
+                        )
+                    }
+                } else {
+                    IconButton(onClick = { onFavoriteClick(recipe.id) }) {
+                        Icon(
+                            imageVector = if (recipe.isUserFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = stringResource(R.string.favorite),
+                            tint = Red
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = stringResource(R.string.rating),
+                            tint = Gold
+                        )
+                        Text(text = recipe.averageRating?.toString() ?: "-")
+                    }
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Row {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = stringResource(R.string.rating),
-                    tint = Gold
-                )
-                Text(text = recipe.averageRating?.toString() ?: "-")
             }
         }
     }

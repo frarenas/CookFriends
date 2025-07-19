@@ -80,6 +80,13 @@
     // Home
     <string name="error_fetching_recipes">No pudimos obtener las últimas recetas.</string>
 
+    // My recipes
+    <string name="owned">Propias</string>
+    <string name="calculated">Calculadas</string>
+    <string name="recipe_deleted_successfully">Se eliminó la receta.</string>
+    <string name="delete_recipe">Eliminar receta</string>
+    <string name="confirm_delete_recipe_message">¿Estás seguro de que quieres eliminar la receta?</string>
+
     // Profile
     <string name="passwords_does_not_match">Las contraseñas no coinciden.</string>
     <string name="repeat_password_mandatory">Vuelva a ingresar la contraseña.</string>
@@ -117,4 +124,12 @@
     <string name="upload_recipe_data_connectivity">Receta guardada.\nEstás conectado con datos. La receta será cargada cuando tengas WiFi.</string>
     <string name="upload_recipe_now">Cargar ahora.</string>
     <string name="upload_recipe_error">Receta guardada.\nNo pudimos cargar la receta. No te preocupes, lo volveremos a intentar cuando haya conexión.</string>
+
+    // Ingredient calculator
+    <string name="ingredient_calculator">Calculadora de ingredientes</string>
+    <string name="user_calculated_recipe_limit_reached">Has llegado al límite de recetas calculadas.</string>
+    <string name="ingredient_label_format">%1s (%2s)</string>
+    <string name="recipe_saved">Receta guardada</string>
+    <string name="recipe_saved_in_my_recipes">Puedes verla en Mis Recetas.</string>
+    <string name="understood">Entendido</string>
 </resources>
