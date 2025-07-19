@@ -1,15 +1,18 @@
 package com.devapp.cookfriends.presentation.ingredientcalculator
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.Ingredient
+import com.devapp.cookfriends.domain.model.UiMessage
+import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.CountUserCalculatedRecipesUseCase
 import com.devapp.cookfriends.domain.usecase.GetLoggedUserUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.SaveRecipeUseCase
-import com.devapp.cookfriends.presentation.common.SnackbarMessage
 import com.devapp.cookfriends.presentation.navigation.IngredientCalculator
 import com.devapp.cookfriends.presentation.navigation.UuidNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +20,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlin.reflect.typeOf
@@ -38,9 +42,6 @@ class IngredientCalculatorViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(IngredientCalculatorState())
     val state: StateFlow<IngredientCalculatorState> = _state
-
-    private val _snackbarFlow = MutableStateFlow<SnackbarMessage?>(null)
-    val snackbarFlow: StateFlow<SnackbarMessage?> = _snackbarFlow
 
     init {
         loadRecipe()
@@ -101,7 +102,14 @@ class IngredientCalculatorViewModel @Inject constructor(
             val currentCalculatedCount = countUserCalculatedRecipesUseCase(loggedUser.id)
 
             if (currentCalculatedCount >= USER_CALCULATED_RECIPE_LIMIT) {
-                _snackbarFlow.emit(SnackbarMessage.Error("Cannot save. Limit of $USER_CALCULATED_RECIPE_LIMIT calculated recipes reached."))
+                _state.update {
+                    it.copy(
+                        message = UiMessage(
+                            uiText = UiText.StringResource(R.string.user_calculated_recipe_limit_reached),
+                            blocking = false
+                        )
+                    )
+                }
                 return@launch
             }
 
@@ -148,13 +156,32 @@ class IngredientCalculatorViewModel @Inject constructor(
                     )
                     try {
                         saveRecipeUseCase(copiedRecipe)
-                        _snackbarFlow.emit(SnackbarMessage.Success("Se guardaron los cambios."))
-                    } catch (_: Exception) {
-                        _snackbarFlow.emit(SnackbarMessage.Error("Error al guardar la receta"))
+                        _state.update {
+                            it.copy(
+                                message = UiMessage(
+                                    uiText = UiText.StringResource(R.string.changes_saved),
+                                    blocking = true
+                                )
+                            )
+                        }
+                    } catch (e: Exception) {
+                        _state.update {
+                            it.copy(
+                                message = UiMessage(
+                                    uiText = UiText.StringResource(R.string.generic_error),
+                                    blocking = false
+                                )
+                            )
+                        }
+                        Log.e("IngredientCalculatorViewModel", "Error saving recipe", e)
                     }
                 }
             }
         }
+    }
+
+    fun onClearMessage() {
+        _state.update { it.copy(message = null) }
     }
 
     companion object {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -15,11 +14,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,55 +27,56 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.devapp.cookfriends.R
-import kotlinx.coroutines.launch
-import kotlin.uuid.Uuid
+import com.devapp.cookfriends.domain.model.Ingredient
+import com.devapp.cookfriends.presentation.common.ConfirmationDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IngredientCalculatorScreen(
-    mainNavController: NavHostController,
-    recipeId: Uuid? = null,
+    navigateBack: () -> Unit,
     viewModel: IngredientCalculatorViewModel = hiltViewModel()
 ) {
 
     val state by viewModel.state.collectAsState()
-    // Editable campo de porciones
-    val porcionesState = remember { mutableStateOf("") }
+    val portionsState = remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(state.desiredPortions) {
-        porcionesState.value = state.desiredPortions.toString()
+        portionsState.value = state.desiredPortions.toString()
     }
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-
-
-    LaunchedEffect(viewModel.snackbarFlow) {
-        viewModel.snackbarFlow.collect { message ->
-            message?.let {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(it.message)
-                }
+    LaunchedEffect(key1 = state.message) {
+        state.message?.let {
+            if(it.blocking) {
+                showConfirmationDialog = true
+            } else {
+                snackbarHostState.showSnackbar(
+                    message = it.uiText.asString(context),
+                    duration = SnackbarDuration.Short
+                )
             }
         }
+        viewModel.onClearMessage()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Calculadora de ingredientes") },
+                title = { Text(stringResource(R.string.ingredient_calculator)) },
                 navigationIcon = {
                     IconButton(onClick = {
-                        mainNavController.popBackStack()
+                        navigateBack()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -84,9 +85,6 @@ fun IngredientCalculatorScreen(
                     }
                 }
             )
-        },
-        bottomBar = {
-
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
@@ -97,13 +95,11 @@ fun IngredientCalculatorScreen(
                 .fillMaxSize()
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Porciones: ", modifier = Modifier.padding(end = 8.dp))
-                TextField(
-                    value = porcionesState.value,
+                OutlinedTextField(
+                    value = state.desiredPortions.toString(),
                     onValueChange = { newValue ->
-                        // Permitir números decimales válidos (ej: 1, 2.5, 3.14)
-                        if (newValue.matches(Regex("^\\d*\\.?\\d*\$"))) {
-                            porcionesState.value = newValue
+                        if (newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                            portionsState.value = newValue
 
                             val parsed = newValue.toFloatOrNull()
                             if (parsed != null) {
@@ -112,22 +108,19 @@ fun IngredientCalculatorScreen(
                             }
                         }
                     },
+                    label = { Text(stringResource(R.string.portions)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Decimal
-                    ),
-                    modifier = Modifier
-                        .width(60.dp)
-            ,
-                    singleLine = true
+                    )
                 )
-
-
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             state.adjustedIngredients.forEach { ingredient ->
-                IngredientDisplayRow(ingredient.name, ingredient.quantity, ingredient.measurement)
+                IngredientDisplayRow(ingredient)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -139,31 +132,52 @@ fun IngredientCalculatorScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Agregar a mis recetas")
+                Text(stringResource(R.string.save))
             }
         }
+    }
+
+    if (showConfirmationDialog) {
+        ConfirmationDialog(
+            title = stringResource(R.string.recipe_saved),
+            message = stringResource(R.string.recipe_saved_in_my_recipes),
+            confirmText = stringResource(R.string.understood),
+            dismissText = null,
+            onConfirm = {
+                navigateBack()
+            },
+            onDismiss = { }
+        )
     }
 }
 
 @Composable
 fun IngredientDisplayRow(
-    name: String,
-    quantity: String,
-    unit: String?
+    ingredient: Ingredient,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 8.dp)
     ) {
-        Text(text = "$name:", modifier = Modifier.width(80.dp))
-        TextField(
-            value = quantity,
-            onValueChange = {}, // deshabilitado (solo lectura por ahora)
-            modifier = Modifier.width(200.dp),
+        OutlinedTextField(
+            value = ingredient.quantity,
+            onValueChange = { },
+            label = {
+                Text(
+                    if (ingredient.measurement.isNullOrBlank()) {
+                        ingredient.name
+                    } else {
+                        stringResource(
+                            R.string.ingredient_label_format,
+                            ingredient.name,
+                            ingredient.measurement!!
+                        )
+                    }
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = false
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = if (unit != null) "$unit" else "")
     }
 }

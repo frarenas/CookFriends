@@ -126,5 +126,10 @@
     <string name="upload_recipe_error">Receta guardada.\nNo pudimos cargar la receta. No te preocupes, lo volveremos a intentar cuando haya conexión.</string>
 
     // Ingredient calculator
-    <string name="user_calculated_recipe_limit_reached">Has llegado al límite de recetas calculadas.</string>">
+    <string name="ingredient_calculator">Calculadora de ingredientes</string>
+    <string name="user_calculated_recipe_limit_reached">Has llegado al límite de recetas calculadas.</string>
+    <string name="ingredient_label_format">%1s (%2s)</string>
+    <string name="recipe_saved">Receta guardada</string>
+    <string name="recipe_saved_in_my_recipes">Puedes verla en Mis Recetas.</string>
+    <string name="understood">Entendido</string>
 </resources>

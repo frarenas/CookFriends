@@ -15,7 +15,7 @@ fun ConfirmationDialog(
     title: String,
     message: String,
     confirmText: String,
-    dismissText: String,
+    dismissText: String?,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -33,13 +33,13 @@ fun ConfirmationDialog(
                 Text(confirmText)
             }
         },
-        dismissButton = {
+        dismissButton = dismissText?.let {{
             TextButton(
                 onClick = onDismiss
             ) {
                 Text(dismissText)
             }
-        }
+        }}
     )
 }
 
@@ -67,6 +67,21 @@ fun DeleteConfirmationDialogPreviewDark() {
             message = "Are you sure you want to delete this ingredient?",
             confirmText = stringResource(R.string.delete),
             dismissText = stringResource(R.string.cancel),
+            onConfirm = {},
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeleteConfirmationDialogNoDismissPreviewDark() {
+    CookFriendsTheme {
+        ConfirmationDialog(
+            title = "Delete Ingredient",
+            message = "Are you sure you want to delete this ingredient?",
+            confirmText = stringResource(R.string.delete),
+            dismissText = null,
             onConfirm = {},
             onDismiss = {}
         )
