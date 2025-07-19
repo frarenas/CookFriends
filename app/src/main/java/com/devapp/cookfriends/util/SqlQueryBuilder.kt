@@ -93,6 +93,9 @@ object SqlQueryBuilder {
             OrderBy.DATE -> queryBuilder.append(" ORDER BY date DESC, name ASC")
         }
 
+        // Limit
+        queryBuilder.append(" LIMIT ${options.limit}")
+
         val rawQuery = SimpleSQLiteQuery(queryBuilder.toString())
 
         return rawQuery

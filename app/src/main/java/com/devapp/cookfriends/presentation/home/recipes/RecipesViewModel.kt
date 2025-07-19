@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devapp.cookfriends.R
+import com.devapp.cookfriends.domain.model.OrderBy
 import com.devapp.cookfriends.domain.model.RecipeType
 import com.devapp.cookfriends.domain.model.SearchOptions
 import com.devapp.cookfriends.domain.model.UiMessage
@@ -41,7 +42,8 @@ class RecipesViewModel @Inject constructor(
     private val _showSearchOptionsDialog = MutableStateFlow(false)
     val showSearchOptionsDialog: StateFlow<Boolean> = _showSearchOptionsDialog.asStateFlow()
 
-    private val _currentSearchOptions = MutableStateFlow(SearchOptions())
+    private val _currentSearchOptions =
+        MutableStateFlow(SearchOptions(order = OrderBy.DATE, limit = 3))
     val currentSearchOptions: StateFlow<SearchOptions> = _currentSearchOptions.asStateFlow()
 
     init {
@@ -90,7 +92,7 @@ class RecipesViewModel @Inject constructor(
     }
 
     fun applySearchOptions(options: SearchOptions) {
-        _currentSearchOptions.value = options
+        _currentSearchOptions.value = options.copy(limit = Int.MAX_VALUE)
         dismissSearchOptionsDialog()
 
         searchRecipes(options)
