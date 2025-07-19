@@ -12,7 +12,6 @@ import com.devapp.cookfriends.presentation.home.favorites.FavoritesScreen
 import com.devapp.cookfriends.presentation.home.myrecipes.MyRecipesScreen
 import com.devapp.cookfriends.presentation.home.recipes.RecipesScreen
 import com.devapp.cookfriends.presentation.profile.ProfileScreen
-import com.devapp.cookfriends.presentation.recoverypassword.RecoveryPasswordScreen
 import kotlin.uuid.Uuid
 
 @Composable
@@ -36,19 +35,12 @@ fun HomeNavGraph(
             FavoritesScreen(isUserLogged = isUserLogged, navigateToDetail = navigateToDetail)
         }
         composable<MyRecipes> {
-            MyRecipesScreen(isUserLogged = isUserLogged, navigateToDetail = navigateToDetail)
+            MyRecipesScreen(isUserLogged = isUserLogged, snackbarHostState = snackbarHostState, navigateToDetail = navigateToDetail)
         }
         composable<Profile> {
             ProfileScreen(
                 snackbarHostState = snackbarHostState,
-            ){ navigateToLogin () }
+            ) { navigateToLogin() }
         }
-        composable("recovery_password") {
-            RecoveryPasswordScreen(
-                navController = homeNavController,
-                onNavigateToLogin = { navigateToLogin() }
-            )
-        }
-
     }
 }

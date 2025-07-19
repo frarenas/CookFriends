@@ -86,14 +86,14 @@ fun HomeScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (recipesState.error?.blocking == true) {
+        } else if (recipesState.message?.blocking == true) {
             MessageScreen(
-                message = recipesState.error!!.uiText.asString(context),
+                message = recipesState.message!!.uiText.asString(context),
                 imageVector = Icons.Default.Error
             )
         } else {
-            LaunchedEffect(key1 = recipesState.error) {
-                recipesState.error?.let {
+            LaunchedEffect(key1 = recipesState.message) {
+                recipesState.message?.let {
                     snackbarHostState.showSnackbar(
                         message = it.uiText.asString(context),
                         duration = SnackbarDuration.Short

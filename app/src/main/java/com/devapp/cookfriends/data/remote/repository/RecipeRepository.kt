@@ -69,4 +69,14 @@ class RecipeRepository @Inject constructor(
             recipeDao.getPendingUploadRecipes().map { it.toDomain() }
         }
     }
+
+    suspend fun deleteRecipe(id: Uuid) =
+        withContext(Dispatchers.IO) {
+            recipeDao.deleteRecipeById(id)
+        }
+
+    suspend fun countUserCalculatedRecipes(userId: Uuid) =
+        withContext(Dispatchers.IO) {
+            recipeDao.countUserCalculatedRecipes(userId)
+        }
 }

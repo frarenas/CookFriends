@@ -25,6 +25,7 @@ fun Content(
     isUserLogged: Boolean = false,
     recipesState: RecipesState = RecipesState(),
     onFavoriteClick: (Uuid) -> Unit,
+    onDeleteClick: (Uuid) -> Unit = { },
     onItemClick: (Uuid) -> Unit
 ) {
     val context = LocalContext.current
@@ -32,9 +33,9 @@ fun Content(
     Box(modifier = Modifier.fillMaxSize()) {
         if (recipesState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (recipesState.error != null) {
+        } else if (recipesState.message?.blocking == true) {
             MessageScreen(
-                message = recipesState.error.uiText.asString(context),
+                message = recipesState.message.uiText.asString(context),
                 imageVector = Icons.Default.Error
             )
         } else {
@@ -51,6 +52,9 @@ fun Content(
                             isUserLogged = isUserLogged,
                             onFavoriteClick = { recipeId ->
                                 onFavoriteClick(recipeId)
+                            },
+                            onDeleteClick = { recipeId ->
+                                onDeleteClick(recipeId)
                             },
                             onItemClick = { recipeId ->
                                 onItemClick(recipeId)
@@ -81,7 +85,7 @@ fun ContentPreviewError() {
     CookFriendsTheme {
         Content(
             recipesState = RecipesState(
-                error = UiMessage(
+                message = UiMessage(
                     UiText.StringResource(R.string.generic_error),
                     blocking = true
                 )

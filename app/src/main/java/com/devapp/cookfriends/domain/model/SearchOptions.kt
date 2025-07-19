@@ -10,6 +10,7 @@ data class SearchOptions(
     val excludedIngredients: List<String> = emptyList(),
     val onlyFavorites: Boolean = false,
     val currentUserId: Uuid? = null,
+    val userCalculated: Boolean = false,
     val order: OrderBy = OrderBy.NAME
 )
 
