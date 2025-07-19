@@ -11,7 +11,8 @@ data class SearchOptions(
     val onlyFavorites: Boolean = false,
     val currentUserId: Uuid? = null,
     val userCalculated: Boolean = false,
-    val order: OrderBy = OrderBy.NAME
+    val order: OrderBy = OrderBy.NAME,
+    val limit: Int = Int.MAX_VALUE
 )
 
 enum class OrderBy {
