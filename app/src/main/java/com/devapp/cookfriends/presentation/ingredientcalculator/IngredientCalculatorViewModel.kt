@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.devapp.cookfriends.domain.model.Ingredient
+import com.devapp.cookfriends.domain.usecase.CountUserCalculatedRecipesUseCase
 import com.devapp.cookfriends.domain.usecase.GetLoggedUserUseCase
 import com.devapp.cookfriends.domain.usecase.GetRecipeUseCase
 import com.devapp.cookfriends.domain.usecase.SaveRecipeUseCase
@@ -26,6 +27,7 @@ class IngredientCalculatorViewModel @Inject constructor(
     private val getRecipeUseCase: GetRecipeUseCase,
     private val saveRecipeUseCase: SaveRecipeUseCase,
     private val getLoggedUserUseCase: GetLoggedUserUseCase,
+    private val countUserCalculatedRecipesUseCase: CountUserCalculatedRecipesUseCase, // Injected
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -47,8 +49,8 @@ class IngredientCalculatorViewModel @Inject constructor(
     private fun loadRecipe() {
         if (recipeId != null) {
             viewModelScope.launch {
-                val recipe = getRecipeUseCase(recipeId)
-                recipe.collect { recipe ->
+                val recipeFlow = getRecipeUseCase(recipeId)
+                recipeFlow.collect { recipe ->
                     recipe?.let {
                         val adjusted =
                             adjustIngredients(it.ingredients, it.portions ?: 1, it.portions ?: 1)
@@ -94,9 +96,17 @@ class IngredientCalculatorViewModel @Inject constructor(
     }
 
     fun saveAdjustedRecipeLocally() {
-        if (recipeId != null) {
-            viewModelScope.launch {
-                val currentState = _state.value
+        viewModelScope.launch {
+            val loggedUser = getLoggedUserUseCase()
+            val currentCalculatedCount = countUserCalculatedRecipesUseCase(loggedUser.id)
+
+            if (currentCalculatedCount >= USER_CALCULATED_RECIPE_LIMIT) {
+                _snackbarFlow.emit(SnackbarMessage.Error("Cannot save. Limit of $USER_CALCULATED_RECIPE_LIMIT calculated recipes reached."))
+                return@launch
+            }
+
+            val currentState = _state.value
+            if (recipeId != null) {
                 val originalRecipe = getRecipeUseCase(recipeId).firstOrNull()
                 originalRecipe?.let { original ->
                     // Nuevo id
@@ -127,7 +137,7 @@ class IngredientCalculatorViewModel @Inject constructor(
                     // Se copia lo demas y se guarda como estaba, pero con el id nuevo
                     val copiedRecipe = original.copy(
                         id = newRecipeId,
-                        user = getLoggedUserUseCase(),
+                        user = loggedUser,
                         portions = currentState.desiredPortions,
                         ingredients = copiedIngredients,
                         steps = copiedSteps,
@@ -145,5 +155,9 @@ class IngredientCalculatorViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    companion object {
+        const val USER_CALCULATED_RECIPE_LIMIT = 10
     }
 }

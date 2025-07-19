@@ -124,4 +124,7 @@
     <string name="upload_recipe_data_connectivity">Receta guardada.\nEstás conectado con datos. La receta será cargada cuando tengas WiFi.</string>
     <string name="upload_recipe_now">Cargar ahora.</string>
     <string name="upload_recipe_error">Receta guardada.\nNo pudimos cargar la receta. No te preocupes, lo volveremos a intentar cuando haya conexión.</string>
+
+    // Ingredient calculator
+    <string name="user_calculated_recipe_limit_reached">Has llegado al límite de recetas calculadas.</string>">
 </resources>

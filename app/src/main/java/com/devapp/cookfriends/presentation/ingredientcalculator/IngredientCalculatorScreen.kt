@@ -86,16 +86,7 @@ fun IngredientCalculatorScreen(
             )
         },
         bottomBar = {
-            Button(
-                onClick = {
-                    viewModel.saveAdjustedRecipeLocally()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Agregar a mis recetas")
-            }
+
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
@@ -137,6 +128,18 @@ fun IngredientCalculatorScreen(
 
             state.adjustedIngredients.forEach { ingredient ->
                 IngredientDisplayRow(ingredient.name, ingredient.quantity, ingredient.measurement)
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = {
+                    viewModel.saveAdjustedRecipeLocally()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Agregar a mis recetas")
             }
         }
     }

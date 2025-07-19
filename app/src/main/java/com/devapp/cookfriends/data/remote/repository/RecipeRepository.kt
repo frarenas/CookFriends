@@ -74,4 +74,9 @@ class RecipeRepository @Inject constructor(
         withContext(Dispatchers.IO) {
             recipeDao.deleteRecipeById(id)
         }
+
+    suspend fun countUserCalculatedRecipes(userId: Uuid) =
+        withContext(Dispatchers.IO) {
+            recipeDao.countUserCalculatedRecipes(userId)
+        }
 }
