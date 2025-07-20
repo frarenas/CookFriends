@@ -42,6 +42,9 @@ open class RecoveryPasswordViewModel @Inject constructor(
     private val _repeatPassword = mutableStateOf("")
     val repeatPassword: State<String> = _repeatPassword
 
+    private val _showConfirmationDialog = mutableStateOf(false)
+    val showConfirmationDialog: State<Boolean> = _showConfirmationDialog
+
     fun onEmailChange(newEmail: String) {
         _email.value = newEmail
         _recoveryPasswordState.update { it.copy(usernameErrorMessage = null) }
@@ -152,16 +155,7 @@ open class RecoveryPasswordViewModel @Inject constructor(
                             username = email.value.trim().lowercase(),
                             newPassword = _newPassword.value
                         )
-
-                        _recoveryPasswordState.update {
-                            it.copy(
-                                isLoading = false,
-                                message = UiMessage(
-                                    uiText = UiText.StringResource(R.string.password_was_updated),
-                                    blocking = false
-                                )
-                            )
-                        }
+                        _showConfirmationDialog.value = true
                     }
                 } catch (e: Exception) {
                     _recoveryPasswordState.update {

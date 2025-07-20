@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.RecoveryStep
 import com.devapp.cookfriends.domain.model.UiText
+import com.devapp.cookfriends.presentation.common.ConfirmationDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,27 +53,22 @@ fun RecoveryPasswordScreen(
 ) {
     val passwordRecoveryState by viewModel.recoveryPasswordState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showConfirmationDialog = viewModel.showConfirmationDialog.value
     val context = LocalContext.current
 
     LaunchedEffect(key1 = passwordRecoveryState.message) {
         passwordRecoveryState.message?.let {
-            snackbarHostState.showSnackbar(
-                message = it.uiText.asString(context),
-                duration = SnackbarDuration.Short
-            )
+            if (it.blocking) {
+                showConfirmationDialog = true
+            } else {
+                snackbarHostState.showSnackbar(
+                    message = it.uiText.asString(context),
+                    duration = SnackbarDuration.Short
+                )
+            }
             viewModel.onClearMessage()
         }
     }
-
-    /*LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { event ->
-            when (event) {
-                is ProfileNavigationEvent.NavigateToLogin -> {
-                    onNavigateToLogin()
-                }
-            }
-        }
-    }*/
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -134,6 +130,19 @@ fun RecoveryPasswordScreen(
                 )
             }
         }
+    }
+
+    if (showConfirmationDialog) {
+        ConfirmationDialog(
+            title = stringResource(R.string.password_was_updated),
+            message = stringResource(R.string.log_in_with_new_password),
+            confirmText = stringResource(R.string.understood),
+            dismissText = null,
+            onConfirm = {
+                onNavigateToLogin()
+            },
+            onDismiss = { }
+        )
     }
 }
 
