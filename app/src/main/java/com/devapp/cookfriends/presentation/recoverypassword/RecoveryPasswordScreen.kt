@@ -27,9 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -38,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.RecoveryStep
-import com.devapp.cookfriends.presentation.profile.ProfileNavigationEvent
+import com.devapp.cookfriends.domain.model.UiText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,22 +50,21 @@ fun RecoveryPasswordScreen(
     viewModel: RecoveryPasswordViewModel = hiltViewModel(),
     onNavigateToLogin: () -> Unit
 ) {
-    val currentStep = viewModel.currentStep.value
-    val isLoading = viewModel.isLoading.value
-    val errorMessage = viewModel.errorMessage.value
+    val passwordRecoveryState by viewModel.recoveryPasswordState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
-    LaunchedEffect(errorMessage) {
-        errorMessage?.let {
+    LaunchedEffect(key1 = passwordRecoveryState.message) {
+        passwordRecoveryState.message?.let {
             snackbarHostState.showSnackbar(
-                message = it,
+                message = it.uiText.asString(context),
                 duration = SnackbarDuration.Short
             )
-            viewModel.clearErrorMessage()
+            viewModel.onClearMessage()
         }
     }
 
-    LaunchedEffect(Unit) {
+    /*LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is ProfileNavigationEvent.NavigateToLogin -> {
@@ -70,7 +72,7 @@ fun RecoveryPasswordScreen(
                 }
             }
         }
-    }
+    }*/
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -78,7 +80,7 @@ fun RecoveryPasswordScreen(
             TopAppBar(
                 title = {
                     Text(
-                        when (currentStep) {
+                        when (passwordRecoveryState.currentStep) {
                             RecoveryStep.EnterEmail -> stringResource(R.string.recovery_password)
                             RecoveryStep.EnterCode -> stringResource(R.string.enter_recovery_code)
                             RecoveryStep.EnterNewPassword -> stringResource(R.string.new_password)
@@ -103,28 +105,32 @@ fun RecoveryPasswordScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (currentStep) {
+            when (passwordRecoveryState.currentStep) {
                 is RecoveryStep.EnterEmail -> EnterEmailStep(
                     email = viewModel.email.value,
                     onEmailChange = viewModel::onEmailChange,
                     onSubmit = viewModel::submitUsername,
-                    isLoading = isLoading
+                    isLoading = passwordRecoveryState.isLoading,
+                    errorMessase = passwordRecoveryState.usernameErrorMessage
                 )
 
                 is RecoveryStep.EnterCode -> EnterCodeStep(
                     code = viewModel.code.value,
                     onCodeChange = viewModel::onCodeChange,
                     onSubmit = viewModel::submitCode,
-                    isLoading = isLoading
+                    isLoading = passwordRecoveryState.isLoading,
+                    errorMessase = passwordRecoveryState.recoveryCodeErrorMessage
                 )
 
                 is RecoveryStep.EnterNewPassword -> EnterNewPasswordStep(
-                    password = viewModel.password.value,
-                    confirmPassword = viewModel.confirmPassword.value,
+                    password = viewModel.newPassword.value,
+                    confirmPassword = viewModel.repeatPassword.value,
                     onPasswordChange = viewModel::onPasswordChange,
                     onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
                     onSubmit = viewModel::submitNewPassword,
-                    isLoading = isLoading
+                    isLoading = passwordRecoveryState.isLoading,
+                    newPasswordErrorMessase = passwordRecoveryState.passwordErrorMessage,
+                    confirmPasswordError = passwordRecoveryState.repeatPasswordErrorMessage
                 )
             }
         }
@@ -136,8 +142,10 @@ fun EnterEmailStep(
     email: String,
     onEmailChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    errorMessase: UiText?
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -157,7 +165,17 @@ fun EnterEmailStep(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             singleLine = true,
-            enabled = !isLoading
+            enabled = !isLoading,
+            isError = errorMessase != null,
+            supportingText = {
+                errorMessase?.let {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = it.asString(context),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onSubmit, enabled = !isLoading, modifier = Modifier.fillMaxWidth()) {
@@ -175,8 +193,10 @@ fun EnterCodeStep(
     code: String,
     onCodeChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    errorMessase: UiText?
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -196,7 +216,17 @@ fun EnterCodeStep(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
-            enabled = !isLoading
+            enabled = !isLoading,
+            isError = errorMessase != null,
+            supportingText = {
+                errorMessase?.let {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = it.asString(context),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onSubmit, enabled = !isLoading, modifier = Modifier.fillMaxWidth()) {
@@ -216,8 +246,11 @@ fun EnterNewPasswordStep(
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    newPasswordErrorMessase: UiText?,
+    confirmPasswordError: UiText?
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -238,7 +271,17 @@ fun EnterNewPasswordStep(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             singleLine = true,
-            enabled = !isLoading
+            enabled = !isLoading,
+            isError = newPasswordErrorMessase != null,
+            supportingText = {
+                newPasswordErrorMessase?.let {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = it.asString(context),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
@@ -249,7 +292,17 @@ fun EnterNewPasswordStep(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             singleLine = true,
-            enabled = !isLoading
+            enabled = !isLoading,
+            isError = confirmPasswordError != null,
+            supportingText = {
+                confirmPasswordError?.let {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = it.asString(context),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onSubmit, enabled = !isLoading, modifier = Modifier.fillMaxWidth()) {

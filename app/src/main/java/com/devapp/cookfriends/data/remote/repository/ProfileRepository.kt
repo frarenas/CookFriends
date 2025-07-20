@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.devapp.cookfriends.data.local.dao.UserDao
 import com.devapp.cookfriends.data.remote.model.ChangePasswordRequest
-import com.devapp.cookfriends.data.remote.model.ChangePasswordResponse
 import com.devapp.cookfriends.data.remote.model.Status
 import com.devapp.cookfriends.data.remote.model.UserModel
 import com.devapp.cookfriends.data.remote.service.CookFriendsService
@@ -47,10 +46,12 @@ class ProfileRepository @Inject constructor(
         }
     }
 
-    suspend fun updatePasswordByUsername(username: String, newPassword: String): ChangePasswordResponse {
+    suspend fun updatePasswordByUsername(username: String, newPassword: String) {
         val request = ChangePasswordRequest(username = username, newPassword = newPassword)
         val response = service.changePassword(request)
-        return response
+        if (response.status == Status.ERROR.value) {
+            throw Exception(response.message)
+        }
     }
 
     suspend fun setLoggedUserId(userId: Uuid) {
