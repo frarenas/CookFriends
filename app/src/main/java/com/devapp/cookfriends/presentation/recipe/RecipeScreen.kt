@@ -90,7 +90,7 @@ fun RecipeScreen(
                     }
                 },
                 actions = {
-                    if (isUserLogged) {
+                    if (isUserLogged && recipeState.recipe?.userCalculated == false) {
                         IconButton(onClick = { viewModel.toggleFavorite() }) {
                             Icon(
                                 imageVector = if (recipeState.recipe?.isUserFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
@@ -103,7 +103,7 @@ fun RecipeScreen(
             )
         },
         floatingActionButton = {
-            if (recipeState.isEditable) {
+            if (recipeState.isEditable && recipeState.recipe?.userCalculated == false) {
                 FloatingActionButton(
                     containerColor = MaterialTheme.colorScheme.primary,
                     onClick = { navigateToEditRecipe(recipeState.recipe!!.id) }
@@ -179,7 +179,7 @@ fun RecipeScreen(
                             tint = Gold
                         )
                         Text(text = recipe.averageRating?.toString() ?: "-")
-                        if(isUserLogged) {
+                        if(isUserLogged && recipeState.recipe?.userCalculated == false) {
                             Spacer(modifier = Modifier.width(16.dp))
                             RatingStar(
                                 rating = recipe.userRating?.toFloat() ?: 0F,
@@ -227,14 +227,16 @@ fun RecipeScreen(
                                 }
                             }
                         }
-                        IconButton(onClick = {
-                            navigateToIngredientCalculator(recipe.id)
-                        }) {
-                            Icon(
-                                Icons.Default.Calculate,
-                                contentDescription = stringResource(R.string.calculate_ingredients),
-                                tint = LightBlue
-                            )
+                        if(isUserLogged && recipeState.recipe?.userCalculated == false) {
+                            IconButton(onClick = {
+                                navigateToIngredientCalculator(recipe.id)
+                            }) {
+                                Icon(
+                                    Icons.Default.Calculate,
+                                    contentDescription = stringResource(R.string.calculate_ingredients),
+                                    tint = LightBlue
+                                )
+                            }
                         }
                     }
 
@@ -267,7 +269,7 @@ fun RecipeScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    if (isUserLogged) {
+                    if(isUserLogged && recipeState.recipe?.userCalculated == false) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
