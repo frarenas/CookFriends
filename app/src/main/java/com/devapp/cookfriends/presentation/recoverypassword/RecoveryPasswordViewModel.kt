@@ -1,27 +1,18 @@
-// En tu paquete de viewmodel, ej: com.devapp.cookfriends.presentation.recoverypassword
 package com.devapp.cookfriends.presentation.recoverypassword
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devapp.cookfriends.domain.model.RecoveryStep // Asegúrate de importar tu RecoveryStep
+import com.devapp.cookfriends.domain.model.RecoveryStep
 import com.devapp.cookfriends.domain.usecase.ChangePasswordByUsernameUseCase
 import com.devapp.cookfriends.domain.usecase.GetUsernameUseCase
 import com.devapp.cookfriends.presentation.profile.ProfileNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-
-// Asume que tienes un repositorio o caso de uso para interactuar con el backend
-// interface AuthRepository {
-//     suspend fun requestPasswordRecoveryCode(email: String): Result<Unit> // Result podría ser una clase sellada propia para manejar éxito/error
-//     suspend fun validateRecoveryCode(email: String, code: String): Result<Unit>
-//     suspend fun resetPassword(email: String, code: String, newPassword: String): Result<Unit>
-// }
 
 @HiltViewModel
 open class RecoveryPasswordViewModel @Inject constructor(
@@ -54,7 +45,7 @@ open class RecoveryPasswordViewModel @Inject constructor(
     val navigationEvent = _navigationEvent.asSharedFlow()
     fun onEmailChange(newEmail: String) {
         _email.value = newEmail
-        _errorMessage.value = null // Limpiar error al escribir
+        _errorMessage.value = null
     }
 
     fun onCodeChange(newCode: String) {
@@ -73,19 +64,13 @@ open class RecoveryPasswordViewModel @Inject constructor(
     }
 
     fun submitUsername() {
-        println("submitUserName() llamado")
         if (email.value.isBlank()) {
             _errorMessage.value = "El nombre de usuario no puede estar vacío."
             return
         }
         _isLoading.value = true
-        println("Antes del launch")
         viewModelScope.launch {
-            println("Quiere lanzar api con profile:")
-            // --- LÓGICA DE BACKEND (SIMULADA) ---
-            delay(1500) // Simular llamada de red
-            val user  = getUsernameUseCase(email.value)
-            println("Se ejecuto el endpoint, $user")
+            val user  = getUsernameUseCase(email.value.trim().lowercase())
             if (user != null) {
                 _currentStep.value = RecoveryStep.EnterCode
                 _errorMessage.value = null
@@ -124,11 +109,11 @@ open class RecoveryPasswordViewModel @Inject constructor(
                     newPassword = password.value
                 )
 
-                if (response?.status == "SUCCESS") {
+                if (response.status == "SUCCESS") {
                     _errorMessage.value = "Contraseña cambiada con éxito."
                     _navigationEvent.emit(ProfileNavigationEvent.NavigateToLogin)
                 } else {
-                    _errorMessage.value = response?.message ?: "Error al cambiar la contraseña."
+                    _errorMessage.value = response.message ?: "Error al cambiar la contraseña."
                 }
 
             } catch (e: Exception) {
@@ -137,11 +122,6 @@ open class RecoveryPasswordViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
-    }
-
-
-    private fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     fun clearErrorMessage() {

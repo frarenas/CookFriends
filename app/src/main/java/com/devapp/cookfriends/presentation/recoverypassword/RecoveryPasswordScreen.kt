@@ -1,22 +1,42 @@
 package com.devapp.cookfriends.presentation.recoverypassword
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel // Si usas Hilt
-import androidx.lifecycle.viewmodel.compose.viewModel // Para uso sin Hilt
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.devapp.cookfriends.R
 import com.devapp.cookfriends.domain.model.RecoveryStep
 import com.devapp.cookfriends.presentation.profile.ProfileNavigationEvent
 
@@ -24,22 +44,21 @@ import com.devapp.cookfriends.presentation.profile.ProfileNavigationEvent
 @Composable
 fun RecoveryPasswordScreen(
     navController: NavController,
-    viewModel: RecoveryPasswordViewModel = hiltViewModel(), // O hiltViewModel()
+    viewModel: RecoveryPasswordViewModel = hiltViewModel(),
     onNavigateToLogin: () -> Unit
 ) {
     val currentStep = viewModel.currentStep.value
     val isLoading = viewModel.isLoading.value
     val errorMessage = viewModel.errorMessage.value
-
-    // Para mostrar Snackbars por errores
     val snackbarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(errorMessage) {
         errorMessage?.let {
             snackbarHostState.showSnackbar(
                 message = it,
                 duration = SnackbarDuration.Short
             )
-            viewModel.clearErrorMessage() // Limpiar para que no se muestre de nuevo
+            viewModel.clearErrorMessage()
         }
     }
 
@@ -60,36 +79,30 @@ fun RecoveryPasswordScreen(
                 title = {
                     Text(
                         when (currentStep) {
-                            RecoveryStep.EnterEmail -> "Recuperar contraseña"
-                            RecoveryStep.EnterCode -> "Ingresa el Código"
-                            RecoveryStep.EnterNewPassword -> "Nueva Contraseña"
+                            RecoveryStep.EnterEmail -> stringResource(R.string.recovery_password)
+                            RecoveryStep.EnterCode -> stringResource(R.string.enter_recovery_code)
+                            RecoveryStep.EnterNewPassword -> stringResource(R.string.new_password)
                         }
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        // Aquí podrías tener lógica más fina,
-                        // como volver al paso anterior dentro del ViewModel o salir de la pantalla
-                        if (currentStep == RecoveryStep.EnterEmail) {
-                            navController.popBackStack()
-                        } else {
-                            // Lógica para volver al paso anterior si quieres, o simplemente salir
-                            // viewModel.goToPreviousStep() // Necesitarías implementar esto
-                            navController.popBackStack() // Opciones: salir o manejar internamente
-                        }
+                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
             )
         }
     ) { innerPadding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             when (currentStep) {
                 is RecoveryStep.EnterEmail -> EnterEmailStep(
                     email = viewModel.email.value,
@@ -97,12 +110,14 @@ fun RecoveryPasswordScreen(
                     onSubmit = viewModel::submitUsername,
                     isLoading = isLoading
                 )
+
                 is RecoveryStep.EnterCode -> EnterCodeStep(
                     code = viewModel.code.value,
                     onCodeChange = viewModel::onCodeChange,
                     onSubmit = viewModel::submitCode,
                     isLoading = isLoading
                 )
+
                 is RecoveryStep.EnterNewPassword -> EnterNewPasswordStep(
                     password = viewModel.password.value,
                     confirmPassword = viewModel.confirmPassword.value,
@@ -130,12 +145,15 @@ fun EnterEmailStep(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Ingrese el usuario con el que se registró a Cook Friends. Enviaremos un código para generar una nueva contraseña.", style = MaterialTheme.typography.bodyLarge)
+        Text(
+            stringResource(R.string.enter_user_indication),
+            style = MaterialTheme.typography.bodyLarge
+        )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = { Text("Username") },
+            label = { Text(stringResource(R.string.username)) },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             singleLine = true,
@@ -143,8 +161,11 @@ fun EnterEmailStep(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onSubmit, enabled = !isLoading, modifier = Modifier.fillMaxWidth()) {
-            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-            else Text("Solicitar código")
+            if (isLoading) CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            else Text(stringResource(R.string.request_code))
         }
     }
 }
@@ -163,12 +184,15 @@ fun EnterCodeStep(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Ingrese el código que le enviamos al mail.", style = MaterialTheme.typography.bodyLarge)
+        Text(
+            stringResource(R.string.enter_code_inication),
+            style = MaterialTheme.typography.bodyLarge
+        )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = code,
             onValueChange = onCodeChange,
-            label = { Text("Código de Verificación") },
+            label = { Text(stringResource(R.string.verification_code)) },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
@@ -176,8 +200,11 @@ fun EnterCodeStep(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onSubmit, enabled = !isLoading, modifier = Modifier.fillMaxWidth()) {
-            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-            else Text("Verificar Código")
+            if (isLoading) CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            else Text(stringResource(R.string.verify_code))
         }
     }
 }
@@ -198,12 +225,15 @@ fun EnterNewPasswordStep(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Ingresa tu nueva contraseña.", style = MaterialTheme.typography.bodyLarge)
+        Text(
+            stringResource(R.string.enter_new_password_inication),
+            style = MaterialTheme.typography.bodyLarge
+        )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = onPasswordChange,
-            label = { Text("Nueva Contraseña") },
+            label = { Text(stringResource(R.string.password)) },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -214,7 +244,7 @@ fun EnterNewPasswordStep(
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = onConfirmPasswordChange,
-            label = { Text("Confirmar Nueva Contraseña") },
+            label = { Text(stringResource(R.string.repeat_password)) },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -223,8 +253,11 @@ fun EnterNewPasswordStep(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onSubmit, enabled = !isLoading, modifier = Modifier.fillMaxWidth()) {
-            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-            else Text("Cambiar Contraseña")
+            if (isLoading) CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            else Text(stringResource(R.string.change_password))
         }
     }
 }

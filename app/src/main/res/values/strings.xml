@@ -132,4 +132,15 @@
     <string name="recipe_saved">Receta guardada</string>
     <string name="recipe_saved_in_my_recipes">Puedes verla en Mis Recetas.</string>
     <string name="understood">Entendido</string>
+
+    // Password recovery
+    <string name="enter_recovery_code">Ingresa el Código</string>
+    <string name="new_password">Nueva Contraseña</string>
+    <string name="enter_user_indication">Ingrese el usuario con el que se registró a Cook Friends. Enviaremos un código para generar una nueva contraseña.</string>
+    <string name="request_code">Solicitar código</string>
+    <string name="enter_code_inication">Ingrese el código que le enviamos al mail.</string>
+    <string name="verification_code">Código de Verificación</string>
+    <string name="verify_code">Verificar Código</string>
+    <string name="enter_new_password_inication">Ingresa tu nueva contraseña.</string>
+
 </resources>
