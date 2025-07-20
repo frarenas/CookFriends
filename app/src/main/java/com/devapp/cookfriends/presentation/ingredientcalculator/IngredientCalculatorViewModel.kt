@@ -1,6 +1,8 @@
 package com.devapp.cookfriends.presentation.ingredientcalculator
 
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,6 +44,9 @@ class IngredientCalculatorViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(IngredientCalculatorState())
     val state: StateFlow<IngredientCalculatorState> = _state
+
+    private val _showConfirmationDialog = mutableStateOf(false)
+    val showConfirmationDialog: State<Boolean> = _showConfirmationDialog
 
     init {
         loadRecipe()
@@ -156,14 +161,7 @@ class IngredientCalculatorViewModel @Inject constructor(
                     )
                     try {
                         saveRecipeUseCase(copiedRecipe)
-                        _state.update {
-                            it.copy(
-                                message = UiMessage(
-                                    uiText = UiText.StringResource(R.string.changes_saved),
-                                    blocking = true
-                                )
-                            )
-                        }
+                        _showConfirmationDialog.value = true
                     } catch (e: Exception) {
                         _state.update {
                             it.copy(

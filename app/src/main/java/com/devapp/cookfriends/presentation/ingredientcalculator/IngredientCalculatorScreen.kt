@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,7 +48,7 @@ fun IngredientCalculatorScreen(
     val state by viewModel.state.collectAsState()
     val portionsState = remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
-    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var showConfirmationDialog = viewModel.showConfirmationDialog.value
     val context = LocalContext.current
 
     LaunchedEffect(state.desiredPortions) {
