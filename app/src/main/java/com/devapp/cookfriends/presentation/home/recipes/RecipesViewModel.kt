@@ -92,10 +92,10 @@ class RecipesViewModel @Inject constructor(
     }
 
     fun applySearchOptions(options: SearchOptions) {
-        _currentSearchOptions.value = options.copy(limit = Int.MAX_VALUE)
+        val updatedOptions = options.copy(limit = Int.MAX_VALUE)
+        _currentSearchOptions.value = updatedOptions
         dismissSearchOptionsDialog()
-
-        searchRecipes(options)
+        searchRecipes(updatedOptions)
     }
 
     fun openSearchOptionsDialog() {
