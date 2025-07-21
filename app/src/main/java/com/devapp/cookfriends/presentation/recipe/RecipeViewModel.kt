@@ -214,7 +214,8 @@ class RecipeViewModel @Inject constructor(
                             recipeId = _recipeState.value.recipe!!.id,
                             user = getLoggedUserUseCase(),
                             date = kotlinx.datetime.Clock.System.now(),
-                            updatePending = true
+                            updatePending = true,
+                            published = true
                         )
                         addCommentUseCase(comment)
                         _recipeState.update {
