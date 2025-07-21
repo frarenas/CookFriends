@@ -179,12 +179,13 @@ fun RecipeScreen(
                             tint = Gold
                         )
                         Text(text = recipe.averageRating?.toString() ?: "-")
-                        if(isUserLogged && recipeState.recipe?.userCalculated == false) {
+                        if (isUserLogged && recipeState.recipe?.userCalculated == false) {
                             Spacer(modifier = Modifier.width(16.dp))
                             RatingStar(
                                 rating = recipe.userRating?.toFloat() ?: 0F,
                                 maxRating = 5,
-                                onStarClick = { viewModel.rateRecipe(it) }
+                                onStarClick = { viewModel.rateRecipe(it) },
+                                isIndicator = recipeState.isSendingRating
                             )
                         }
                     }
@@ -227,7 +228,7 @@ fun RecipeScreen(
                                 }
                             }
                         }
-                        if(isUserLogged && recipeState.recipe?.userCalculated == false) {
+                        if (isUserLogged && recipeState.recipe?.userCalculated == false) {
                             IconButton(onClick = {
                                 navigateToIngredientCalculator(recipe.id)
                             }) {
@@ -269,7 +270,7 @@ fun RecipeScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    if(isUserLogged && recipeState.recipe?.userCalculated == false) {
+                    if (isUserLogged && recipeState.recipe?.userCalculated == false) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
@@ -291,11 +292,15 @@ fun RecipeScreen(
                                             color = MaterialTheme.colorScheme.error
                                         )
                                     }
-                                }
+                                },
+                                enabled = !recipeState.isSendingComment
                             )
-                            IconButton(onClick = {
-                                viewModel.sendComment()
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.sendComment()
+                                },
+                                enabled = !recipeState.isSendingComment
+                            ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.Send,
                                     contentDescription = stringResource(R.string.send),

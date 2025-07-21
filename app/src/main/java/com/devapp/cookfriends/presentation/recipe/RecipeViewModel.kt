@@ -1,5 +1,6 @@
 package com.devapp.cookfriends.presentation.recipe
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -152,7 +153,6 @@ class RecipeViewModel @Inject constructor(
             if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                 _recipeState.update {
                     it.copy(
-                        isLoading = false,
                         message = UiMessage(
                             UiText.StringResource(R.string.no_internet_connection),
                             blocking = false
@@ -160,7 +160,7 @@ class RecipeViewModel @Inject constructor(
                     )
                 }
             } else {
-                _recipeState.update { it.copy(isLoading = true) }
+                _recipeState.update { it.copy(isSendingRating = true) }
                 try {
                     val rating = Rating(
                         recipeId = _recipeState.value.recipe!!.id,
@@ -170,23 +170,24 @@ class RecipeViewModel @Inject constructor(
                     rateRecipeUseCase(rating)
                     _recipeState.update {
                         it.copy(
-                            isLoading = false,
+                            isSendingRating = false,
                             message = UiMessage(
                                 uiText = UiText.StringResource(R.string.comment_sent),
                                 blocking = false
                             )
                         )
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
                     _recipeState.update {
                         it.copy(
-                            isLoading = true,
+                            isSendingRating = false,
                             message = UiMessage(
                                 uiText = UiText.StringResource(R.string.generic_error),
                                 blocking = false
                             )
                         )
                     }
+                    Log.e("RecipeViewModel", "Error sending rating", e)
                 }
             }
         }
@@ -199,7 +200,6 @@ class RecipeViewModel @Inject constructor(
                 if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                     _recipeState.update {
                         it.copy(
-                            isLoading = false,
                             message = UiMessage(
                                 UiText.StringResource(R.string.no_internet_connection),
                                 blocking = false
@@ -207,7 +207,7 @@ class RecipeViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    _recipeState.update { it.copy(isLoading = true) }
+                    _recipeState.update { it.copy(isSendingComment = true) }
                     try {
                         val comment = Comment(
                             comment = _newComment.value,
@@ -219,7 +219,7 @@ class RecipeViewModel @Inject constructor(
                         addCommentUseCase(comment)
                         _recipeState.update {
                             it.copy(
-                                isLoading = false,
+                                isSendingComment = false,
                                 message = UiMessage(
                                     uiText = UiText.StringResource(R.string.comment_sent),
                                     blocking = false
@@ -230,7 +230,7 @@ class RecipeViewModel @Inject constructor(
                     } catch (e: Exception) {
                         _recipeState.update {
                             it.copy(
-                                isLoading = true,
+                                isSendingComment = false,
                                 message = UiMessage(
                                     uiText = if (e.message != null) UiText.DynamicString(
                                         e.message ?: ""
@@ -239,6 +239,7 @@ class RecipeViewModel @Inject constructor(
                                 )
                             )
                         }
+                        Log.e("RecipeViewModel", "Error sending comment", e)
                     }
                 }
             }
