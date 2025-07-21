@@ -95,4 +95,8 @@ class HomeViewModel @Inject constructor(
             _isUserLogged.value = isUserLoggedUseCase()
         }
     }
+
+    fun onClearMessage() {
+        _recipesState.update { it.copy(message = null) }
+    }
 }

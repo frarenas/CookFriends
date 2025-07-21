@@ -99,6 +99,7 @@ fun HomeScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
+                viewModel.onClearMessage()
             }
 
             Scaffold(
