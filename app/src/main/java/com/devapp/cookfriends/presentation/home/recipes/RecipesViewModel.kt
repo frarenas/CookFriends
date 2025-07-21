@@ -47,13 +47,13 @@ class RecipesViewModel @Inject constructor(
     val currentSearchOptions: StateFlow<SearchOptions> = _currentSearchOptions.asStateFlow()
 
     init {
-        searchRecipes(_currentSearchOptions.value)
+        searchRecipes()
         getAvailableRecipeTypes()
     }
 
-    fun searchRecipes(options: SearchOptions) {
+    fun searchRecipes() {
         viewModelScope.launch {
-            getRecipesUseCase(options)
+            getRecipesUseCase(_currentSearchOptions.value)
                 .onStart {
                     _recipesState.update { it.copy(isLoading = true, message = null) }
                 }
@@ -92,10 +92,9 @@ class RecipesViewModel @Inject constructor(
     }
 
     fun applySearchOptions(options: SearchOptions) {
-        val updatedOptions = options.copy(limit = Int.MAX_VALUE)
-        _currentSearchOptions.value = updatedOptions
+        _currentSearchOptions.value = options.copy(limit = Int.MAX_VALUE)
         dismissSearchOptionsDialog()
-        searchRecipes(updatedOptions)
+        searchRecipes()
     }
 
     fun openSearchOptionsDialog() {
