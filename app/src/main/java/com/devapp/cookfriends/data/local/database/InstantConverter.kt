@@ -1,7 +1,7 @@
 package com.devapp.cookfriends.data.local.database
 
 import androidx.room.TypeConverter
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 class InstantConverter {
 

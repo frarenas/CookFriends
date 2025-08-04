@@ -3,7 +3,7 @@ package com.devapp.cookfriends.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Entity(

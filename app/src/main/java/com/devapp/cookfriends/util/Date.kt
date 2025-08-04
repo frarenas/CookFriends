@@ -1,6 +1,6 @@
 package com.devapp.cookfriends.util
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -12,7 +12,7 @@ fun Instant.toShortFormat() : String {
 
     val localDateTime = this.toLocalDateTime(timeZone)
     return  localDateTime.format(LocalDateTime.Format {
-        dayOfMonth()
+        day()
         char('/')
         monthNumber()
         char('/')

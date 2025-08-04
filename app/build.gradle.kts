@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,12 +11,12 @@ plugins {
 
 android {
     namespace = "com.devapp.cookfriends"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.devapp.cookfriends"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -34,9 +36,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-        freeCompilerArgs += "-Xopt-in=kotlin.uuid.ExperimentalUuidApi"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+            freeCompilerArgs.addAll(
+                "-opt-in=kotlin.uuid.ExperimentalUuidApi",
+                "-opt-in=kotlin.time.ExperimentalTime"
+            )
+        }
     }
     buildFeatures {
         compose = true

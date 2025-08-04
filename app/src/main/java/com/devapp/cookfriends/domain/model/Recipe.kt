@@ -2,8 +2,8 @@ package com.devapp.cookfriends.domain.model
 
 import com.devapp.cookfriends.data.local.entity.RecipeWithExtraData
 import com.devapp.cookfriends.data.remote.model.RecipeModel
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.String
 import kotlin.uuid.Uuid
 

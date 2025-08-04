@@ -2,7 +2,7 @@ package com.devapp.cookfriends.domain.model
 
 import com.devapp.cookfriends.data.local.entity.CommentWithUser
 import com.devapp.cookfriends.data.remote.model.CommentModel
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 data class Comment(

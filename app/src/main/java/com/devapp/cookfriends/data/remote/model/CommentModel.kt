@@ -1,9 +1,9 @@
 package com.devapp.cookfriends.data.remote.model
 
 import com.devapp.cookfriends.domain.model.Comment
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Serializable
