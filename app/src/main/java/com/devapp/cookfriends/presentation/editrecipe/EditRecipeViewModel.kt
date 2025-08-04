@@ -35,10 +35,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 import kotlin.text.trim
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 @HiltViewModel

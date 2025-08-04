@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.reflect.typeOf
+import kotlin.time.Clock.System.now
 import kotlin.uuid.Uuid
 
 @HiltViewModel
@@ -213,7 +214,7 @@ class RecipeViewModel @Inject constructor(
                             comment = _newComment.value,
                             recipeId = _recipeState.value.recipe!!.id,
                             user = getLoggedUserUseCase(),
-                            date = kotlinx.datetime.Clock.System.now(),
+                            date = now(),
                             updatePending = true
                         )
                         addCommentUseCase(comment)

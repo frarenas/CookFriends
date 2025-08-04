@@ -19,7 +19,7 @@ import com.devapp.cookfriends.domain.model.User
 import com.devapp.cookfriends.ui.theme.CookFriendsTheme
 import com.devapp.cookfriends.ui.theme.LightGray
 import com.devapp.cookfriends.util.toShortFormat
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 @Composable
