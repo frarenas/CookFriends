@@ -7,6 +7,7 @@ import com.devapp.cookfriends.domain.model.UiMessage
 import com.devapp.cookfriends.domain.model.UiText
 import com.devapp.cookfriends.domain.usecase.ChangePasswordUseCase
 import com.devapp.cookfriends.domain.usecase.LogoutUseCase
+import com.devapp.cookfriends.domain.usecase.ValidatePasswordInputUseCase
 import com.devapp.cookfriends.util.ConnectivityObserver
 import com.devapp.cookfriends.util.NetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val validatePasswordInputUseCase: ValidatePasswordInputUseCase,
     private val connectivityObserver: ConnectivityObserver
 ): ViewModel() {
 
@@ -38,8 +40,19 @@ class ProfileViewModel @Inject constructor(
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     fun updatePassword() {
-        val isChangePasswordValid = validateChangePassword()
-        if (isChangePasswordValid) {
+        val validationResult = validatePasswordInputUseCase(
+            newPassword = _newPassword.value,
+            repeatPassword = _repeatPassword.value
+        )
+
+        _profileState.update {
+            it.copy(
+                passwordErrorMessage = validationResult.newPasswordError,
+                repeatPasswordErrorMessage = validationResult.repeatPasswordError
+            )
+        }
+
+        if (validationResult.isValid) {
             viewModelScope.launch {
                 if (connectivityObserver.getCurrentNetworkStatus() == NetworkStatus.Unavailable) {
                     _profileState.update {
@@ -106,54 +119,5 @@ class ProfileViewModel @Inject constructor(
 
     fun onClearMessage() {
         _profileState.update { it.copy(message = null) }
-    }
-
-    private fun validateChangePassword(): Boolean {
-        var isValid = true
-        if (_newPassword.value.isBlank()) {
-            _profileState.update {
-                it.copy(
-                    passwordErrorMessage = UiText.StringResource(R.string.password_mandatory)
-                )
-            }
-            isValid = false
-        } else if (_newPassword.value.length < 8) {
-            _profileState.update {
-                it.copy(
-                    passwordErrorMessage = UiText.StringResource(R.string.password_invalid)
-                )
-            }
-            isValid = false
-        } else {
-            _profileState.update {
-                it.copy(
-                    passwordErrorMessage = null
-                )
-            }
-        }
-
-        if (_repeatPassword.value.isBlank()) {
-            _profileState.update {
-                it.copy(
-                    repeatPasswordErrorMessage = UiText.StringResource(R.string.repeat_password_mandatory)
-                )
-            }
-            isValid = false
-        } else if (_repeatPassword.value != _newPassword.value) {
-            _profileState.update {
-                it.copy(
-                    repeatPasswordErrorMessage = UiText.StringResource(R.string.passwords_does_not_match)
-                )
-            }
-            isValid = false
-        } else {
-            _profileState.update {
-                it.copy(
-                    repeatPasswordErrorMessage = null
-                )
-            }
-        }
-
-        return isValid
     }
 }
