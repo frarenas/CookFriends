@@ -1,19 +1,19 @@
 [versions]
-agp = "8.12.0"
+agp = "8.12.2"
 coilCompose = "3.3.0"
 coreTesting = "2.2.0"
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 kotlinxCoroutinesTest = "1.10.2"
 ksp = "2.2.0-2.0.2"
 kotlinxSerialization = "1.9.0"
-coreKtx = "1.16.0"
+coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.9.2"
+lifecycleRuntimeKtx = "2.9.3"
 activityCompose = "1.10.1"
-composeBom = "2025.07.00"
-hiltAndroid = "2.57"
+composeBom = "2025.08.01"
+hiltAndroid = "2.57.1"
 hiltNavigation = "1.2.0"
 materialIconsExtended = "1.7.8"
 mockk = "1.14.5"
@@ -23,6 +23,7 @@ okhttp = "5.1.0"
 room = "2.7.2"
 kotlinxDatetime = "0.7.1"
 datastore = "1.1.7"
+detekt = "1.23.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -73,3 +74,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
