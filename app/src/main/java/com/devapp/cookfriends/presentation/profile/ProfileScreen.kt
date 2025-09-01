@@ -142,7 +142,11 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(8.dp),
                     enabled = uiEnabled,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
                     trailingIcon = {
                         val image = if (passwordVisible)
                             Icons.Filled.Visibility
