@@ -151,7 +151,11 @@ fun LoginScreen(
                         .fillMaxWidth(),
                     singleLine = true,
                     enabled = uiEnabled,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
                     trailingIcon = {
                         val image = if (passwordVisible)
                             Icons.Filled.Visibility
@@ -219,8 +223,9 @@ fun LoginScreen(
                     if (loginState.isLoggingInGuest)
                         CircularProgressIndicator(modifier = Modifier.size(16.dp))
                     else
-                        Text(text = stringResource(R.string.continue_as_guest)
-                    )
+                        Text(
+                            text = stringResource(R.string.continue_as_guest)
+                        )
                 }
 
                 Row(

@@ -74,7 +74,10 @@ fun RecipeListItem(
                 } else {
                     IconButton(onClick = { onFavoriteClick(recipe.id) }) {
                         Icon(
-                            imageVector = if (recipe.isUserFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            imageVector = if (recipe.isUserFavorite)
+                                Icons.Filled.Favorite
+                            else
+                                Icons.Outlined.FavoriteBorder,
                             contentDescription = stringResource(R.string.favorite),
                             tint = Red
                         )

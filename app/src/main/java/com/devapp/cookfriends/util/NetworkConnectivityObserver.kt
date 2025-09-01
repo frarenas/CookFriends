@@ -111,7 +111,7 @@ class NetworkConnectivityObserver @Inject constructor(
 
         return when {
             !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ||
-                    !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) -> NetworkStatus.Unavailable
+            !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) -> NetworkStatus.Unavailable
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> NetworkStatus.Wifi
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NetworkStatus.Cellular
             else -> NetworkStatus.Available // For other types like Ethernet, VPN etc.
