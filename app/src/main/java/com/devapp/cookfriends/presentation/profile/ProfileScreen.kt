@@ -103,7 +103,10 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(8.dp),
                     enabled = uiEnabled,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible)
+                        VisualTransformation.None
+                    else
+                        PasswordVisualTransformation(),
                     trailingIcon = {
                         val image = if (passwordVisible)
                             Icons.Filled.Visibility
@@ -139,7 +142,11 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(8.dp),
                     enabled = uiEnabled,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
                     trailingIcon = {
                         val image = if (passwordVisible)
                             Icons.Filled.Visibility
@@ -199,18 +206,18 @@ fun ProfileScreen(
     }
 
     if (showConfirmationDialog) {
-            ConfirmationDialog(
-                title = stringResource(R.string.confirm_logout_title),
-                message = stringResource(R.string.confirm_logout_message),
-                confirmText = stringResource(R.string.logout),
-                dismissText = stringResource(R.string.cancel),
-                onConfirm = {
-                    viewModel.logout()
-                    showConfirmationDialog = false
-                },
-                onDismiss = {
-                    showConfirmationDialog = false
-                }
-            )
-        }
+        ConfirmationDialog(
+            title = stringResource(R.string.confirm_logout_title),
+            message = stringResource(R.string.confirm_logout_message),
+            confirmText = stringResource(R.string.logout),
+            dismissText = stringResource(R.string.cancel),
+            onConfirm = {
+                viewModel.logout()
+                showConfirmationDialog = false
+            },
+            onDismiss = {
+                showConfirmationDialog = false
+            }
+        )
+    }
 }

@@ -93,7 +93,10 @@ fun RecipeScreen(
                     if (isUserLogged && recipeState.recipe?.userCalculated == false) {
                         IconButton(onClick = { viewModel.toggleFavorite() }) {
                             Icon(
-                                imageVector = if (recipeState.recipe?.isUserFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                imageVector = if (recipeState.recipe?.isUserFavorite == true)
+                                    Icons.Filled.Favorite
+                                else
+                                    Icons.Outlined.FavoriteBorder,
                                 contentDescription = stringResource(R.string.favorite),
                                 tint = Red
                             )

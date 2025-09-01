@@ -53,6 +53,6 @@ class NetworkModule {
         .create(CookFriendsService::class.java)
 
     private companion object {
-        val API_BASE_URL = "https://script.google.com/macros/s/AKfycbzYa1RDPseB3M2gtqRqZc7qWr7hSg1G43EEjYytrdDbPICWvneQ5xA0BPJncnyCHU1s/"
+        const val API_BASE_URL = "https://script.google.com/macros/s/AKfycbzYa1RDPseB3M2gtqRqZc7qWr7hSg1G43EEjYytrdDbPICWvneQ5xA0BPJncnyCHU1s/"
     }
 }

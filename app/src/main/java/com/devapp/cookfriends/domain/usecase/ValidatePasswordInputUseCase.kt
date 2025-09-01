@@ -12,7 +12,7 @@ data class PasswordValidationResult(
         get() = newPasswordError == null && repeatPasswordError == null
 }
 
-class ValidatePasswordInputUseCase @Inject constructor() { // No dependencies needed for this simple validation
+class ValidatePasswordInputUseCase @Inject constructor() {
 
     operator fun invoke(newPassword: String, repeatPassword: String): PasswordValidationResult {
         val newPasswordError = when {
